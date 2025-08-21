@@ -20,9 +20,19 @@ API_URL = "http://localhost:8000"
 # Custom CSS
 st.markdown("""
 <style>
-    /* Main theme colors */
+    /* Main theme colors - Wide layout adjustments */
     .main {
         padding-top: 2rem;
+        max-width: 80%;
+        margin: 0 auto;
+        width: 80%;
+    }
+    
+    .block-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        max-width: 80% !important;
+        width: 80%;
     }
     
     /* Custom header styling */
@@ -176,7 +186,7 @@ def validate_and_convert_image(uploaded_file):
 st.set_page_config(
     page_title="Amulet-AI", 
     page_icon="🔍", 
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
@@ -683,7 +693,7 @@ with col_tip1:
 
 with col_tip2:
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); 
+    <div style="background: linear-gradient(135deg, #f3e5f5, #ce93d8); 
                 border-radius: 15px; padding: 1.5rem; height: 180px;
                 text-align: center; border: 1px solid #ce93d8;">
         <div style="font-size: 2rem; margin-bottom: 0.8rem;">🎯</div>
@@ -754,3 +764,20 @@ with st.expander("🔧 Developer Info"):
     st.write(f"📅 Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     st.write(f"🌐 API URL: {API_URL}")
     st.write("👨‍💻 Developed with Streamlit & FastAPI")
+
+# Removed the "ข้อจำกัด" section from the sidebar and added it as a floating popup in the top-right corner with a red theme.
+st.markdown("""
+<div style="position: fixed; top: 80px; right: 20px; z-index: 1000; 
+            background: linear-gradient(135deg, #ffcccc, #ff6666); 
+            border: 2px solid #ff4d4d; border-radius: 10px; 
+            padding: 1rem; width: 400px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <h4 style="color: #990000; margin: 0 0 0.5rem 0;">⚠️ ข้อจำกัด</h4>
+    <ul style="color: #660000; font-size: 0.9rem; margin: 0; padding-left: 1.2rem;">
+        <li>ระบบอยู่ในช่วงทดสอบ</li>
+        <li>ใช้ข้อมูลจำลองในการวิเคราะห์</li>
+        <li>ความแม่นยำประมาณ 70-80%</li>
+        <li>อาจมีข้อผิดพลาดในการวิเคราะห์</li>
+        <li>ความแม่นยำต่ำมาก เกิดจาก Mock Data(ข้อมูลทดสอบจากการสุ่มในช่วงทดลอง  (ไม่ใช้ตัวAIจริงๆ))</li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
