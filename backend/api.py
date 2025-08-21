@@ -1,5 +1,7 @@
 import sys
 import os
+import logging
+import random
 # เพิ่ม path สำหรับ import ไฟล์ใน backend folder
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,7 +12,6 @@ from typing import List, Optional
 from model_loader import ModelLoader
 from valuation import get_quantiles
 from recommend import recommend_markets
-import logging
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +69,6 @@ async def predict(front: UploadFile = File(...), back: Optional[UploadFile] = Fi
             all_classes = list(model_loader.labels.values())
             other_classes = [cls for cls in all_classes if cls != main_class]
             
-            import random
             topk = [
                 {"class_id": 0, "class_name": main_class, "confidence": main_confidence}
             ]
@@ -109,6 +109,11 @@ async def predict(front: UploadFile = File(...), back: Optional[UploadFile] = Fi
         logger.error(f"Error processing prediction: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+@app.get("/")
+def root():
+    """Root endpoint for health check"""
+    return {"message": "Amulet-AI API is running", "status": "ok"}
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
@@ -123,10 +128,5 @@ async def get_supported_formats():
         "heic_support": True  # เนื่องจากติดตั้ง pillow-heif แล้ว
     }
     return formats
-
-@app.get("/")
-def root():
-    """Root endpoint for health check"""
-    return {"message": "Amulet-AI API is running", "status": "ok"}
 
 # รัน: uvicorn backend.api:app --reload --port 8000
