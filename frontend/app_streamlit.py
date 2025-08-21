@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
 
-API_URL = st.secrets.get("API_URL", "http://localhost:8000")
+# เปลี่ยนจาก st.secrets.get() เป็นการกำหนดค่าตรงๆ
+API_URL = "http://localhost:8000"
 
 st.set_page_config(page_title="Amulet-AI", page_icon="🔍", layout="centered")
 st.title("Amulet-AI — วิเคราะห์พระเครื่องลึกลับ")
