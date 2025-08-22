@@ -206,7 +206,8 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    with st.expander("� วิธีการใช้งาน", expanded=True):
+    # คำอธิบายการใช้งานหลัก
+    with st.expander("📘 วิธีการใช้งาน", expanded=True):
         st.markdown("""
         1. 📤 **อัปโหลด** ภาพด้านหน้าพระเครื่อง
         2. 📷 **ถ่ายรูป** หรือเลือกภาพด้านหลัง (ไม่บังคับ)
@@ -272,12 +273,18 @@ with col_camera:
     </div>
     """, unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
-
-col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)  # สร้างคอลัมน์ครั้งเดียว (ลบการประกาศซ้ำ)
 
 with col1:
-    st.markdown("**ภาพด้านหน้า** (บังคับ)")
+    st.markdown("""
+    <div style="text-align: center; padding: 1rem; background: #d4edda; 
+                border: 1px solid #c3e6cb; border-radius: 10px; margin: 1rem 0;">
+        <h4 style="color: #155724; margin: 0;">📸 ภาพด้านหน้า</h4>
+        <p style="color: #155724; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
+            (บังคับ - จำเป็นสำหรับการวิเคราะห์)
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Tab สำหรับเลือกวิธีการ input
     tab1, tab2 = st.tabs(["📁 อัปโหลด", "📷 ถ่ายรูป"])
@@ -393,9 +400,6 @@ with col2:
                 if st.button("✅ ใช้รูปนี้", key="back_camera_confirm"):
                     st.session_state.show_back_camera = False
                     st.rerun()
-            else:
-                back = back_file if 'back_file' in locals() and back_file else None
-                back_source = "upload"
         else:
             back = back_file if 'back_file' in locals() and back_file else None
             back_source = "upload"
@@ -679,14 +683,14 @@ col_tip1, col_tip2, col_tip3 = st.columns(3)
 with col_tip1:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
-                border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #90caf9;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">📸</div>
-        <h4 style="color: #1565c0; margin: 0.5rem 0;">แสงสว่าง</h4>
-        <p style="color: #1565c0; font-size: 0.85rem; margin: 0; line-height: 1.4;">
+                border-radius: 15px; padding: 1.4rem 1.2rem; min-height: 160px;
+                text-align: center; border: 1px solid #90caf9; display:flex; flex-direction:column; justify-content:flex-start;">
+        <div style="font-size: 2rem; margin-bottom: 0.4rem;">📸</div>
+        <h4 style="color: #1565c0; margin: 0.3rem 0 0.6rem 0;">แสงสว่าง</h4>
+        <p style="color: #1565c0; font-size: 0.8rem; margin: 0; line-height: 1.35; word-wrap: break-word;">
             ถ่ายในที่แสงสว่างเพียงพอ<br>
-            หลีกเลี่ยงแสงแรง<br>
-            ใช้แสงธรรมชาติ
+            หลีกเลี่ยงแสงสะท้อนหรือเงาแข็ง<br>
+            ใช้แสงธรรมชาติหรือไฟสีขาว
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -694,14 +698,14 @@ with col_tip1:
 with col_tip2:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #f3e5f5, #ce93d8); 
-                border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #ce93d8;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">🎯</div>
-        <h4 style="color: #6a1b9a; margin: 0.5rem 0;">มุมกล้อง</h4>
-        <p style="color: #6a1b9a; font-size: 0.85rem; margin: 0; line-height: 1.4;">
-            ถ่ายตรงกลางวัตถุ<br>
-            หลีกเลี่ยงมุมเอียง<br>
-            ระยะ 20-30 ซม.
+                border-radius: 15px; padding: 1.4rem 1.2rem; min-height: 160px;
+                text-align: center; border: 1px solid #ce93d8; display:flex; flex-direction:column; justify-content:flex-start;">
+        <div style="font-size: 2rem; margin-bottom: 0.4rem;">🎯</div>
+        <h4 style="color: #6a1b9a; margin: 0.3rem 0 0.6rem 0;">มุมกล้อง</h4>
+        <p style="color: #6a1b9a; font-size: 0.8rem; margin: 0; line-height: 1.35; word-wrap: break-word;">
+            วางพระให้ตรงกลางเฟรม<br>
+            ถือกล้องขนานพื้น ไม่เอียง<br>
+            ระยะประมาณ 20–30 ซม.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -709,14 +713,14 @@ with col_tip2:
 with col_tip3:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #fff3e0, #ffcc80); 
-                border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #ffb74d;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">🖼️</div>
-        <h4 style="color: #e65100; margin: 0.5rem 0;">พื้นหลัง</h4>
-        <p style="color: #e65100; font-size: 0.85rem; margin: 0; line-height: 1.4;">
-            ใช้พื้นหลังเรียบ<br>
-            สีขาวหรือสีอ่อน<br>
-            ไม่มีสิ่งรบกวน
+                border-radius: 15px; padding: 1.4rem 1.2rem; min-height: 160px;
+                text-align: center; border: 1px solid #ffb74d; display:flex; flex-direction:column; justify-content:flex-start;">
+        <div style="font-size: 2rem; margin-bottom: 0.4rem;">🖼️</div>
+        <h4 style="color: #e65100; margin: 0.3rem 0 0.6rem 0;">พื้นหลัง</h4>
+        <p style="color: #e65100; font-size: 0.8rem; margin: 0; line-height: 1.35; word-wrap: break-word;">
+            ใช้พื้นหลังเรียบ สีขาวหรืออ่อน<br>
+            ไม่มีลวดลายหรือสิ่งรบกวน<br>
+            ทำความสะอาดพื้นผิวก่อนวาง
         </p>
     </div>
     """, unsafe_allow_html=True)
