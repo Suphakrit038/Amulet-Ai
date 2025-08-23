@@ -13,6 +13,28 @@ from model_loader import ModelLoader
 from valuation import get_quantiles
 from recommend import recommend_markets
 
+# เพิ่ม import สำหรับเทคโนโลยีใหม่
+try:
+    from similarity_search import find_similar_amulets
+    SIMILARITY_SEARCH_AVAILABLE = True
+except ImportError:
+    SIMILARITY_SEARCH_AVAILABLE = False
+    logging.warning("⚠️ Similarity search not available")
+
+try:
+    from price_estimator import get_enhanced_price_estimation
+    PRICE_ESTIMATOR_AVAILABLE = True
+except ImportError:
+    PRICE_ESTIMATOR_AVAILABLE = False
+    logging.warning("⚠️ Enhanced price estimator not available")
+
+try:
+    from market_scraper import get_market_insights
+    MARKET_SCRAPER_AVAILABLE = True
+except ImportError:
+    MARKET_SCRAPER_AVAILABLE = False
+    logging.warning("⚠️ Market scraper not available")
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,16 +54,32 @@ class TopKItem(BaseModel):
     class_name: str
     confidence: float
 
+class SimilarAmulet(BaseModel):
+    path: str
+    similarity_score: float
+    rank: int
+    class_name: Optional[str] = None
+
+class MarketInsight(BaseModel):
+    average_price: float
+    market_activity: str
+    trend: str
+    sample_size: int
+
 class Valuation(BaseModel):
     p05: float
     p50: float
     p95: float
+    confidence: Optional[str] = None
 
 class PredictionResponse(BaseModel):
     top1: TopKItem
     topk: List[TopKItem]
     valuation: Valuation
     recommendations: List[dict]
+    similar_amulets: Optional[List[SimilarAmulet]] = []
+    market_insights: Optional[MarketInsight] = None
+    enhanced_features: dict = {}
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(front: UploadFile = File(...), back: Optional[UploadFile] = File(None)):
@@ -93,15 +131,83 @@ async def predict(front: UploadFile = File(...), back: Optional[UploadFile] = Fi
         
         # เรียกใช้ valuation และ recommendation จริง
         class_id = topk[0]["class_id"]
-        valuation = get_quantiles(class_id)
+        class_name = topk[0]["class_name"]
+        
+        # ใช้ enhanced price estimation ถ้ามี
+        if PRICE_ESTIMATOR_AVAILABLE:
+            try:
+                valuation_result = get_enhanced_price_estimation(class_id, class_name)
+                valuation = valuation_result
+                logger.info("✅ Using enhanced price estimation")
+            except Exception as e:
+                logger.warning(f"⚠️ Enhanced price estimation failed: {e}, using fallback")
+                valuation = get_quantiles(class_id)
+        else:
+            valuation = get_quantiles(class_id)
+        
         recommendations = recommend_markets(class_id, valuation)
-
-        return {
+        
+        # เพิ่มฟีเจอร์ใหม่
+        response_data = {
             "top1": topk[0],
             "topk": topk,
             "valuation": valuation,
             "recommendations": recommendations,
+            "enhanced_features": {
+                "tensorflow_model": True,
+                "similarity_search": SIMILARITY_SEARCH_AVAILABLE,
+                "price_estimator": PRICE_ESTIMATOR_AVAILABLE,
+                "market_scraper": MARKET_SCRAPER_AVAILABLE
+            }
         }
+        
+        # Similarity Search (FAISS)
+        if SIMILARITY_SEARCH_AVAILABLE:
+            try:
+                # Save uploaded image temporarily for similarity search
+                temp_path = f"temp_query_{hash(str(front.filename))}.jpg"
+                with open(temp_path, "wb") as temp_file:
+                    front.file.seek(0)
+                    temp_file.write(front.file.read())
+                
+                similar_results = find_similar_amulets(temp_path, top_k=3)
+                response_data["similar_amulets"] = [
+                    {
+                        "path": result.get("relative_path", ""),
+                        "similarity_score": result.get("similarity_score", 0.0),
+                        "rank": result.get("rank", 0),
+                        "class_name": result.get("class_name", "")
+                    }
+                    for result in similar_results
+                ]
+                
+                # Clean up temp file
+                try:
+                    os.remove(temp_path)
+                except:
+                    pass
+                    
+                logger.info(f"✅ Found {len(similar_results)} similar amulets")
+            except Exception as e:
+                logger.warning(f"⚠️ Similarity search failed: {e}")
+                response_data["similar_amulets"] = []
+        
+        # Market Insights (Scrapy)
+        if MARKET_SCRAPER_AVAILABLE:
+            try:
+                market_data = get_market_insights(class_name)
+                response_data["market_insights"] = {
+                    "average_price": market_data.get("average_price", 0),
+                    "market_activity": market_data.get("market_activity", "low"),
+                    "trend": market_data.get("trend", "stable"),
+                    "sample_size": market_data.get("sample_size", 0)
+                }
+                logger.info("✅ Added market insights")
+            except Exception as e:
+                logger.warning(f"⚠️ Market insights failed: {e}")
+                response_data["market_insights"] = None
+
+        return response_data
         
     except HTTPException:
         raise
@@ -128,5 +234,60 @@ async def get_supported_formats():
         "heic_support": True  # เนื่องจากติดตั้ง pillow-heif แล้ว
     }
     return formats
+
+@app.get("/system-status")
+async def get_system_status():
+    """Get system status and available features"""
+    return {
+        "status": "online",
+        "features": {
+            "tensorflow_model": True,
+            "similarity_search": SIMILARITY_SEARCH_AVAILABLE,
+            "price_estimator": PRICE_ESTIMATOR_AVAILABLE, 
+            "market_scraper": MARKET_SCRAPER_AVAILABLE
+        },
+        "model_info": {
+            "labels": model_loader.labels if model_loader else {},
+            "mode": "production" if model_loader.model else "mock"
+        }
+    }
+
+@app.post("/similarity-search")
+async def similarity_search(image: UploadFile = File(...), k: int = 5):
+    """Endpoint for similarity search only"""
+    if not SIMILARITY_SEARCH_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Similarity search not available")
+    
+    try:
+        # Save uploaded image temporarily
+        temp_path = f"temp_similarity_{hash(str(image.filename))}.jpg"
+        with open(temp_path, "wb") as temp_file:
+            temp_file.write(await image.read())
+        
+        # Find similar images
+        similar_results = find_similar_amulets(temp_path, top_k=k)
+        
+        # Clean up
+        try:
+            os.remove(temp_path)
+        except:
+            pass
+        
+        return {"similar_amulets": similar_results}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Similarity search failed: {str(e)}")
+
+@app.get("/market-insights/{class_name}")
+async def get_market_insights_endpoint(class_name: str):
+    """Get market insights for specific amulet class"""
+    if not MARKET_SCRAPER_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Market insights not available")
+    
+    try:
+        insights = get_market_insights(class_name)
+        return {"market_insights": insights}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Market insights failed: {str(e)}")
 
 # รัน: uvicorn backend.api:app --reload --port 8000
