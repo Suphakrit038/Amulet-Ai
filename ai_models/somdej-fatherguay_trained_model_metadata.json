@@ -1,0 +1,27 @@
+{
+  "class_name": "somdej-fatherguay",
+  "model_type": "binary_classification",
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "training_date": "2025-08-23T13:41:49.551995",
+  "metrics": {
+    "accuracy": 0.875,
+    "precision": 0.875,
+    "recall": 1.0,
+    "f1_score": 0.9333333333333333,
+    "confusion_matrix": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        7
+      ]
+    ]
+  },
+  "description": "Binary classifier for somdej-fatherguay amulet recognition"
+}

@@ -1,0 +1,40 @@
+{
+  "project": {
+    "name": "Amulet-AI",
+    "version": "2.0.0-Optimized",
+    "description": "Advanced Thai Buddhist Amulet Recognition System"
+  },
+  "environments": {
+    "development": {
+      "debug": true,
+      "api_host": "127.0.0.1",
+      "api_port": 8000,
+      "frontend_port": 8501
+    },
+    "production": {
+      "debug": false,
+      "api_host": "0.0.0.0",
+      "api_port": 8000,
+      "frontend_port": 8501
+    }
+  },
+  "ai": {
+    "mode": "advanced_simulation",
+    "supported_formats": [
+      "JPEG",
+      "PNG",
+      "HEIC",
+      "WebP",
+      "BMP",
+      "TIFF"
+    ],
+    "max_file_size_mb": 10,
+    "cache_enabled": true
+  },
+  "classes": {
+    "0": "หลวงพ่อกวยแหวกม่าน",
+    "1": "โพธิ์ฐานบัว",
+    "2": "ฐานสิงห์",
+    "3": "สีวลี"
+  }
+}
