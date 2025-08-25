@@ -6,7 +6,10 @@
     224,
     3
   ],
-  "training_date": "2025-08-23T13:41:49.551995",
+  "resize_method": "pad_with_aspect_ratio",
+  "image_processor": "SmartImageProcessor",
+  "database_backend": "PostgreSQL",
+  "training_date": "2025-08-24T16:07:48.588120",
   "metrics": {
     "accuracy": 0.875,
     "precision": 0.875,
@@ -23,5 +26,5 @@
       ]
     ]
   },
-  "description": "Binary classifier for somdej-fatherguay amulet recognition"
+  "description": "Binary classifier for somdej-fatherguay amulet recognition with smart image processing"
 }

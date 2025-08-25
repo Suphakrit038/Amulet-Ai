@@ -107,11 +107,21 @@ class SystemConfig:
     environment: str = "development"  # development, testing, production
     debug: bool = True
     
-    # Component configs
-    api: APIConfig = APIConfig()
-    model: ModelConfig = ModelConfig()
-    data: DataConfig = DataConfig()
-    price: PriceConfig = PriceConfig()
+    # Component configs - use default_factory for mutable defaults
+    api: APIConfig = None
+    model: ModelConfig = None
+    data: DataConfig = None
+    price: PriceConfig = None
+    
+    def __post_init__(self):
+        if self.api is None:
+            self.api = APIConfig()
+        if self.model is None:
+            self.model = ModelConfig()
+        if self.data is None:
+            self.data = DataConfig()
+        if self.price is None:
+            self.price = PriceConfig()
     
     # Logging
     log_level: str = "INFO"

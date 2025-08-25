@@ -3,17 +3,21 @@ AI Training Script for Single Class: somdej-fatherguay
 เทรน AI โมเดลสำหรับพระสมเด็จหลวงพ่อกวยโฟลเดอร์เดียว
 """
 import os
+import sys
 import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.optimizers import Adam
-from PIL import Image
 from pathlib import Path
 import logging
 from datetime import datetime
+
+# Add parent directory to path for imports
+sys.path.append(str(Path(__file__).parent.parent))
+from smart_image_processor import SmartImageProcessor, PostgreSQLImageDatabase
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,7 +39,28 @@ class SingleClassTrainer:
         self.epochs = 50
         self.learning_rate = 0.0001
         
+        # Initialize smart image processor
+        self.image_processor = SmartImageProcessor(
+            target_size=self.img_size,
+            padding_color=(128, 128, 128)  # Gray padding
+        )
+        
+        # Initialize PostgreSQL database (optional - fallback to file system if not available)
+        try:
+            self.database = PostgreSQLImageDatabase(
+                host='localhost',
+                port=5432,
+                database='amulet_ai',
+                user='amulet_user',
+                password='amulet_password_2025'
+            )
+            logger.info("✅ PostgreSQL database connected")
+        except Exception as e:
+            logger.warning(f"⚠️ PostgreSQL not available, using file system: {e}")
+            self.database = None
+        
         logger.info(f"🤖 Initializing trainer for class: {class_name}")
+        logger.info(f"🖼️ Smart processing enabled with 'pad' method")
         
     def verify_dataset(self):
         """Verify dataset exists and has images"""
@@ -55,22 +80,36 @@ class SingleClassTrainer:
         return image_files
     
     def prepare_data(self, image_files):
-        """Prepare training data for binary classification"""
-        logger.info("📋 Preparing training data...")
+        """Prepare training data with smart image processing"""
+        logger.info("📋 Preparing training data with smart processing...")
         
         X = []  # Images
         y = []  # Labels (1 for somdej-fatherguay, 0 for others)
         
-        # Load somdej-fatherguay images (positive class)
+        # Load somdej-fatherguay images (positive class) with smart processing
         for img_file in image_files:
             try:
-                # Load and preprocess image
-                img = load_img(img_file, target_size=self.img_size)
-                img_array = img_to_array(img) / 255.0  # Normalize
+                # Use smart image processor instead of simple load_img
+                img_array, success, metadata = self.image_processor.process_for_training(
+                    str(img_file), method='pad'  # Keep aspect ratio with padding!
+                )
                 
-                X.append(img_array)
-                y.append(1)  # Positive class
-                
+                if success:
+                    X.append(img_array)
+                    y.append(1)  # Positive class
+                    
+                    # Save to database if available
+                    if self.database:
+                        db_metadata = {
+                            'class_label': self.class_name,
+                            'confidence_score': 1.0,  # Ground truth
+                            **metadata,
+                            'file_size_bytes': os.path.getsize(img_file)
+                        }
+                        self.database.add_image(str(img_file), db_metadata)
+                else:
+                    logger.warning(f"⚠️ Failed to process {img_file}: {metadata.get('error')}")
+                    
             except Exception as e:
                 logger.warning(f"⚠️ Failed to load {img_file}: {e}")
         
@@ -91,25 +130,39 @@ class SingleClassTrainer:
             
             for img_file in other_images[:max(1, negative_samples_needed // len(other_classes))]:
                 try:
-                    img = load_img(img_file, target_size=self.img_size)
-                    img_array = img_to_array(img) / 255.0
+                    # Use smart processing for negative samples too
+                    img_array, success, metadata = self.image_processor.process_for_training(
+                        str(img_file), method='pad'
+                    )
                     
-                    X.append(img_array)
-                    y.append(0)  # Negative class
-                    negative_count += 1
-                    
-                    if negative_count >= negative_samples_needed:
-                        break
+                    if success:
+                        X.append(img_array)
+                        y.append(0)  # Negative class
+                        negative_count += 1
                         
+                        # Save to database
+                        if self.database:
+                            db_metadata = {
+                                'class_label': 'other',
+                                'confidence_score': 0.0,  # Ground truth negative
+                                **metadata,
+                                'file_size_bytes': os.path.getsize(img_file)
+                            }
+                            self.database.add_image(str(img_file), db_metadata)
+                        
+                        if negative_count >= negative_samples_needed:
+                            break
+                    
                 except Exception as e:
                     logger.warning(f"⚠️ Failed to load negative sample {img_file}: {e}")
         
         X = np.array(X)
         y = np.array(y)
         
-        logger.info(f"✅ Prepared dataset: {len(X)} samples")
+        logger.info(f"✅ Prepared dataset with smart processing: {len(X)} samples")
         logger.info(f"   - Positive samples (somdej-fatherguay): {np.sum(y == 1)}")
         logger.info(f"   - Negative samples (others): {np.sum(y == 0)}")
+        logger.info(f"   - Aspect ratio preserved with padding method")
         
         return X, y
     
@@ -264,7 +317,7 @@ class SingleClassTrainer:
         # Save model in multiple formats
         model_name = f"{self.class_name}_trained_model"
         
-        # Keras native format (recommended)
+        # Keras format (recommended)
         keras_path = self.model_save_path / f"{model_name}.keras"
         model.save(keras_path)
         
@@ -272,9 +325,9 @@ class SingleClassTrainer:
         h5_path = self.model_save_path / f"{model_name}.h5"
         model.save(h5_path)
         
-        # Export SavedModel format for TFLite/TFServing
+        # SavedModel format for deployment
         saved_model_path = self.model_save_path / f"{model_name}_savedmodel"
-        model.export(str(saved_model_path))
+        model.export(saved_model_path)
         
         # TensorFlow Lite (mobile deployment)
         try:
@@ -288,27 +341,58 @@ class SingleClassTrainer:
         except Exception as e:
             logger.warning(f"⚠️ Failed to create TFLite model: {e}")
         
-        # Save metadata
+        # Save metadata with PostgreSQL integration info
         metadata = {
             'class_name': self.class_name,
             'model_type': 'binary_classification',
             'input_shape': [*self.img_size, 3],
+            'resize_method': 'pad_with_aspect_ratio',
+            'image_processor': 'SmartImageProcessor',
+            'database_backend': 'PostgreSQL' if self.database else 'FileSystem',
             'training_date': datetime.now().isoformat(),
             'metrics': metrics,
-            'description': f'Binary classifier for {self.class_name} amulet recognition'
+            'description': f'Binary classifier for {self.class_name} amulet recognition with smart image processing'
         }
         
         metadata_path = self.model_save_path / f"{model_name}_metadata.json"
         with open(metadata_path, 'w', encoding='utf-8') as f:
             json.dump(metadata, f, ensure_ascii=False, indent=2)
         
-        logger.info(f"✅ Model saved successfully:")
-        logger.info(f"   Keras format:   {keras_path}")
-        logger.info(f"   H5 format:      {h5_path}")
-        logger.info(f"   SavedModel:     {saved_model_path}")
-        logger.info(f"   Metadata:       {metadata_path}")
+        # Save training session to database
+        if self.database:
+            try:
+                with self.database.connection.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO training_sessions 
+                        (session_name, class_labels, model_path, training_accuracy, 
+                         validation_accuracy, f1_score, training_parameters)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        f"{self.class_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                        [self.class_name],
+                        str(keras_path),
+                        metrics['accuracy'],
+                        metrics['accuracy'],  # Using same for now
+                        metrics['f1_score'],
+                        json.dumps({
+                            'img_size': self.img_size,
+                            'batch_size': self.batch_size,
+                            'epochs': self.epochs,
+                            'learning_rate': self.learning_rate,
+                            'resize_method': 'pad'
+                        })
+                    ))
+                logger.info("✅ Training session saved to PostgreSQL")
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to save training session: {e}")
         
-        return keras_path, h5_path, saved_model_path, metadata_path
+        logger.info(f"✅ Model saved successfully:")
+        logger.info(f"   Keras format: {keras_path}")
+        logger.info(f"   H5 format:    {h5_path}")
+        logger.info(f"   SavedModel:   {saved_model_path}")
+        logger.info(f"   Metadata:     {metadata_path}")
+        
+        return keras_path, h5_path, metadata_path
     
     def run_training(self):
         """Run complete training pipeline"""
@@ -319,7 +403,7 @@ class SingleClassTrainer:
             # Step 1: Verify dataset
             image_files = self.verify_dataset()
             
-            # Step 2: Prepare data
+            # Step 2: Prepare data with smart processing
             X, y = self.prepare_data(image_files)
             
             if len(X) < 10:
@@ -331,8 +415,16 @@ class SingleClassTrainer:
             # Step 4: Evaluate model
             metrics = self.evaluate_model(model, X, y)
             
-            # Step 5: Save model
+            # Step 5: Save model with PostgreSQL integration
             saved_paths = self.save_model(model, metrics)
+            
+            # Step 6: Get database statistics if available
+            if self.database:
+                db_stats = self.database.get_statistics()
+                logger.info(f"📊 Database Statistics:")
+                logger.info(f"   Total images: {db_stats.get('total_images', 0)}")
+                logger.info(f"   Unique classes: {db_stats.get('unique_classes', 0)}")
+                logger.info(f"   Average confidence: {db_stats.get('avg_confidence', 0):.3f}")
             
             logger.info("🎉 Training completed successfully!")
             logger.info("="*50)
@@ -342,6 +434,10 @@ class SingleClassTrainer:
         except Exception as e:
             logger.error(f"❌ Training failed: {e}")
             raise
+        finally:
+            # Clean up database connection
+            if self.database:
+                self.database.close()
 
 def main():
     """Main training function"""

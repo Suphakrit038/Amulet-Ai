@@ -18,6 +18,57 @@
       "frontend_port": 8501
     }
   },
+  "model": {
+    "simulation_mode": true,
+    "confidence_threshold": 0.7,
+    "max_image_size": 10485760,
+    "supported_formats": ["JPEG", "PNG", "HEIC", "WEBP", "BMP", "TIFF"],
+    "model_path": "./models",
+    "default_model": "amulet_classifier_v1"
+  },
+  "database": {
+    "type": "simulation",
+    "connection_string": "",
+    "pool_size": 10,
+    "timeout": 30,
+    "postgresql": {
+      "host": "localhost",
+      "port": 5432,
+      "database": "amulet_ai",
+      "user": "amulet_user",
+      "password": "amulet_password_2025"
+    },
+    "sqlite_fallback": {
+      "database": "amulet_images.db",
+      "description": "SQLite fallback when PostgreSQL unavailable"
+    }
+  },
+  "paths": {
+    "dataset": "./dataset",
+    "models": "./models", 
+    "logs": "./logs",
+    "temp": "./temp",
+    "uploads": "./uploads"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/amulet_ai.log",
+    "max_size": "10MB",
+    "backup_count": 5,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "performance": {
+    "enable_tracking": true,
+    "cache_enabled": true,
+    "cache_size": 100,
+    "timeout_seconds": 30
+  },
+  "features": {
+    "price_estimation": true,
+    "similarity_search": true,
+    "market_recommendations": true,
+    "batch_processing": false
+  },
   "ai": {
     "mode": "advanced_simulation",
     "supported_formats": [
@@ -33,8 +84,19 @@
   },
   "classes": {
     "0": "หลวงพ่อกวยแหวกม่าน",
-    "1": "โพธิ์ฐานบัว",
+    "1": "โพธิ์ฐานบัว", 
     "2": "ฐานสิงห์",
     "3": "สีวลี"
+  },
+  "labels": {
+    "0": "หลวงพ่อกวยแหวกม่าน",
+    "1": "โพธิ์ฐานบัว",
+    "2": "ฐานสิงห์", 
+    "3": "สีวลี"
+  },
+  "system": {
+    "version": "2.0.0",
+    "environment": "development",
+    "last_updated": "2024-01-01T00:00:00Z"
   }
 }

@@ -1,28 +1,36 @@
 """
-Test script for trained somdej-fatherguay AI model
-ทดสอบโมเดล AI ที่เทรนแล้วสำหรับพระสมเด็จหลวงพ่อกวย
+Test script for trained somdej-fatherguay AI model - PostgreSQL Version
+ทดสอบโมเดล AI ที่เทรนแล้วสำหรับพระสมเด็จหลวงพ่อกวย (ใช้ Smart Image Processor)
 """
-import os
+import sys
 import json
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-from PIL import Image
 from pathlib import Path
 import logging
+
+# Add parent directory to path for imports
+sys.path.append(str(Path(__file__).parent.parent))
+from smart_image_processor import SmartImageProcessor
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class AmuletTester:
-    """AI Model Tester for amulet recognition"""
+    """AI Model Tester for amulet recognition with Smart Image Processing"""
     
     def __init__(self, model_path="ai_models"):
         self.model_path = Path(model_path)
         self.model = None
         self.metadata = None
         self.img_size = (224, 224)
+        
+        # Initialize Smart Image Processor
+        self.image_processor = SmartImageProcessor(
+            target_size=self.img_size,
+            padding_color=(128, 128, 128)
+        )
         
         # Load model and metadata
         self.load_model()
@@ -55,25 +63,36 @@ class AmuletTester:
             logger.warning("⚠️ No metadata file found")
             
     def preprocess_image(self, image_path):
-        """Preprocess image for model prediction"""
+        """Preprocess image for model prediction using Smart Image Processor"""
         try:
-            # Load and resize image
-            img = load_img(image_path, target_size=self.img_size)
-            img_array = img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-            img_array = img_array / 255.0  # Normalize
+            # Use Smart Image Processor for consistent processing
+            img_array, success, metadata = self.image_processor.process_for_training(
+                image_path, method='pad'  # Same method as training
+            )
             
-            return img_array
+            if success:
+                # Add batch dimension and ensure proper normalization
+                if img_array.dtype != np.float32:
+                    img_array = img_array.astype(np.float32) / 255.0
+                
+                img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+                
+                logger.info(f"✅ Preprocessed with Smart Processor: {metadata.get('resize_method', 'pad')}")
+                return img_array, metadata
+            else:
+                logger.error(f"❌ Smart processing failed: {metadata.get('error')}")
+                return None, None
+                
         except Exception as e:
             logger.error(f"❌ Failed to preprocess image {image_path}: {e}")
-            return None
+            return None, None
     
     def predict_single_image(self, image_path):
-        """Predict single image"""
+        """Predict single image using Smart Image Processing"""
         logger.info(f"🔍 Predicting: {Path(image_path).name}")
         
-        # Preprocess image
-        img_array = self.preprocess_image(image_path)
+        # Preprocess image with Smart Processor
+        img_array, processing_metadata = self.preprocess_image(image_path)
         if img_array is None:
             return None
         
