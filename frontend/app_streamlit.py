@@ -228,20 +228,19 @@ def save_analysis_result(analysis_data):
 # ==========================================
 
 def setup_page():
-    """Sets up the page configuration and CSS."""
+    """Sets up the Streamlit page with custom styles, translations, and other configurations."""
     st.set_page_config(
-        page_title="🔍 Amulet-AI | ระบบวิเคราะห์พระเครื่อง", 
-        page_icon="🔍", 
+        page_title="Amulet-AI V3",
+        page_icon="🔮",
         layout="wide",
-        initial_sidebar_state="expanded",
-        menu_items={
-            'Get Help': 'https://github.com/your-repo/amulet-ai',
-            'Report a bug': 'https://github.com/your-repo/amulet-ai/issues',
-            'About': "Amulet-AI - ระบบวิเคราะห์พระเครื่องด้วยปัญญาประดิษฐ์"
-        }
+        initial_sidebar_state="expanded"
     )
 
-    # Modern CSS with Responsive Design & Interactive Elements
+    # Initialize session state for language if not present
+    if 'language' not in st.session_state:
+        st.session_state.language = 'th'
+
+    # Modern CSS with Minimalist Design & Glassmorphism
     st.markdown("""
     <style>
         /* Import Modern Font */
@@ -249,20 +248,16 @@ def setup_page():
         
         /* Global Variables */
         :root {
-            --primary-color: #8B5CF6;
-            --primary-gradient: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #C084FC 100%);
-            --secondary-color: #F3F4F6;
-            --text-primary: #1F2937;
-            --text-secondary: #6B7280;
+            --primary-color: #A855F7; /* Lighter purple for accents */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --text-primary: #FFFFFF;
+            --text-secondary: #E0E0E0;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
             --success-color: #10B981;
             --warning-color: #F59E0B;
             --error-color: #EF4444;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --border-radius: 12px;
-            --border-radius-lg: 16px;
+            --border-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -270,251 +265,134 @@ def setup_page():
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
-        /* Main Container - Responsive */
-        .main {
-            padding: 1rem;
-            max-width: none;
+
+        /* Main App Background */
+        .stApp {
+            background: var(--primary-gradient) !important;
+            background-attachment: fixed;
+        }
+
+        /* Main Container */
+        .main .block-container {
+            padding: 1rem 2rem;
         }
         
-        .block-container {
-            padding: 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Text colors */
+        h1, h2, h3, h4, h5, h6, p, div, span, li, label {
+            color: var(--text-primary) !important;
         }
-        
-        /* Hero Section */
+        p, li, label, .st-emotion-cache-1q8dd3e p {
+             color: var(--text-secondary) !important;
+        }
+
+        /* Hero Section - Simplified */
         .hero-section {
-            background: var(--primary-gradient);
-            padding: 3rem 2rem;
-            border-radius: var(--border-radius-lg);
+            background: none;
+            padding: 2rem 1rem;
             text-align: center;
             color: white;
-            margin-bottom: 3rem;
-            box-shadow: var(--shadow-xl);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="7" cy="7" r="1"/></g></svg>');
-            animation: float 20s ease-in-out infinite;
+            margin-bottom: 2rem;
+            box-shadow: none;
+            border: none;
         }
         
         .hero-title {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(2.5rem, 6vw, 4rem);
             font-weight: 700;
-            margin: 0 0 1rem 0;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 1;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
         .hero-subtitle {
-            font-size: clamp(1rem, 3vw, 1.2rem);
-            font-weight: 400;
-            margin: 0;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 300;
+            opacity: 0.9;
         }
         
-        /* Card Components */
-        .modern-card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            border: 1px solid #E5E7EB;
+        /* Glassmorphism Card Style */
+        .modern-card, .result-card, .metric-card, .tip-card {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius) !important;
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: none !important;
             transition: var(--transition);
             overflow: hidden;
+            padding: 1rem;
         }
         
-        .modern-card:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+        .modern-card:hover, .result-card:hover, .metric-card:hover, .tip-card:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         
         /* Button Styles */
         .stButton > button {
-            background: var(--primary-gradient) !important;
+            background: var(--glass-bg) !important;
             color: white !important;
-            border: none !important;
+            border: 1px solid var(--glass-border) !important;
             border-radius: var(--border-radius) !important;
             padding: 0.75rem 2rem !important;
             font-weight: 600 !important;
             font-size: 1rem !important;
             transition: var(--transition) !important;
-            box-shadow: var(--shadow-md) !important;
+            box-shadow: none !important;
             width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stButton > button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s;
         }
         
         .stButton > button:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
             transform: translateY(-2px) !important;
-            box-shadow: var(--shadow-lg) !important;
         }
-        
-        .stButton > button:hover::before {
-            left: 100%;
-        }
-        
-        /* Results Cards */
-        .result-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin: 1rem 0;
-            transition: var(--transition);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .result-card:hover {
-            transform: translateX(4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        /* Metrics Cards */
-        .metric-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            border: 1px solid #E5E7EB;
-            transition: var(--transition);
-            margin: 0.5rem;
-        }
-        
-        .metric-card:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        /* Tips Section */
-        .tip-card {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            border-top: 4px solid var(--primary-color);
-            transition: var(--transition);
-            position: relative;
-        }
-        
-        .tip-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .tip-card:nth-child(1) { border-top-color: #3B82F6; }
-        .tip-card:nth-child(2) { border-top-color: #8B5CF6; }
-        .tip-card:nth-child(3) { border-top-color: #F59E0B; }
         
         /* Tab Enhancement */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
+            gap: 12px;
+            border-bottom: none !important;
         }
         
         .stTabs [data-baseweb="tab"] {
             padding: 12px 24px !important;
             border-radius: var(--border-radius) !important;
-            border: 1px solid #E5E7EB !important;
-            background: white !important;
+            border: 1px solid var(--glass-border) !important;
+            background: var(--glass-bg) !important;
             transition: var(--transition) !important;
         }
         
         .stTabs [data-baseweb="tab"]:hover {
-            border-color: var(--primary-color) !important;
+            background: rgba(255, 255, 255, 0.15) !important;
             transform: translateY(-2px);
         }
         
         .stTabs [aria-selected="true"] {
-            background: var(--primary-gradient) !important;
-            color: white !important;
-            border-color: transparent !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        /* Sidebar Style */
+        .st-emotion-cache-16txtl3 {
+            background: rgba(0, 0, 0, 0.2) !important;
         }
         
         /* Loading & Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .analyzing {
-            animation: pulse 2s ease-in-out infinite;
         }
         
         .slide-in {
             animation: slideIn 0.6s ease-out;
         }
         
-        /* Progress Bar */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #E5E7EB;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-gradient);
-            animation: loading 2s ease-in-out infinite;
-        }
-        
-        @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-        
         /* Responsive Design */
         @media (max-width: 768px) {
-            .block-container {
-                padding: 0.5rem;
+            .main .block-container {
+                padding: 1rem;
             }
-            
             .hero-section {
-                padding: 2rem 1rem;
-                margin-bottom: 2rem;
-            }
-            
-            .tip-card {
-                padding: 1.5rem;
-            }
-            
-            .modern-card {
-                margin: 0.5rem 0;
+                padding: 1rem;
             }
         }
     </style>
@@ -583,17 +461,17 @@ def show_camera_interface(key_prefix=""):
 def create_confidence_gauge(confidence):
     """Create circular confidence gauge component"""
     if confidence >= 80:
-        color, status, icon = "#10B981", "สูง", "🎯"
+        color, status, icon = "var(--success-color)", "สูง", "🎯"
     elif confidence >= 60:
-        color, status, icon = "#F59E0B", "ปานกลาง", "⚡"
+        color, status, icon = "var(--warning-color)", "ปานกลาง", "⚡"
     else:
-        color, status, icon = "#EF4444", "ต่ำ", "⚠️"
+        color, status, icon = "var(--error-color)", "ต่ำ", "⚠️"
     
     return f"""
     <div style="display: flex; align-items: center; justify-content: center; margin: 1rem 0;">
         <div style="position: relative; width: 120px; height: 120px;">
             <svg width="120" height="120" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="8"/>
                 <circle cx="60" cy="60" r="50" fill="none" stroke="{color}" stroke-width="8"
                         stroke-dasharray="314.16" stroke-dashoffset="{314.16 * (1 - confidence/100)}"
                         stroke-linecap="round" transform="rotate(-90 60 60)"
@@ -611,21 +489,21 @@ def create_confidence_gauge(confidence):
 def create_authenticity_score(score):
     """Create authenticity score component with progress bar"""
     if score >= 85:
-        color, status, icon = "#10B981", "น่าเชื่อถือสูง", "🔒"
+        color, status, icon = "var(--success-color)", "น่าเชื่อถือสูง", "🔒"
     elif score >= 70:
-        color, status, icon = "#F59E0B", "น่าเชื่อถือปานกลาง", "🔐"
+        color, status, icon = "var(--warning-color)", "น่าเชื่อถือปานกลาง", "🔐"
     else:
-        color, status, icon = "#EF4444", "ควรตรวจสอบเพิ่มเติม", "🔓"
+        color, status, icon = "var(--error-color)", "ควรตรวจสอบเพิ่มเติม", "🔓"
     
     return f"""
     <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span style="font-size: 1.2rem;">{icon}</span>
         <div style="flex-grow: 1;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                <span style="font-size: 0.9rem; font-weight: 600;">Authenticity Score</span>
+                <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">Authenticity Score</span>
                 <span style="font-size: 0.9rem; font-weight: 700; color: {color};">{score}%</span>
             </div>
-            <div style="background: #E5E7EB; height: 6px; border-radius: 3px;">
+            <div style="background: rgba(255,255,255,0.2); height: 6px; border-radius: 3px;">
                 <div style="background: {color}; width: {score}%; height: 100%; border-radius: 3px; transition: width 1.5s ease-out;"></div>
             </div>
             <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">{status}</div>
@@ -726,7 +604,7 @@ def show_comparison_mode():
         fig.add_trace(go.Bar(x=names, y=[item['popularity'] for item in comparison_data],
                            name='ความนิยม', marker_color='#EF4444'), row=2, col=2)
         
-        fig.update_layout(height=600, showlegend=False, title_text="📊 การเปรียบเทียบพระเครื่อง")
+        fig.update_layout(height=600, showlegend=False, title_text="📊 การเปรียบเทียบพระเครื่อง", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color='white')
         st.plotly_chart(fig, use_container_width=True)
         
         # Recommendation
@@ -742,7 +620,7 @@ def show_comparison_mode():
         """, unsafe_allow_html=True)
 
 def show_analytics_dashboard():
-    """แสดงแดชบอร์ดสถิติและข้อมูลวิเคราะห์"""
+    """แสดงแดชบอร์ดสถิติและข้อมูลวิเคราะห์ในรูปแบบมินิมอล"""
     st.markdown(f"""
     <div style="text-align: center; margin: 0 0 2rem 0;">
         <h2 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600;">📊 แดชบอร์ดสถิติ</h2>
@@ -752,96 +630,72 @@ def show_analytics_dashboard():
     </div>
     """, unsafe_allow_html=True)
     
-    # Key Metrics Row
-    col1, col2, col3, col4 = st.columns(4)
+    # Key Metrics Row (Simplified)
+    metrics = [
+        {"value": "1,247", "label": "การวิเคราะห์วันนี้", "delta": "↗ +12%", "color": "var(--primary-color)"},
+        {"value": "94.2%", "label": "ความแม่นยำเฉลี่ย", "delta": "↗ +2.1%", "color": "var(--success-color)"},
+        {"value": "฿47,500", "label": "ราคาประเมินเฉลี่ย", "delta": "↗ +8.5%", "color": "var(--warning-color)"},
+        {"value": "2.3s", "label": "เวลาประมวลผล", "delta": "เร็วขึ้น 15%", "color": "var(--primary-color)"}
+    ]
     
-    with col1:
-        st.markdown("""
-        <div class="metric-card">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">1,247</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">การวิเคราะห์วันนี้</div>
-            <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 0.25rem;">↗ +12% จากเมื่อวาน</div>
-        </div>
-        """, unsafe_allow_html=True)
+    cols = st.columns(4)
+    for i, metric in enumerate(metrics):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="metric-card" style="padding: 1.5rem; text-align: center; height: 100%;">
+                <div style="font-size: 2rem; font-weight: 700; color: {metric['color']};">{metric['value']}</div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">{metric['label']}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.8; margin-top: 0.25rem;">{metric['delta']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<hr style='border-color: var(--glass-border); margin: 2rem 0;'>", unsafe_allow_html=True)
     
-    with col2:
-        st.markdown("""
-        <div class="metric-card">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏆</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);">94.2%</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">ความแม่นยำเฉลี่ย</div>
-            <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 0.25rem;">↗ +2.1% จากเดือนที่แล้ว</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="metric-card">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💰</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--warning-color);">₿47,500</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">ราคาเฉลี่ย (บาท)</div>
-            <div style="font-size: 0.75rem; color: var(--warning-color); margin-top: 0.25rem;">↗ +8.5% จากเดือนที่แล้ว</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="metric-card">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⭐</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--error-color);">4.8/5</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">คะแนนผู้ใช้</div>
-            <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 0.25rem;">1,892 รีวิว</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Charts Section
+    # Charts Section (Simplified)
     col_chart1, col_chart2 = st.columns(2)
     
     with col_chart1:
         st.markdown("### 📈 แนวโน้มการวิเคราะห์รายวัน")
         
         # Create trend chart
-        dates = [(datetime.now() - timedelta(days=x)).strftime('%d/%m') for x in range(30, 0, -1)]
-        analyses = [randint(800, 1500) for _ in range(30)]
+        dates = [(datetime.now() - timedelta(days=x)).strftime('%d/%m') for x in range(14, 0, -1)]
+        analyses = [randint(800, 1500) for _ in range(14)]
         
         fig_trend = go.Figure()
         fig_trend.add_trace(go.Scatter(
             x=dates, y=analyses,
-            mode='lines+markers',
+            mode='lines',
             name='การวิเคราะห์',
-            line=dict(color='#8B5CF6', width=3),
-            marker=dict(size=6, color='#8B5CF6'),
+            line=dict(color='#A855F7', width=3),
             fill='tonexty',
-            fillcolor='rgba(139, 92, 246, 0.1)'
+            fillcolor='rgba(168, 85, 247, 0.2)'
         ))
         
         fig_trend.update_layout(
             height=300,
             margin=dict(l=0, r=0, t=30, b=0),
             showlegend=False,
-            xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
-            yaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
-            plot_bgcolor='white'
+            xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
+            yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white'
         )
         
         st.plotly_chart(fig_trend, use_container_width=True)
     
     with col_chart2:
-        st.markdown("### 🏷️ พระเครื่องยอดนิยม (Top 10)")
+        st.markdown("### 🏷️ พระเครื่องยอดนิยม")
         
         # Popular amulets data
         popular_amulets = [
-            "หลวงปู่ทวด", "พระสมเด็จ", "พระนางพญา", "หลวงพ่อโสธร", "พระรอด",
-            "หลวงปู่ศุข", "พระผงสุพรรณ", "หลวงปู่บุญ", "พระกรุ", "หลวงพ่อคูณ"
+            "หลวงปู่ทวด", "พระสมเด็จ", "พระนางพญา", "หลวงพ่อโสธร", "พระรอด", "หลวงปู่ศุข"
         ]
-        popularity_scores = [randint(60, 100) for _ in range(10)]
+        popularity_scores = sorted([randint(70, 100) for _ in range(6)], reverse=True)
         
         fig_popular = go.Figure()
         fig_popular.add_trace(go.Bar(
-            y=[name[:15] + '...' if len(name) > 15 else name for name in popular_amulets],
+            y=[name[:15] for name in popular_amulets],
             x=popularity_scores,
             orientation='h',
             marker=dict(
@@ -850,138 +704,22 @@ def show_analytics_dashboard():
                 showscale=False
             ),
             text=[f'{score}%' for score in popularity_scores],
-            textposition='inside'
+            textposition='inside',
+            insidetextanchor='middle'
         ))
         
         fig_popular.update_layout(
             height=300,
             margin=dict(l=0, r=0, t=30, b=0),
             showlegend=False,
-            xaxis=dict(showgrid=True, gridcolor='rgba(0,0,0,0.1)'),
-            yaxis=dict(showgrid=False),
-            plot_bgcolor='white'
+            xaxis=dict(showgrid=False, showticklabels=False),
+            yaxis=dict(showgrid=False, autorange="reversed"),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white'
         )
         
         st.plotly_chart(fig_popular, use_container_width=True)
-    
-    # Price Analysis Section  
-    st.markdown("---")
-    st.markdown("### 💹 การวิเคราะห์ราคา")
-    
-    col_price1, col_price2 = st.columns(2)
-    
-    with col_price1:
-        # Price distribution
-        price_ranges = ['< 5K', '5K-15K', '15K-50K', '50K-150K', '150K+']
-        price_counts = [25, 35, 25, 12, 3]
-        
-        fig_price = go.Figure()
-        fig_price.add_trace(go.Pie(
-            labels=price_ranges,
-            values=price_counts,
-            hole=0.4,
-            marker=dict(colors=['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6']),
-            textinfo='label+percent',
-            textfont=dict(size=12)
-        ))
-        
-        fig_price.update_layout(
-            title="การกระจายตัวของราคา (บาท)",
-            height=350,
-            margin=dict(l=20, r=20, t=50, b=20),
-            showlegend=False
-        )
-        
-        st.plotly_chart(fig_price, use_container_width=True)
-    
-    with col_price2:
-        # Market trends
-        st.markdown("#### 📊 สถิติตลาด")
-        
-        market_stats = [
-            {"label": "ราคาเฉลี่ย", "value": "47,500 บาท", "change": "+8.5%", "color": "#10B981"},
-            {"label": "ราคาสูงสุด", "value": "850,000 บาท", "change": "+15%", "color": "#EF4444"},
-            {"label": "ราคาต่ำสุด", "value": "1,200 บาท", "change": "-2.1%", "color": "#3B82F6"},
-            {"label": "มูลค่ารวม", "value": "124.5 ล้านบาท", "change": "+22%", "color": "#8B5CF6"}
-        ]
-        
-        for stat in market_stats:
-            st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; 
-                       padding: 1rem; margin: 0.5rem 0; background: white; border-radius: 8px; 
-                       border-left: 4px solid {stat['color']}; box-shadow: var(--shadow-sm);">
-                <div>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">{stat['label']}</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">{stat['value']}</div>
-                </div>
-                <div style="font-size: 0.9rem; font-weight: 600; color: {stat['color']};">{stat['change']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # AI Performance Metrics
-    st.markdown("---")
-    st.markdown("### 🤖 ประสิทธิภาพ AI")
-    
-    col_ai1, col_ai2, col_ai3 = st.columns(3)
-    
-    with col_ai1:
-        # Accuracy over time
-        months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.']
-        accuracy = [89.2, 91.5, 92.8, 93.1, 94.0, 94.2]
-        
-        fig_acc = go.Figure()
-        fig_acc.add_trace(go.Scatter(
-            x=months, y=accuracy,
-            mode='lines+markers+text',
-            text=[f'{acc}%' for acc in accuracy],
-            textposition='top center',
-            line=dict(color='#10B981', width=3),
-            marker=dict(size=8, color='#10B981')
-        ))
-        
-        fig_acc.update_layout(
-            title="ความแม่นยำ AI (%)",
-            height=250,
-            margin=dict(l=0, r=0, t=40, b=0),
-            showlegend=False,
-            yaxis=dict(range=[85, 100])
-        )
-        
-        st.plotly_chart(fig_acc, use_container_width=True)
-    
-    with col_ai2:
-        # Model confidence distribution
-        confidence_ranges = ['90-100%', '80-90%', '70-80%', '60-70%', '< 60%']
-        confidence_counts = [45, 30, 15, 7, 3]
-        
-        fig_conf = go.Figure()
-        fig_conf.add_trace(go.Bar(
-            x=confidence_ranges,
-            y=confidence_counts,
-            marker=dict(color=['#10B981', '#22C55E', '#F59E0B', '#EF4444', '#DC2626']),
-            text=[f'{count}%' for count in confidence_counts],
-            textposition='outside'
-        ))
-        
-        fig_conf.update_layout(
-            title="การกระจาย Confidence Score",
-            height=250,
-            margin=dict(l=0, r=0, t=40, b=0),
-            showlegend=False
-        )
-        
-        st.plotly_chart(fig_conf, use_container_width=True)
-    
-    with col_ai3:
-        # Processing time
-        st.markdown("""
-        <div style="text-align: center; padding: 2rem;">
-            <div style="font-size: 3rem; color: var(--primary-color);">⚡</div>
-            <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0.5rem 0;">2.3s</div>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">เวลาประมวลผลเฉลี่ย</div>
-            <div style="font-size: 0.75rem; color: var(--success-color); margin-top: 0.5rem;">↗ เร็วขึ้น 15% จากเดือนที่แล้ว</div>
-        </div>
-        """, unsafe_allow_html=True)
 
 def show_saved_analyses():
     """Display saved analysis results with management options"""
@@ -1011,132 +749,40 @@ def show_saved_analyses():
                     st.rerun()
 
 def show_tips_section():
-    """แสดงส่วนคำแนะนำและเทคนิค"""
-    st.markdown("---")
+    """แสดงส่วนคำแนะนำและเทคนิคในรูปแบบมินิมอล"""
+    st.markdown("<hr style='border-color: var(--glass-border); margin: 3rem 0;'>", unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; margin: 3rem 0 2rem 0;">
         <h2 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600;">💡 เทคนิคการถ่ายภาพ</h2>
         <p style="color: var(--text-secondary); margin: 0; font-size: 1.1rem;">
-            เคล็ดลับสำหรับการถ่ายภาพพระเครื่องให้ได้ผลลัพธ์ที่ดีที่สุด
+            เคล็ดลับเพื่อผลลัพธ์การวิเคราะห์ที่ดีที่สุด
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    tip_col1, tip_col2, tip_col3 = st.columns(3)
+    tips = {
+        "💡 แสงที่เหมาะสม": "ใช้แสงธรรมชาติ หลีกเลี่ยงแสงแฟลชและเงาบนองค์พระ",
+        "📐 มุมกล้อง": "ถ่ายภาพตรงๆ ในระยะห่างที่พอดี โดยใช้พื้นหลังสีเรียบ",
+        "🔍 คุณภาพภาพ": "ใช้ความละเอียดสูง ภาพต้องคมชัด ไม่เบลอ และเห็นรายละเอียดครบถ้วน"
+    }
     
-    with tip_col1:
-        st.markdown("""
-        <div class="tip-card">
-            <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">💡</div>
-            <h3 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600;">แสงที่เหมาะสม</h3>
-            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
-                <li>ใช้แสงธรรมชาติ</li>
-                <li>หลีกเลี่ยงแสงแฟลช</li>
-                <li>ถ่ายในที่ร่ม แต่สว่าง</li>
-                <li>หลีกเลี่ยงเงาบนพระเครื่อง</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with tip_col2:
-        st.markdown("""
-        <div class="tip-card">
-            <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">📐</div>
-            <h3 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600;">มุมกล้องและท่าทาง</h3>
-            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
-                <li>ถ่ายตรง ไม่เอียง</li>
-                <li>ระยะห่าง 15-30 ซม.</li>
-                <li>ใช้พื้นหลังสีขาวหรือเทา</li>
-                <li>ให้พระเครื่องอยู่ตรงกลางเฟรม</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with tip_col3:
-        st.markdown("""
-        <div class="tip-card">
-            <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">🔍</div>
-            <h3 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600;">คุณภาพภาพ</h3>
-            <ul style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
-                <li>ความละเอียดสูง (1080p+)</li>
-                <li>ภาพคมชัด ไม่เบลอ</li>
-                <li>แสดงรายละเอียดชัดเจน</li>
-                <li>ไม่มีสิ่งบดบัง</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+    cols = st.columns(3)
+    for i, (title, content) in enumerate(tips.items()):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="tip-card" style="padding: 1.5rem; text-align: center; height: 100%;">
+                <h3 style="color: var(--text-primary); margin: 0 0 1rem 0; font-weight: 600; font-size: 1.2rem;">{title}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">{content}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 def show_footer():
-    """แสดงส่วน Footer ที่สวยงามและทันสมัย"""
-    st.markdown("---")
-    # Main Footer Section
+    """แสดงส่วน Footer ที่เรียบง่าย"""
+    st.markdown("<hr style='border-color: var(--glass-border); margin: 3rem 0;'>", unsafe_allow_html=True)
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                padding: 4rem 2rem; border-radius: 20px; text-align: center; 
-                color: white; margin: 3rem 0; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-                position: relative; overflow: hidden;">
-        <!-- Background Pattern -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-                    background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
-                                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);"></div>
-        <!-- Main Content -->
-        <div style="position: relative; z-index: 1;">
-            <!-- Logo and Title -->
-            <div style="margin-bottom: 3rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 0 20px rgba(255,255,255,0.3);">&#128269;</div>
-                <h1 style="color: white; margin: 0; font-weight: 700; font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.3); letter-spacing: 1px;">
-                    Amulet-AI
-                </h1>
-                <p style="color: rgba(255,255,255,0.9); margin: 1rem 0 0 0; font-size: 1.2rem; font-weight: 300; letter-spacing: 0.5px;">
-                    ระบบวิเคราะห์พระเครื่องด้วยปัญญาประดิษฐ์ระดับสูง
-                </p>
-                <div style="width: 60px; height: 3px; background: rgba(255,255,255,0.8); margin: 1.5rem auto; border-radius: 2px;"></div>
-            </div>
-            <!-- Enhanced Features Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2.5rem; margin: 4rem 0; max-width: 900px; margin-left: auto; margin-right: auto;">
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 2rem 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚡</div>
-                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.1rem;">เร็วทันใจ</div>
-                    <div style="color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.4;">วิเคราะห์ได้ใน &lt; 3 วินาที<br><small style="opacity: 0.7;">ด้วยเทคโนโลยี AI ล่าสุด</small></div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 2rem 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
-                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.1rem;">แม่นยำสูง</div>
-                    <div style="color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.4;">ความแม่นยำ 94.2%<br><small style="opacity: 0.7;">ทดสอบจากข้อมูลจริง 10,000+ ภาพ</small></div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 2rem 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔒</div>
-                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; font-size: 1.1rem;">ปลอดภัย 100%</div>
-                    <div style="color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.4;">ไม่เก็บข้อมูลส่วนตัว<br><small style="opacity: 0.7;">ประมวลผลในเครื่องเท่านั้น</small></div>
-                </div>
-            </div>
-            <!-- Technology Badges -->
-            <div style="display: flex; justify-content: center; gap: 1rem; margin: 3rem 0; flex-wrap: wrap;">
-                <span style="background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 25px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">🤖 TensorFlow</span>
-                <span style="background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 25px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">🐍 Python</span>
-                <span style="background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 25px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">⚡ Streamlit</span>
-                <span style="background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 25px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);">📊 Plotly</span>
-            </div>
-            <!-- Bottom Section with Enhanced Design -->
-            <div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 2.5rem; margin-top: 3rem;">
-                <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                    <div style="font-size: 1.5rem;">🇹🇭</div>
-                    <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 1rem; font-weight: 400; letter-spacing: 0.5px;">© 2025 Amulet-AI • Made with ❤️ in Thailand</p>
-                </div>
-                <!-- Version and Stats -->
-                <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
-                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"><strong>Version:</strong> 3.0 (Combined v1 + v2)</span>
-                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"><strong>Build:</strong> 2025.08.26</span>
-                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"><strong>Users:</strong> 12,547+ วิเคราะห์แล้ว</span>
-                </div>
-                <!-- Social Links -->
-                <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
-                    <a href="mailto:info@amulet-ai.com" target="_blank" style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; color: white; text-decoration: none;">📧</a>
-                    <a href="https://facebook.com/amuletai" target="_blank" style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; color: white; text-decoration: none;">📱</a>
-                    <a href="https://amulet-ai.com" target="_blank" style="background: rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; color: white; text-decoration: none;">🌐</a>
-                </div>
-            </div>
-        </div>
+    <div style="text-align: center; padding: 2rem 0; color: var(--text-secondary); font-size: 0.9rem;">
+        <p>© 2025 Amulet-AI • Made with ❤️ in Thailand</p>
+        <p>Version: 3.0 (Minimalist) • Build: 2025.08.26</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1147,7 +793,7 @@ def main():
     # System Status Check
     is_online, status_message = check_system_status()
     if not is_online:
-        st.warning(f"🔧 {status_message}")
+        st.toast(f"🔧 {status_message}", icon="⚠️")
     
     # Hero Section with Multi-language
     st.markdown(f"""
@@ -1165,10 +811,12 @@ def main():
         # Language Selector
         st.markdown("### 🌍 Language / ภาษา")
         current_lang = get_lang()
-        lang_option = st.selectbox(
+        lang_option = st.radio(
             "Select Language", 
             ["🇹🇭 ไทย", "🇺🇸 English"],
-            index=0 if current_lang == 'th' else 1
+            index=0 if current_lang == 'th' else 1,
+            horizontal=True,
+            label_visibility="collapsed"
         )
         
         new_lang = 'th' if lang_option.startswith('🇹🇭') else 'en'
@@ -1178,47 +826,21 @@ def main():
         
         st.markdown("---")
         
-        # Theme Toggle
-        st.markdown("### 🎨" + (" ธีม" if current_lang == 'th' else " Theme"))
-        theme_option = st.selectbox(
-            "เลือกธีม" if current_lang == 'th' else "Choose Theme", 
-            ["🌞 Light Mode", "🌙 Dark Mode"]
-        )
-        
-        if theme_option == "🌙 Dark Mode":
-            st.markdown("""
-            <style>
-                .main { background-color: #1F2937 !important; }
-                .stApp { background-color: #111827 !important; }
-                :root {
-                    --secondary-color: #374151 !important;
-                    --text-primary: #F9FAFB !important;
-                    --text-secondary: #D1D5DB !important;
-                }
-                
-                /* Mobile-first Responsive Adjustments */
-                @media (max-width: 480px) {
-                    .block-container { padding: 0.5rem !important; }
-                    .hero-section { padding: 1.5rem 1rem !important; }
-                    .modern-card { padding: 1rem !important; }
-                }
-            </style>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("---")
         st.subheader("📋 " + ("คู่มือใช้งาน" if current_lang == 'th' else "User Guide"))
         
-        with st.expander("📘 " + ("วิธีการใช้งาน" if current_lang == 'th' else "How to Use"), expanded=True):
+        with st.expander("📘 " + ("วิธีการใช้งาน" if current_lang == 'th' else "How to Use"), expanded=False):
             steps = [
                 "📤 อัปโหลดภาพด้านหน้า" if current_lang == 'th' else "📤 Upload front image",
-                "📷 เลือกภาพด้านหลัง (ไม่บังคับ)" if current_lang == 'th' else "📷 Select back image (optional)",
-                "🔍 กดปุ่มวิเคราะห์" if current_lang == 'th' else "🔍 Click analyze button",
-                "⏳ รอผลการวิเคราะห์" if current_lang == 'th' else "⏳ Wait for analysis",
-                "📊 ดูผลลัพธ์" if current_lang == 'th' else "📊 View results"
+                "📷 (ไม่บังคับ) อัปโหลดภาพด้านหลัง" if current_lang == 'th' else "📷 (Optional) Upload back image",
+                "� กดปุ่ม 'วิเคราะห์พระเครื่อง'" if current_lang == 'th' else "� Click 'Analyze Amulet'",
+                "📊 รอชมผลลัพธ์แบบละเอียด" if current_lang == 'th' else "📊 View the detailed results"
             ]
             
             for i, step in enumerate(steps, 1):
                 st.write(f"{i}. {step}")
+        
+        st.markdown("---")
+        st.info("💡 " + ("เคล็ดลับ: ใช้ภาพที่คมชัดและมีแสงดีเพื่อให้ได้ผลลัพธ์แม่นยำที่สุด" if current_lang == 'th' else "Tip: Use clear, well-lit photos for the most accurate results."))
     
     # Main Navigation Tabs
     tab_analyze, tab_compare, tab_analytics, tab_saved = st.tabs([
@@ -1297,7 +919,7 @@ def main():
         if hasattr(st.session_state, 'front_data') and st.session_state.front_data:
             st.markdown("""
             <div style="margin: 3rem 0 2rem 0; text-align: center;">
-                <div style="height: 2px; background: var(--primary-gradient); border-radius: 1px; margin: 1rem auto; width: 200px;"></div>
+                <div style="height: 1px; background: var(--glass-border); border-radius: 1px; margin: 1rem auto; width: 80%;"></div>
             </div>
             """, unsafe_allow_html=True)
             
@@ -1375,8 +997,8 @@ def main():
                 
                 with col2:
                     st.markdown(f"""
-                    <div class="metric-card">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    <div class="metric-card" style="padding: 1.5rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-primary);">
                            
                             {result['top1']['confidence'] * 100:.1f}%
                         </div>
@@ -1386,8 +1008,8 @@ def main():
                 
                 with col3:
                     st.markdown(f"""
-                    <div class="metric-card">
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    <div class="metric-card" style="padding: 1.5rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-primary);">
                             {result['authenticity_score']}%
                         </div>
                         <div style="color: var(--text-secondary); font-size: 0.9rem;">{_('authenticity')}</div>
@@ -1434,7 +1056,7 @@ def main():
                 
                 with col_price:
                     st.markdown(f"""
-                    <div class="metric-card" style="text-align: center;">
+                    <div class="metric-card" style="text-align: center; padding: 1.5rem;">
                         <div style="font-size: 2rem; font-weight: 700; color: var(--warning-color);">
                             {result['valuation']['p50']:,} บาท
                         </div>
