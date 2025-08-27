@@ -82,12 +82,89 @@ API_URL = "http://localhost:8000"
 # Custom CSS
 st.markdown("""
 <style>
-    /* Main theme colors */
+    /* Main theme colors with animated background */
     .main {
         padding-top: 2rem;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        min-height: 100vh;
     }
     
-    /* Custom header styling */
+    /* Expand content width for wide layout */
+    .block-container {
+        max-width: 95% !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+    
+    /* Full width sections */
+    .main-content-area {
+        max-width: none !important;
+        width: 100% !important;
+    }
+    
+    /* Sidebar and main area adjustments */
+    section[data-testid="stSidebar"] {
+        width: 350px !important;
+        min-width: 350px !important;
+    }
+    
+    .main .block-container {
+        max-width: calc(100% - 350px) !important;
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+    
+    /* Column spacing adjustments */
+    div[data-testid="column"] {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Background animation */
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+    
+    /* Floating particles animation */
+    .main::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.3) 0%, transparent 50%);
+        animation: floatingParticles 20s ease-in-out infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    @keyframes floatingParticles {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+        33% {
+            transform: translateY(-20px) rotate(120deg);
+        }
+        66% {
+            transform: translateY(20px) rotate(240deg);
+        }
+    }
+    
+    /* Custom header styling with enhanced animation */
     .custom-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2rem;
@@ -96,6 +173,39 @@ st.markdown("""
         text-align: center;
         color: white;
         box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        animation: headerGlow 3s ease-in-out infinite alternate;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .custom-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 4s infinite;
+        pointer-events: none;
+    }
+    
+    @keyframes headerGlow {
+        0% {
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        100% {
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
     }
     
     .custom-header h1 {
@@ -103,38 +213,101 @@ st.markdown("""
         font-weight: 700;
         margin: 0;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        animation: titleBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes titleBounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
     }
     
     .custom-header p {
         font-size: 1.2rem;
         margin: 0.5rem 0 0 0;
         opacity: 0.9;
+        animation: fadeInUp 1.5s ease-out 0.5s both;
     }
     
-    /* Upload sections */
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Upload sections with hover animations */
     .upload-section {
-        background: white;
+        background: rgba(255, 255, 255, 0.95);
         padding: 1.5rem;
         border-radius: 12px;
         border: 2px dashed #e1e8ed;
         margin: 1rem 0;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        backdrop-filter: blur(10px);
+        animation: slideInFromLeft 0.8s ease-out;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    @keyframes slideInFromLeft {
+        0% {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
     
     .upload-section:hover {
         border-color: #667eea;
-        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        transform: translateY(-5px) scale(1.02);
+        background: rgba(255, 255, 255, 1);
     }
     
-    /* Result cards */
+    /* Result cards with staggered animation */
     .result-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.95);
         padding: 1.5rem;
         border-radius: 12px;
         margin: 1rem 0;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         border-left: 4px solid #667eea;
+        backdrop-filter: blur(10px);
+        animation: slideInFromRight 0.8s ease-out;
+        transition: all 0.3s ease;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    @keyframes slideInFromRight {
+        0% {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .result-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 30px rgba(0,0,0,0.15);
     }
     
     .confidence-high {
@@ -149,38 +322,110 @@ st.markdown("""
         border-left-color: #f44336;
     }
     
-    /* Metrics styling */
+    /* Metrics styling with enhanced animations */
     .metric-card {
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         padding: 1rem;
         border-radius: 10px;
         text-align: center;
         margin: 0.5rem;
-        transition: transform 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: popIn 0.6s ease-out;
+        animation-delay: var(--delay, 0s);
+    }
+    
+    @keyframes popIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3) rotate(-10deg);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
     }
     
     .metric-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px) scale(1.1);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, #fff 0%, #e8f4fd 100%);
     }
     
-    /* Tips section */
+    /* Tips section with wave animation */
     .tips-container {
-        background: #f8f9fa;
+        background: rgba(248, 249, 250, 0.9);
         padding: 2rem;
         border-radius: 15px;
         margin: 2rem 0;
+        backdrop-filter: blur(10px);
+        animation: waveFloat 6s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    @keyframes waveFloat {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .tips-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: wave 3s infinite;
+    }
+    
+    @keyframes wave {
+        0% {
+            left: -100%;
+        }
+        100% {
+            left: 100%;
+        }
     }
     
     .tip-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.9);
         padding: 1.5rem;
         border-radius: 10px;
         margin: 1rem 0;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         border-top: 3px solid #667eea;
+        backdrop-filter: blur(5px);
+        animation: slideInScale 0.8s ease-out;
+        animation-fill-mode: both;
+        transition: all 0.3s ease;
+        width: 100% !important;
+        max-width: none !important;
     }
     
-    /* Button styling */
+    @keyframes slideInScale {
+        0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .tip-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+    
+    /* Button styling with enhanced animations */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -188,21 +433,68 @@ st.markdown("""
         border-radius: 25px;
         padding: 0.75rem 2rem;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: buttonPulse 2s infinite;
+    }
+    
+    @keyframes buttonPulse {
+        0% {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        50% {
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        100% {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     }
     
-    /* Sidebar styling */
+    .stButton > button:hover::before {
+        left: 100%;
+    }
+    
+    .stButton > button:active {
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
+    }
+    
+    /* Sidebar styling with animated gradient */
     .css-1d391kg {
-        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+        background: linear-gradient(180deg, rgba(248, 249, 250, 0.95) 0%, rgba(233, 236, 239, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        animation: sidebarGlow 8s ease-in-out infinite;
     }
     
-    /* Progress animation */
+    @keyframes sidebarGlow {
+        0%, 100% {
+            background: linear-gradient(180deg, rgba(248, 249, 250, 0.95) 0%, rgba(233, 236, 239, 0.95) 100%);
+        }
+        50% {
+            background: linear-gradient(180deg, rgba(255, 248, 250, 0.95) 0%, rgba(240, 233, 255, 0.95) 100%);
+        }
+    }
+    
+    /* Loading and progress animations */
     @keyframes pulse {
         0% { opacity: 1; }
         50% { opacity: 0.5; }
@@ -212,6 +504,70 @@ st.markdown("""
     .analyzing {
         animation: pulse 1.5s ease-in-out infinite;
     }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 53%, 80%, 100% {
+            animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            transform: translate3d(0,0,0);
+        }
+        40%, 43% {
+            animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+            transform: translate3d(0, -10px, 0);
+        }
+        70% {
+            animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+            transform: translate3d(0, -5px, 0);
+        }
+        90% {
+            transform: translate3d(0,-2px,0);
+        }
+    }
+    
+    /* Responsive animations for mobile */
+    @media (max-width: 768px) {
+        .main {
+            animation-duration: 20s;
+        }
+        
+        .custom-header {
+            animation-duration: 4s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px) scale(1.03);
+        }
+    }
+    
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Custom scrollbar with animation */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(241, 241, 241, 0.3);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #764ba2, #667eea);
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -219,15 +575,15 @@ st.markdown("""
 
 st.set_page_config(
     page_title="Amulet-AI", 
-    page_icon="🔍", 
-    layout="centered",
+    page_icon=None, 
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # Header Section with custom styling
 st.markdown("""
 <div class="custom-header">
-    <h1>🔍 Amulet-AI</h1>
+    <h1>Amulet-AI</h1>
     <p>วิเคราะห์พระเครื่องลึกลับด้วยปัญญาประดิษฐ์</p>
 </div>
 """, unsafe_allow_html=True)
@@ -236,43 +592,43 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; padding: 1rem;">
-        <h2 style="color: #667eea;">📋 คู่มือใช้งาน</h2>
+        <h2 style="color: #667eea;">คู่มือใช้งาน</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    with st.expander("� วิธีการใช้งาน", expanded=True):
+    with st.expander("วิธีการใช้งาน", expanded=True):
         st.markdown("""
-        1. 📤 **อัปโหลด** ภาพด้านหน้าพระเครื่อง
-        2. 📷 **ถ่ายรูป** หรือเลือกภาพด้านหลัง (บังคับ)
-        3. 🔍 **กดปุ่ม** "วิเคราะห์ตอนนี้"
-        4. ⏳ **รอผล** การวิเคราะห์
-        5. 📊 **ดูผลลัพธ์** และคำแนะนำ
+        1. **อัปโหลด** ภาพด้านหน้าพระเครื่อง
+        2. **ถ่ายรูป** หรือเลือกภาพด้านหลัง (บังคับ)
+        3. **กดปุ่ม** "วิเคราะห์ตอนนี้"
+        4. **รอผล** การวิเคราะห์
+        5. **ดูผลลัพธ์** และคำแนะนำ
         """)
     
-    with st.expander("🎯 ข้อมูลระบบ"):
+    with st.expander("ข้อมูลระบบ"):
         st.markdown("""
-        - 🤖 **เทคโนโลยี**: TensorFlow + FastAPI
-        - 📈 **ความแม่นยำ**: แสดง Top-3 ผลลัพธ์
-        - 💰 **ประเมินราคา**: ช่วงราคาตลาดปัจจุบัน
-        - 🛒 **คำแนะนำ**: ช่องทางขายที่เหมาะสม
+        - **เทคโนโลยี**: TensorFlow + FastAPI
+        - **ความแม่นยำ**: แสดง Top-3 ผลลัพธ์
+        - **ประเมินราคา**: ช่วงราคาตลาดปัจจุบัน
+        - **คำแนะนำ**: ช่องทางขายที่เหมาะสม
         """)
     
-    with st.expander("📸 เคล็ดลับถ่ายรูป"):
+    with st.expander("เคล็ดลับถ่ายรูป"):
         st.markdown("""
-        **แสงสว่าง** 💡
+        **แสงสว่าง**
         - ใช้แสงธรรมชาติหรือแสงขาว
         - หลีกเลี่ยงแสงสะท้อนและเงา
         
-        **มุมกล้อง** 📐
+        **มุมกล้อง**
         - ถ่ายตรงไม่เอียง
         - ระยะใกล้พอเห็นรายละเอียด
         
-        **พื้นหลัง** 🎨
+        **พื้นหลัง**
         - ใช้พื้นเรียบสีขาวหรืออ่อน
         - ไม่มีสิ่งรบกวนในภาพ
         """)
     
-    with st.expander("⚠️ ข้อจำกัด"):
+    with st.expander("ข้อจำกัด"):
         st.warning("""
         - ระบบอยู่ในช่วงทดสอบ
         - ใช้ข้อมูลจำลองในการวิเคราะห์
@@ -282,7 +638,7 @@ with st.sidebar:
 # Main Content
 st.markdown("""
 <div style="text-align: center; margin: 2rem 0;">
-    <h2 style="color: #667eea; margin-bottom: 0.5rem;">📤 อัปโหลดรูปภาพพระเครื่อง</h2>
+    <h2 style="color: #667eea; margin-bottom: 0.5rem;">อัปโหลดรูปภาพพระเครื่อง</h2>
     <p style="color: #6c757d; margin: 0;">รองรับไฟล์: <code>{}</code></p>
 </div>
 """.format(FORMAT_DISPLAY), unsafe_allow_html=True)
@@ -293,7 +649,7 @@ col_upload, col_camera = st.columns(2)
 with col_upload:
     st.markdown("""
     <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px; margin: 1rem 0;">
-        <h4 style="color: #495057; margin: 0;">📁 อัปโหลดจากไฟล์</h4>
+        <h4 style="color: #495057; margin: 0;">อัปโหลดจากไฟล์</h4>
         <p style="color: #6c757d; font-size: 0.9rem; margin: 0.5rem 0 0 0;">เลือกไฟล์จากเครื่องของคุณ</p>
     </div>
     """, unsafe_allow_html=True)
@@ -301,8 +657,8 @@ with col_upload:
 with col_camera:
     st.markdown("""
     <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px; margin: 1rem 0;">
-        <h4 style="color: #495057; margin: 0;">📷 ถ่ายรูปด้วยกล้อง</h4>
-        <p style="color: #6c757d; font-size: 0.9rem; margin: 0.5rem 0 0 0;">🔒 ขอสิทธิ์เมื่อกดใช้งาน</p>
+        <h4 style="color: #495057; margin: 0;">ถ่ายรูปด้วยกล้อง</h4>
+        <p style="color: #6c757d; font-size: 0.9rem; margin: 0.5rem 0 0 0;">ขอสิทธิ์เมื่อกดใช้งาน</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -314,7 +670,7 @@ with col1:
     st.markdown("""
     <div style="text-align: center; padding: 1rem; background: #e8f5e8; 
                 border: 1px solid #c3e6c3; border-radius: 10px; margin: 1rem 0;">
-        <h4 style="color: #2d5016; margin: 0;">📸 ภาพด้านหน้า</h4>
+        <h4 style="color: #2d5016; margin: 0;">ภาพด้านหน้า</h4>
         <p style="color: #2d5016; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
             (บังคับ - สำหรับการวิเคราะห์พระเครื่อง)
         </p>
@@ -322,13 +678,13 @@ with col1:
     """, unsafe_allow_html=True)
     
     # Tab สำหรับเลือกวิธีการ input
-    tab1, tab2 = st.tabs(["📁 อัปโหลด", "📷 ถ่ายรูป"])
+    tab1, tab2 = st.tabs(["อัปโหลด", "ถ่ายรูป"])
     
     with tab1:
         st.markdown("""
         <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
                     text-align: center; margin: 1rem 0; background: #f9f9f9;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📁</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;">ไฟล์</div>
             <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
                 เลือกไฟล์จากเครื่องของคุณ
             </div>
@@ -353,17 +709,17 @@ with col1:
         st.markdown("""
         <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
                     text-align: center; margin: 1rem 0; background: #f9f9f9;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📷</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;">กล้อง</div>
             <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
                 ถ่ายรูปด้วยกล้อง
             </div>
             <div style="color: #999; font-size: 0.9rem;">
-                🔒 ขอสิทธิ์เมื่อกดใช้งาน
+                ขอสิทธิ์เมื่อกดใช้งาน
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📷 เปิดกล้องถ่ายรูป", key="front_camera_btn", use_container_width=True):
+        if st.button("เปิดกล้องถ่ายรูป", key="front_camera_btn", use_container_width=True):
             st.session_state.show_front_camera = True
         
         if st.session_state.get('show_front_camera', False):
@@ -375,7 +731,7 @@ with col1:
                 front = front_camera
                 front_source = "camera"
                 # ซ่อนกล้องหลังถ่ายเสร็จ
-                if st.button("✅ ใช้รูปนี้", key="front_camera_confirm"):
+                if st.button("ใช้รูปนี้", key="front_camera_confirm"):
                     st.session_state.show_front_camera = False
                     st.rerun()
             else:
@@ -395,7 +751,7 @@ with col1:
                         border: 1px solid #c3e6cb; border-radius: 10px; 
                         padding: 0.8rem; margin: 1rem 0; text-align: center;">
                 <div style="color: #155724; font-size: 1rem; font-weight: bold;">
-                    ✅ ภาพถูกต้อง กำลังแสดงผล...
+                    ภาพถูกต้อง กำลังแสดงผล...
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -403,7 +759,7 @@ with col1:
             # Enhanced image display
             st.markdown(f"""
             <div style="text-align: center; margin: 1rem 0;">
-                <h5 style="color: #495057; margin: 0;">🖼️ ภาพด้านหน้า ({front_source})</h5>
+                <h5 style="color: #495057; margin: 0;">ภาพด้านหน้า ({front_source})</h5>
             </div>
             """, unsafe_allow_html=True)
             
@@ -418,10 +774,10 @@ with col1:
                         border: 1px solid #f5c6cb; border-radius: 10px; 
                         padding: 1rem; margin: 1rem 0; text-align: center;">
                 <div style="color: #721c24; font-size: 1rem; font-weight: bold;">
-                    ❌ ไฟล์ภาพไม่ถูกต้อง: {error_msg}
+                    ไฟล์ภาพไม่ถูกต้อง: {error_msg}
                 </div>
                 <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
-                    💡 ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่
+                    ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -430,20 +786,20 @@ with col2:
     st.markdown("""
     <div style="text-align: center; padding: 1rem; background: #e8f5e8; 
                 border: 1px solid #c3e6c3; border-radius: 10px; margin: 1rem 0;">
-        <h4 style="color: #2d5016; margin: 0;">📸 ภาพด้านหลัง</h4>
+        <h4 style="color: #2d5016; margin: 0;">ภาพด้านหลัง</h4>
         <p style="color: #2d5016; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
             (บังคับ - สำหรับการวิเคราะห์ที่ละเอียดยิ่งขึ้น)
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    tab1, tab2 = st.tabs(["📁 อัปโหลด", "📷 ถ่ายรูป"])
+    tab1, tab2 = st.tabs(["อัปโหลด", "ถ่ายรูป"])
     
     with tab1:
         st.markdown("""
         <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
                     text-align: center; margin: 1rem 0; background: #f9f9f9;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📁</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;">ไฟล์</div>
             <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
                 เลือกไฟล์จากเครื่องของคุณ
             </div>
@@ -468,17 +824,17 @@ with col2:
         st.markdown("""
         <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
                     text-align: center; margin: 1rem 0; background: #f9f9f9;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📷</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;">กล้อง</div>
             <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
                 ถ่ายรูปด้วยกล้อง
             </div>
             <div style="color: #999; font-size: 0.9rem;">
-                🔒 ขอสิทธิ์เมื่อกดใช้งาน
+                ขอสิทธิ์เมื่อกดใช้งาน
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📷 เปิดกล้องถ่ายรูป", key="back_camera_btn", use_container_width=True):
+        if st.button("เปิดกล้องถ่ายรูป", key="back_camera_btn", use_container_width=True):
             st.session_state.show_back_camera = True
         
         if st.session_state.get('show_back_camera', False):
@@ -490,7 +846,7 @@ with col2:
                 back = back_camera
                 back_source = "camera"
                 # ซ่อนกล้องหลังถ่ายเสร็จ
-                if st.button("✅ ใช้รูปนี้", key="back_camera_confirm"):
+                if st.button("ใช้รูปนี้", key="back_camera_confirm"):
                     st.session_state.show_back_camera = False
                     st.rerun()
             else:
@@ -510,7 +866,7 @@ with col2:
                         border: 1px solid #c3e6cb; border-radius: 10px; 
                         padding: 0.8rem; margin: 1rem 0; text-align: center;">
                 <div style="color: #155724; font-size: 1rem; font-weight: bold;">
-                    ✅ ภาพถูกต้อง กำลังแสดงผล...
+                    ภาพถูกต้อง กำลังแสดงผล...
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -518,7 +874,7 @@ with col2:
             # Enhanced image display
             st.markdown(f"""
             <div style="text-align: center; margin: 1rem 0;">
-                <h5 style="color: #495057; margin: 0;">🖼️ ภาพด้านหลัง ({back_source})</h5>
+                <h5 style="color: #495057; margin: 0;">ภาพด้านหลัง ({back_source})</h5>
             </div>
             """, unsafe_allow_html=True)
             
@@ -533,10 +889,10 @@ with col2:
                         border: 1px solid #f5c6cb; border-radius: 10px; 
                         padding: 1rem; margin: 1rem 0; text-align: center;">
                 <div style="color: #721c24; font-size: 1rem; font-weight: bold;">
-                    ❌ ไฟล์ภาพไม่ถูกต้อง: {error_msg}
+                    ไฟล์ภาพไม่ถูกต้อง: {error_msg}
                 </div>
                 <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
-                    💡 ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่
+                    ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -549,19 +905,19 @@ if (front and hasattr(st.session_state, 'front_processed') and
     # Enhanced analyze button section
     st.markdown("""
     <div style="text-align: center; margin: 2rem 0 1rem 0;">
-        <h3 style="color: #495057; margin: 0;">🚀 พร้อมวิเคราะห์แล้ว</h3>
+        <h3 style="color: #495057; margin: 0;">พร้อมวิเคราะห์แล้ว</h3>
         <p style="color: #6c757d; font-size: 0.9rem;">กดปุ่มด้านล่างเพื่อเริ่มการวิเคราะห์ด้วย AI</p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("🔍 วิเคราะห์ตอนนี้", type="primary", use_container_width=True):
+    if st.button("วิเคราะห์ตอนนี้", type="primary", use_container_width=True):
         # ใช้ไฟล์ที่ประมวลผลแล้ว - บังคับทั้งหน้าและหลัง
         files = {
             "front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg"),
             "back": (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
         }
         # Enhanced loading message
-        with st.spinner("⚡ กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
+        with st.spinner("กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
                 
@@ -573,7 +929,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                 border: 1px solid #c3e6cb; border-radius: 15px; 
                                 padding: 1.5rem; margin: 1.5rem 0; text-align: center;">
                         <div style="color: #155724; font-size: 1.2rem; font-weight: bold;">
-                            ✅ วิเคราะห์เสร็จสิ้น!
+                            วิเคราะห์เสร็จสิ้น!
                         </div>
                         <div style="color: #155724; font-size: 0.9rem; margin-top: 0.5rem;">
                             ระบบ AI ได้ประมวลผลข้อมูลเรียบร้อยแล้ว
@@ -585,7 +941,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     st.markdown("---")
                     st.markdown("""
                     <div style="text-align: center; margin: 1.5rem 0;">
-                        <h2 style="color: #495057; margin: 0;">🎯 ผลการวิเคราะห์</h2>
+                        <h2 style="color: #495057; margin: 0;">ผลการวิเคราะห์</h2>
                         <p style="color: #6c757d; font-size: 0.9rem;">ผลลัพธ์จากระบบปัญญาประดิษฐ์</p>
                     </div>
                     """, unsafe_allow_html=True)
@@ -612,25 +968,68 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                 background: {bg_color}; 
                                 border: 2px solid {border_color};
                                 margin: 1.5rem 0; text-align: center;
-                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                        <div style="font-size: 2rem; margin-bottom: 1rem;">🏆</div>
-                        <h2 style="color: {conf_color}; margin: 0; font-size: 1.5rem;">
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                animation: resultBounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                                position: relative;
+                                overflow: hidden;">
+                        <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+                                    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+                                    animation: resultShimmer 3s infinite; pointer-events: none;"></div>
+                        <div style="font-size: 2rem; margin-bottom: 1rem; animation: crownSpin 3s ease-in-out infinite;"></div>
+                        <h2 style="color: {conf_color}; margin: 0; font-size: 1.5rem; position: relative; z-index: 1;">
                             {data['top1']['class_name']}
                         </h2>
-                        <div style="margin: 1rem 0; font-size: 1.2rem; color: {conf_color};">
+                        <div style="margin: 1rem 0; font-size: 1.2rem; color: {conf_color}; position: relative; z-index: 1;">
                             <strong>ความน่าจะเป็น: {confidence_percent:.1f}%</strong>
                         </div>
-                        <div style="font-size: 0.9rem; color: {conf_color}; opacity: 0.8;">
+                        <div style="font-size: 0.9rem; color: {conf_color}; opacity: 0.8; position: relative; z-index: 1;">
                             ผลการวิเคราะห์อันดับ 1 จากระบบ AI
                         </div>
                     </div>
+                    <style>
+                    @keyframes resultBounceIn {{
+                        0% {{
+                            opacity: 0;
+                            transform: scale(0.3) rotate(-10deg);
+                        }}
+                        50% {{
+                            opacity: 1;
+                            transform: scale(1.05) rotate(5deg);
+                        }}
+                        70% {{
+                            transform: scale(0.95) rotate(-2deg);
+                        }}
+                        100% {{
+                            opacity: 1;
+                            transform: scale(1) rotate(0deg);
+                        }}
+                    }}
+                    
+                    @keyframes resultShimmer {{
+                        0% {{
+                            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                        }}
+                        100% {{
+                            transform: translateX(100%) translateY(100%) rotate(45deg);
+                        }}
+                    }}
+                    
+                    @keyframes crownSpin {{
+                        0%, 100% {{
+                            transform: rotateY(0deg) scale(1);
+                        }}
+                        50% {{
+                            transform: rotateY(180deg) scale(1.1);
+                        }}
+                    }}
+                    </style>
                     """, unsafe_allow_html=True)
                     
                     # Top-3 Results with enhanced styling
                     st.markdown("---")
                     st.markdown("""
                     <div style="text-align: center; margin: 1.5rem 0;">
-                        <h3 style="color: #495057; margin: 0;">📊 ตัวเลือกอื่นๆ (Top-3)</h3>
+                        <h3 style="color: #495057; margin: 0;">ตัวเลือกอื่นๆ (Top-3)</h3>
                         <p style="color: #6c757d; font-size: 0.9rem;">ผลการจัดอันดับทั้งหมดจากระบบ AI</p>
                     </div>
                     """, unsafe_allow_html=True)
@@ -641,17 +1040,17 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         
                         # Medal and styling based on rank
                         if i == 1:
-                            icon = "🥇"
+                            icon = ""
                             bg_gradient = "linear-gradient(135deg, #fff3e0, #ffe0b3)"
                             border_color = "#ffcc80"
                             text_color = "#e65100"
                         elif i == 2:
-                            icon = "🥈"
+                            icon = ""
                             bg_gradient = "linear-gradient(135deg, #f3e5f5, #ce93d8)"
                             border_color = "#ba68c8"
                             text_color = "#4a148c"
                         else:
-                            icon = "🥉"
+                            icon = ""
                             bg_gradient = "linear-gradient(135deg, #fff8e1, #ffecb3)"
                             border_color = "#ffcc02"
                             text_color = "#f57f17"
@@ -660,9 +1059,18 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <div style="padding: 1rem; margin: 0.8rem 0; border-radius: 10px;
                                     background: {bg_gradient}; 
                                     border: 1px solid {border_color};
-                                    display: flex; align-items: center;">
-                            <div style="font-size: 1.5rem; margin-right: 1rem;">{icon}</div>
-                            <div style="flex-grow: 1;">
+                                    display: flex; align-items: center;
+                                    animation: rankSlideIn 0.8s ease-out {i * 0.2}s both;
+                                    transition: all 0.3s ease;
+                                    position: relative;
+                                    overflow: hidden;"
+                             onmouseover="this.style.transform='translateX(10px) scale(1.02)'"
+                             onmouseout="this.style.transform='translateX(0) scale(1)'">
+                            <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+                                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                                        transition: left 0.6s;" class="rank-shimmer"></div>
+                            <div style="font-size: 1.5rem; margin-right: 1rem; position: relative; z-index: 1;"></div>
+                            <div style="flex-grow: 1; position: relative; z-index: 1;">
                                 <div style="font-weight: bold; color: {text_color}; font-size: 1.1rem;">
                                     {item['class_name']}
                                 </div>
@@ -670,15 +1078,31 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                     ความน่าจะเป็น: {confidence_pct:.1f}%
                                 </div>
                             </div>
-                            <div style="text-align: right; color: {text_color};">
+                            <div style="text-align: right; color: {text_color}; position: relative; z-index: 1;">
                                 <div style="font-size: 0.8rem; opacity: 0.7;">อันดับ {i}</div>
                             </div>
                         </div>
+                        <style>
+                        @keyframes rankSlideIn {{
+                            0% {{
+                                opacity: 0;
+                                transform: translateX(-30px);
+                            }}
+                            100% {{
+                                opacity: 1;
+                                transform: translateX(0);
+                            }}
+                        }}
+                        
+                        .rank-shimmer:hover {{
+                            left: 100% !important;
+                        }}
+                        </style>
                         """, unsafe_allow_html=True)
                         
                         col_rank, col_name, col_conf = st.columns([0.5, 3, 1])
                         with col_rank:
-                            st.markdown(f"**{icon}**")
+                            st.markdown(f"**{''}**")
                         with col_name:
                             st.markdown(f"**{item['class_name']}**")
                         with col_conf:
@@ -686,42 +1110,42 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     
                     # Price Valuation
                     st.markdown("---")
-                    st.subheader("💰 ช่วงราคาประเมิน")
+                    st.subheader("ช่วงราคาประเมิน")
                     
                     price_col1, price_col2, price_col3 = st.columns(3)
                     with price_col1:
                         st.metric(
-                            label="💸 ราคาต่ำ (P05)",
+                            label="ราคาต่ำ (P05)",
                             value=f"{data['valuation']['p05']:,.0f} ฿",
                             help="ราคาต่ำสุดในตลาด"
                         )
                     with price_col2:
                         st.metric(
-                            label="💵 ราคากลาง (P50)",
+                            label="ราคากลาง (P50)",
                             value=f"{data['valuation']['p50']:,.0f} ฿",
                             help="ราคาเฉลี่ยในตลาด"
                         )
                     with price_col3:
                         st.metric(
-                            label="💳 ราคาสูง (P95)",
+                            label="ราคาสูง (P95)",
                             value=f"{data['valuation']['p95']:,.0f} ฿",
                             help="ราคาสูงสุดในตลาด"
                         )
                     
                     # Recommendations
                     st.markdown("---")
-                    st.subheader("🛒 แนะนำช่องทางการขาย")
+                    st.subheader("แนะนำช่องทางการขาย")
                     
                     for i, rec in enumerate(data["recommendations"], 1):
-                        with st.expander(f"📍 {rec['market']}", expanded=i==1):
-                            st.write(f"💡 **เหตุผล:** {rec['reason']}")
+                        with st.expander(f"{rec['market']}", expanded=i==1):
+                            st.write(f"**เหตุผล:** {rec['reason']}")
                             if rec['market'] == "Facebook Marketplace":
-                                st.info("🔗 เหมาะสำหรับการขายให้คนทั่วไป")
+                                st.info("เหมาะสำหรับการขายให้คนทั่วไป")
                             elif rec['market'] == "Shopee":
-                                st.info("🛍️ มีระบบรีวิวและการันตี")
+                                st.info("มีระบบรีวิวและการันตี")
                 
                 else:
-                    st.error(f"❌ เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง: {r.status_code} - {r.text}")
+                    st.error(f"เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง: {r.status_code} - {r.text}")
                     
             except requests.exceptions.Timeout:
                 st.markdown("""
@@ -729,7 +1153,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             border: 1px solid #ffeaa7; border-radius: 10px; 
                             padding: 1.5rem; margin: 1rem 0; text-align: center;">
                     <div style="color: #856404; font-size: 1.1rem; font-weight: bold;">
-                        ⏰ การประมวลผลใช้เวลานานเกินไป
+                        การประมวลผลใช้เวลานานเกินไป
                     </div>
                     <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
                         กรุณาลองใหม่อีกครั้ง หรือลองใช้ภาพที่มีขนาดเล็กกว่า
@@ -742,7 +1166,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             border: 1px solid #f5c6cb; border-radius: 10px; 
                             padding: 1.5rem; margin: 1rem 0; text-align: center;">
                     <div style="color: #721c24; font-size: 1.1rem; font-weight: bold;">
-                        🔌 ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้
+                        ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้
                     </div>
                     <div style="color: #721c24; font-size: 0.9rem; margin-top: 0.5rem;">
                         กรุณาตรวจสอบว่า Backend กำลังทำงานอยู่บนพอร์ต 8000
@@ -755,7 +1179,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             border: 1px solid #f5c6cb; border-radius: 10px; 
                             padding: 1.5rem; margin: 1rem 0; text-align: center;">
                     <div style="color: #721c24; font-size: 1.1rem; font-weight: bold;">
-                        💥 เกิดข้อผิดพลาดไม่คาดคิด
+                        เกิดข้อผิดพลาดไม่คาดคิด
                     </div>
                     <div style="color: #721c24; font-size: 0.9rem; margin-top: 0.5rem;">
                         รายละเอียด: {str(e)}
@@ -777,7 +1201,7 @@ else:
                     border: 1px solid #ffeaa7; border-radius: 10px; 
                     padding: 1.5rem; margin: 1rem 0; text-align: center;">
             <div style="color: #856404; font-size: 1.1rem; font-weight: bold;">
-                🔄 กำลังประมวลผลรูปภาพ...
+                กำลังประมวลผลรูปภาพ...
             </div>
             <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
                 กรุณารอสักครู่ ระบบกำลังเตรียมข้อมูล
@@ -790,7 +1214,7 @@ else:
         <div style="background: linear-gradient(135deg, #cce7ff, #b3daff); 
                     border: 1px solid #b3daff; border-radius: 10px; 
                     padding: 2rem; margin: 2rem 0; text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📋</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;"></div>
             <div style="color: #0056b3; font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">
                 เริ่มต้นการวิเคราะห์
             </div>
@@ -798,10 +1222,10 @@ else:
                 กรุณาอัปโหลด{missing_text}ก่อนเริ่มการวิเคราะห์
             </div>
             <div style="color: #d32f2f; font-size: 0.9rem; margin-top: 0.8rem; font-weight: bold;">
-                ⚠️ จำเป็นต้องมีทั้งภาพหน้าและหลังสำหรับการวิเคราะห์
+                จำเป็นต้องมีทั้งภาพหน้าและหลังสำหรับการวิเคราะห์
             </div>
             <div style="color: #0056b3; font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                💡 เคล็ดลับ: ภาพที่มีแสงสว่างเพียงพอจะให้ผลลัพธ์ที่ดีกว่า
+                เคล็ดลับ: ภาพที่มีแสงสว่างเพียงพอจะให้ผลลัพธ์ที่ดีกว่า
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -810,7 +1234,7 @@ else:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; margin: 2rem 0 1.5rem 0;">
-    <h2 style="color: #495057; margin: 0;">💡 เคล็ดลับการถ่ายภาพที่ดี</h2>
+    <h2 style="color: #495057; margin: 0;">เคล็ดลับการถ่ายภาพที่ดี</h2>
     <p style="color: #6c757d; font-size: 0.9rem;">วิธีการถ่ายภาพเพื่อให้ได้ผลการวิเคราะห์ที่แม่นยำที่สุด</p>
 </div>
 """, unsafe_allow_html=True)
@@ -821,8 +1245,18 @@ with col_tip1:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
                 border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #90caf9;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">📸</div>
+                text-align: center; border: 1px solid #90caf9;
+                animation: tipFloat1 4s ease-in-out infinite;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-10px) scale(1.05)'"
+         onmouseout="this.style.transform='translateY(0) scale(1)'">
+        <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+                    background: linear-gradient(45deg, #90caf9, #e3f2fd, #90caf9);
+                    border-radius: 15px; z-index: -1;
+                    animation: borderGlow1 3s ease-in-out infinite;"></div>
+        <div style="font-size: 2rem; margin-bottom: 0.8rem; animation: iconBounce1 2s ease-in-out infinite;"></div>
         <h4 style="color: #1565c0; margin: 0.5rem 0;">แสงสว่าง</h4>
         <p style="color: #1565c0; font-size: 0.85rem; margin: 0; line-height: 1.4;">
             ถ่ายในที่แสงสว่างเพียงพอ<br>
@@ -830,14 +1264,38 @@ with col_tip1:
             ใช้แสงธรรมชาติ
         </p>
     </div>
+    <style>
+    @keyframes tipFloat1 {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+    }
+    @keyframes borderGlow1 {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+    @keyframes iconBounce1 {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 with col_tip2:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); 
                 border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #ce93d8;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">🎯</div>
+                text-align: center; border: 1px solid #ce93d8;
+                animation: tipFloat2 4s ease-in-out infinite 0.5s;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-10px) scale(1.05)'"
+         onmouseout="this.style.transform='translateY(0) scale(1)'">
+        <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+                    background: linear-gradient(45deg, #ce93d8, #f3e5f5, #ce93d8);
+                    border-radius: 15px; z-index: -1;
+                    animation: borderGlow2 3s ease-in-out infinite 0.5s;"></div>
+        <div style="font-size: 2rem; margin-bottom: 0.8rem; animation: iconSpin 3s ease-in-out infinite;"></div>
         <h4 style="color: #6a1b9a; margin: 0.5rem 0;">มุมกล้อง</h4>
         <p style="color: #6a1b9a; font-size: 0.85rem; margin: 0; line-height: 1.4;">
             ถ่ายตรงกลางวัตถุ<br>
@@ -845,14 +1303,39 @@ with col_tip2:
             ระยะ 20-30 ซม.
         </p>
     </div>
+    <style>
+    @keyframes tipFloat2 {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+    @keyframes borderGlow2 {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+    @keyframes iconSpin {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 with col_tip3:
     st.markdown("""
     <div style="background: linear-gradient(135deg, #fff3e0, #ffcc80); 
                 border-radius: 15px; padding: 1.5rem; height: 180px;
-                text-align: center; border: 1px solid #ffb74d;">
-        <div style="font-size: 2rem; margin-bottom: 0.8rem;">🖼️</div>
+                text-align: center; border: 1px solid #ffb74d;
+                animation: tipFloat3 4s ease-in-out infinite 1s;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-10px) scale(1.05)'"
+         onmouseout="this.style.transform='translateY(0) scale(1)'">
+        <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+                    background: linear-gradient(45deg, #ffb74d, #fff3e0, #ffb74d);
+                    border-radius: 15px; z-index: -1;
+                    animation: borderGlow3 3s ease-in-out infinite 1s;"></div>
+        <div style="font-size: 2rem; margin-bottom: 0.8rem; animation: iconPulse 2s ease-in-out infinite;"></div>
         <h4 style="color: #e65100; margin: 0.5rem 0;">พื้นหลัง</h4>
         <p style="color: #e65100; font-size: 0.85rem; margin: 0; line-height: 1.4;">
             ใช้พื้นหลังเรียบ<br>
@@ -860,13 +1343,27 @@ with col_tip3:
             ไม่มีสิ่งรบกวน
         </p>
     </div>
+    <style>
+    @keyframes tipFloat3 {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
+    }
+    @keyframes borderGlow3 {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 # Enhanced Footer
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; margin: 2rem 0 1rem 0;">
-    <h3 style="color: #495057; margin: 0;">🚀 เทคโนโลยี</h3>
+    <h3 style="color: #495057; margin: 0;">เทคโนโลยี</h3>
     <p style="color: #6c757d; font-size: 0.9rem;">ระบบปัญญาประดิษฐ์ขั้นสูงสำหรับการวิเคราะห์พระเครื่อง</p>
 </div>
 """, unsafe_allow_html=True)
@@ -875,33 +1372,86 @@ col_info1, col_info2, col_info3 = st.columns(3)
 
 with col_info1:
     st.markdown("""
-    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;
+                animation: infoCardSlide 1s ease-out;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-8px) rotateY(5deg)'"
+         onmouseout="this.style.transform='translateY(0) rotateY(0)'">
+        <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+                    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+                    animation: infoShimmer 3s infinite;"></div>
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem; animation: techIconFloat 2s ease-in-out infinite;"></div>
         <h4 style="color: #495057; margin: 0.5rem 0;">AI Technology</h4>
         <p style="color: #6c757d; font-size: 0.85rem; margin: 0;">TensorFlow + FastAPI</p>
     </div>
+    <style>
+    @keyframes infoCardSlide {
+        0% { opacity: 0; transform: translateX(-30px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes techIconFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    @keyframes infoShimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 with col_info2:
     st.markdown("""
-    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📱</div>
+    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;
+                animation: infoCardSlide 1s ease-out 0.2s both;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-8px) rotateY(-5deg)'"
+         onmouseout="this.style.transform='translateY(0) rotateY(0)'">
+        <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+                    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+                    animation: infoShimmer 3s infinite 0.5s;"></div>
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem; animation: formatIconSpin 4s linear infinite;"></div>
         <h4 style="color: #495057; margin: 0.5rem 0;">Multi-Format</h4>
         <p style="color: #6c757d; font-size: 0.85rem; margin: 0;">JPG, PNG, HEIC & More</p>
     </div>
+    <style>
+    @keyframes formatIconSpin {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 with col_info3:
     st.markdown("""
-    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📷</div>
+    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;
+                animation: infoCardSlide 1s ease-out 0.4s both;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;"
+         onmouseover="this.style.transform='translateY(-8px) scale(1.05)'"
+         onmouseout="this.style.transform='translateY(0) scale(1)'">
+        <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+                    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+                    animation: infoShimmer 3s infinite 1s;"></div>
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem; animation: cameraIconPulse 1.5s ease-in-out infinite;"></div>
         <h4 style="color: #495057; margin: 0.5rem 0;">Camera Ready</h4>
         <p style="color: #6c757d; font-size: 0.85rem; margin: 0;">ถ่ายรูปได้ทันที</p>
     </div>
+    <style>
+    @keyframes cameraIconPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    </style>
     """, unsafe_allow_html=True)
 
 # Development info
-with st.expander("🔧 Developer Info"):
-    st.write(f"📅 Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-    st.write(f"🌐 API URL: {API_URL}")
-    st.write("👨‍💻 Developed with Streamlit & FastAPI")
+with st.expander("Developer Info"):
+    st.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    st.write(f"API URL: {API_URL}")
+    st.write("Developed with Streamlit & FastAPI")
