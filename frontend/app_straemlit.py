@@ -1,18 +1,9 @@
 import streamlit as st
 import requests
+from frontend.utils import validate_and_convert_image, send_predict_request, SUPPORTED_FORMATS, FORMAT_DISPLAY
 from datetime import datetime
 from PIL import Image
 import io
-
-# รองรับ HEIC format
-try:
-    from pillow_heif import register_heif_opener
-    register_heif_opener()
-    SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "heic", "heif", "webp", "bmp", "tiff"]
-    FORMAT_DISPLAY = "JPG, JPEG, PNG, HEIC, HEIF, WebP, BMP, TIFF"
-except ImportError:
-    SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "webp", "bmp", "tiff"]
-    FORMAT_DISPLAY = "JPG, JPEG, PNG, WebP, BMP, TIFF"
 
 # เปลี่ยนจาก st.secrets.get() เป็นการกำหนดค่าตรงๆ
 API_URL = "http://localhost:8000"
@@ -153,25 +144,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ฟังก์ชันตรวจสอบและแปลงรูปภาพ
-def validate_and_convert_image(uploaded_file):
-    try:
-        uploaded_file.seek(0)
-        img = Image.open(uploaded_file)
-        
-        # แปลงเป็น RGB (จำเป็นสำหรับบางฟอร์แมต)
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
-        
-        # แปลงเป็น bytes สำหรับการส่งไป API
-        img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='JPEG', quality=95)
-        img_byte_arr.seek(0)
-        
-        uploaded_file.seek(0)  # reset original file pointer
-        return True, img, img_byte_arr, None
-    except Exception as e:
-        return False, None, None, str(e)
+# ใช้ฟังก์ชันจาก utils แทน
 
 st.set_page_config(
     page_title="Amulet-AI", 
@@ -419,11 +392,10 @@ if front and hasattr(st.session_state, 'front_processed'):
         files = {"front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg")}
         if back and hasattr(st.session_state, 'back_processed'):
             files["back"] = (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
-        
         # Enhanced loading message
         with st.spinner("⚡ กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
             try:
-                r = requests.post(f"{API_URL}/predict", files=files, timeout=60)
+                r = send_predict_request(files, API_URL, timeout=60)
                 
                 if r.ok:
                     data = r.json()
