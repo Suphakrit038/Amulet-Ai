@@ -1,9 +1,80 @@
 import streamlit as st
 import requests
-from frontend.utils import validate_and_convert_image, send_predict_request, SUPPORTED_FORMATS, FORMAT_DISPLAY
 from datetime import datetime
 from PIL import Image
 import io
+
+# Import functions from utils file (inline import approach)
+try:
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from frontend.utils import validate_and_convert_image, send_predict_request, SUPPORTED_FORMATS, FORMAT_DISPLAY
+except ImportError:
+    # Fallback: define functions locally if import fails
+    # รองรับ HEIC format
+    try:
+        from pillow_heif import register_heif_opener
+        register_heif_opener()
+        SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "heic", "heif", "webp", "bmp", "tiff"]
+        FORMAT_DISPLAY = "JPG, JPEG, PNG, HEIC, HEIF, WebP, BMP, TIFF"
+    except ImportError:
+        SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "webp", "bmp", "tiff"]
+        FORMAT_DISPLAY = "JPG, JPEG, PNG, WebP, BMP, TIFF"
+
+    MAX_FILE_SIZE_MB = 10
+    
+    def validate_and_convert_image(uploaded_file):
+        """Validate uploaded image, enforce size and extension limits, convert to RGB JPEG bytes."""
+        try:
+            try:
+                uploaded_file.seek(0)
+            except Exception:
+                pass
+
+            if hasattr(uploaded_file, 'read'):
+                file_bytes = uploaded_file.read()
+            else:
+                file_bytes = getattr(uploaded_file, 'getvalue', lambda: b'')()
+
+            if not file_bytes:
+                return False, None, None, 'Empty file or unreadable upload'
+
+            if len(file_bytes) > MAX_FILE_SIZE_MB * 1024 * 1024:
+                return False, None, None, f'File too large (> {MAX_FILE_SIZE_MB} MB)'
+
+            filename = getattr(uploaded_file, 'name', '') or ''
+            if filename:
+                ext = filename.rsplit('.', 1)[-1].lower()
+                if ext not in SUPPORTED_FORMATS:
+                    return False, None, None, f'Unsupported file extension: .{ext}'
+
+            img = Image.open(io.BytesIO(file_bytes))
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+
+            img_byte_arr = io.BytesIO()
+            img.save(img_byte_arr, format='JPEG', quality=95)
+            img_byte_arr.seek(0)
+
+            return True, img, img_byte_arr, None
+        except Exception as e:
+            return False, None, None, str(e)
+    
+    def send_predict_request(files, api_url, timeout=60):
+        """Send POST to /predict with given files dict."""
+        url = api_url.rstrip('/') + '/predict'
+        prepared = {}
+        for k, v in files.items():
+            fname, fileobj, mime = v
+            try:
+                fileobj.seek(0)
+            except Exception:
+                pass
+            prepared[k] = (fname, fileobj, mime)
+        
+        resp = requests.post(url, files=prepared, timeout=timeout)
+        return resp
 
 # เปลี่ยนจาก st.secrets.get() เป็นการกำหนดค่าตรงๆ
 API_URL = "http://localhost:8000"
@@ -172,7 +243,7 @@ with st.sidebar:
     with st.expander("� วิธีการใช้งาน", expanded=True):
         st.markdown("""
         1. 📤 **อัปโหลด** ภาพด้านหน้าพระเครื่อง
-        2. 📷 **ถ่ายรูป** หรือเลือกภาพด้านหลัง (ไม่บังคับ)
+        2. 📷 **ถ่ายรูป** หรือเลือกภาพด้านหลัง (บังคับ)
         3. 🔍 **กดปุ่ม** "วิเคราะห์ตอนนี้"
         4. ⏳ **รอผล** การวิเคราะห์
         5. 📊 **ดูผลลัพธ์** และคำแนะนำ
@@ -240,21 +311,58 @@ col1, col2 = st.columns(2)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("**ภาพด้านหน้า** (บังคับ)")
+    st.markdown("""
+    <div style="text-align: center; padding: 1rem; background: #e8f5e8; 
+                border: 1px solid #c3e6c3; border-radius: 10px; margin: 1rem 0;">
+        <h4 style="color: #2d5016; margin: 0;">📸 ภาพด้านหน้า</h4>
+        <p style="color: #2d5016; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
+            (บังคับ - สำหรับการวิเคราะห์พระเครื่อง)
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Tab สำหรับเลือกวิธีการ input
     tab1, tab2 = st.tabs(["📁 อัปโหลด", "📷 ถ่ายรูป"])
     
     with tab1:
+        st.markdown("""
+        <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
+                    text-align: center; margin: 1rem 0; background: #f9f9f9;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📁</div>
+            <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
+                เลือกไฟล์จากเครื่องของคุณ
+            </div>
+            <div style="color: #999; font-size: 0.9rem;">
+                Limit 200MB per file • JPG, JPEG, PNG, HEIC, HEIF, WEBP, BMP, TIFF, TIF
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         front_file = st.file_uploader(
             "เลือกไฟล์ภาพด้านหน้า", 
             type=SUPPORTED_FORMATS,
-            key="front_upload"
+            key="front_upload",
+            label_visibility="collapsed"
         )
+        if front_file:
+            st.button("Browse files", key="front_browse", disabled=True)
         front = front_file
         front_source = "upload"
     
     with tab2:
+        st.markdown("""
+        <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
+                    text-align: center; margin: 1rem 0; background: #f9f9f9;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📷</div>
+            <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
+                ถ่ายรูปด้วยกล้อง
+            </div>
+            <div style="color: #999; font-size: 0.9rem;">
+                🔒 ขอสิทธิ์เมื่อกดใช้งาน
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         if st.button("📷 เปิดกล้องถ่ายรูป", key="front_camera_btn", use_container_width=True):
             st.session_state.show_front_camera = True
         
@@ -320,11 +428,11 @@ with col1:
 
 with col2:
     st.markdown("""
-    <div style="text-align: center; padding: 1rem; background: #fff3cd; 
-                border: 1px solid #ffeaa7; border-radius: 10px; margin: 1rem 0;">
-        <h4 style="color: #856404; margin: 0;">📸 ภาพด้านหลัง</h4>
-        <p style="color: #856404; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
-            (ไม่บังคับ - สำหรับการวิเคราะห์ที่ละเอียดยิ่งขึ้น)
+    <div style="text-align: center; padding: 1rem; background: #e8f5e8; 
+                border: 1px solid #c3e6c3; border-radius: 10px; margin: 1rem 0;">
+        <h4 style="color: #2d5016; margin: 0;">📸 ภาพด้านหลัง</h4>
+        <p style="color: #2d5016; font-size: 0.85rem; margin: 0.3rem 0 0 0;">
+            (บังคับ - สำหรับการวิเคราะห์ที่ละเอียดยิ่งขึ้น)
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -332,15 +440,44 @@ with col2:
     tab1, tab2 = st.tabs(["📁 อัปโหลด", "📷 ถ่ายรูป"])
     
     with tab1:
+        st.markdown("""
+        <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
+                    text-align: center; margin: 1rem 0; background: #f9f9f9;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📁</div>
+            <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
+                เลือกไฟล์จากเครื่องของคุณ
+            </div>
+            <div style="color: #999; font-size: 0.9rem;">
+                Limit 200MB per file • JPG, JPEG, PNG, HEIC, HEIF, WEBP, BMP, TIFF, TIF
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         back_file = st.file_uploader(
             "เลือกไฟล์ภาพด้านหลัง", 
             type=SUPPORTED_FORMATS,
-            key="back_upload"
+            key="back_upload",
+            label_visibility="collapsed"
         )
+        if back_file:
+            st.button("Browse files", key="back_browse", disabled=True)
         back = back_file
         back_source = "upload"
     
     with tab2:
+        st.markdown("""
+        <div style="border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; 
+                    text-align: center; margin: 1rem 0; background: #f9f9f9;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📷</div>
+            <div style="color: #666; font-size: 1rem; margin-bottom: 0.5rem;">
+                ถ่ายรูปด้วยกล้อง
+            </div>
+            <div style="color: #999; font-size: 0.9rem;">
+                🔒 ขอสิทธิ์เมื่อกดใช้งาน
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         if st.button("📷 เปิดกล้องถ่ายรูป", key="back_camera_btn", use_container_width=True):
             st.session_state.show_back_camera = True
         
@@ -367,18 +504,48 @@ with col2:
     if back:
         is_valid, processed_img, processed_bytes, error_msg = validate_and_convert_image(back)
         if is_valid:
-            st.image(processed_img, caption=f"ภาพด้านหลัง ({back_source})", use_container_width=True)
+            # Success message with enhanced styling
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+                        border: 1px solid #c3e6cb; border-radius: 10px; 
+                        padding: 0.8rem; margin: 1rem 0; text-align: center;">
+                <div style="color: #155724; font-size: 1rem; font-weight: bold;">
+                    ✅ ภาพถูกต้อง กำลังแสดงผล...
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Enhanced image display
+            st.markdown(f"""
+            <div style="text-align: center; margin: 1rem 0;">
+                <h5 style="color: #495057; margin: 0;">🖼️ ภาพด้านหลัง ({back_source})</h5>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.image(processed_img, use_container_width=True)
             # เก็บข้อมูลที่ประมวลผลแล้วไว้ใน session_state
             st.session_state.back_processed = processed_bytes
             st.session_state.back_filename = back.name if hasattr(back, 'name') else f"camera_back_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
         else:
-            st.error(f"❌ ไฟล์ภาพไม่ถูกต้อง: {error_msg}")
-            st.warning("💡 ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่")
+            # Enhanced error message
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #f8d7da, #f5c6cb); 
+                        border: 1px solid #f5c6cb; border-radius: 10px; 
+                        padding: 1rem; margin: 1rem 0; text-align: center;">
+                <div style="color: #721c24; font-size: 1rem; font-weight: bold;">
+                    ❌ ไฟล์ภาพไม่ถูกต้อง: {error_msg}
+                </div>
+                <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
+                    💡 ลองใช้รูปภาพอื่น หรือถ่ายรูปใหม่
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
 st.markdown("---")
 
 # Analysis Section
-if front and hasattr(st.session_state, 'front_processed'):
+if (front and hasattr(st.session_state, 'front_processed') and 
+    back and hasattr(st.session_state, 'back_processed')):
     # Enhanced analyze button section
     st.markdown("""
     <div style="text-align: center; margin: 2rem 0 1rem 0;">
@@ -388,10 +555,11 @@ if front and hasattr(st.session_state, 'front_processed'):
     """, unsafe_allow_html=True)
     
     if st.button("🔍 วิเคราะห์ตอนนี้", type="primary", use_container_width=True):
-        # ใช้ไฟล์ที่ประมวลผลแล้ว
-        files = {"front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg")}
-        if back and hasattr(st.session_state, 'back_processed'):
-            files["back"] = (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
+        # ใช้ไฟล์ที่ประมวลผลแล้ว - บังคับทั้งหน้าและหลัง
+        files = {
+            "front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg"),
+            "back": (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
+        }
         # Enhanced loading message
         with st.spinner("⚡ กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
             try:
@@ -596,7 +764,14 @@ if front and hasattr(st.session_state, 'front_processed'):
                 """, unsafe_allow_html=True)
 
 else:
-    if front:
+    # ตรวจสอบว่ามีภาพไหนขาดไป
+    missing_images = []
+    if not (front and hasattr(st.session_state, 'front_processed')):
+        missing_images.append("ภาพด้านหน้า")
+    if not (back and hasattr(st.session_state, 'back_processed')):
+        missing_images.append("ภาพด้านหลัง")
+    
+    if (front and not hasattr(st.session_state, 'front_processed')) or (back and not hasattr(st.session_state, 'back_processed')):
         st.markdown("""
         <div style="background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
                     border: 1px solid #ffeaa7; border-radius: 10px; 
@@ -610,7 +785,8 @@ else:
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("""
+        missing_text = " และ ".join(missing_images)
+        st.markdown(f"""
         <div style="background: linear-gradient(135deg, #cce7ff, #b3daff); 
                     border: 1px solid #b3daff; border-radius: 10px; 
                     padding: 2rem; margin: 2rem 0; text-align: center;">
@@ -619,9 +795,12 @@ else:
                 เริ่มต้นการวิเคราะห์
             </div>
             <div style="color: #0056b3; font-size: 0.95rem;">
-                กรุณาอัปโหลดภาพด้านหน้าหรือถ่ายรูปก่อนเริ่มการวิเคราะห์
+                กรุณาอัปโหลด{missing_text}ก่อนเริ่มการวิเคราะห์
             </div>
-            <div style="color: #0056b3; font-size: 0.8rem; margin-top: 0.8rem; opacity: 0.8;">
+            <div style="color: #d32f2f; font-size: 0.9rem; margin-top: 0.8rem; font-weight: bold;">
+                ⚠️ จำเป็นต้องมีทั้งภาพหน้าและหลังสำหรับการวิเคราะห์
+            </div>
+            <div style="color: #0056b3; font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
                 💡 เคล็ดลับ: ภาพที่มีแสงสว่างเพียงพอจะให้ผลลัพธ์ที่ดีกว่า
             </div>
         </div>
