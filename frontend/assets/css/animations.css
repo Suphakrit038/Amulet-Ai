@@ -1,0 +1,79 @@
+/* ===== ENHANCED ANIMATED BACKGROUND ===== */
+.main {
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        linear-gradient(-45deg, var(--color-bg-gradient-start), var(--color-bg-gradient-middle), var(--color-card), var(--color-background));
+    background-size: 800% 800%, 600% 600%, 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%, 100% 0%, 0% 50%; }
+    25% { background-position: 100% 50%, 0% 100%, 100% 50%; }
+    50% { background-position: 100% 0%, 0% 0%, 50% 100%; }
+    75% { background-position: 0% 100%, 100% 50%, 0% 0%; }
+    100% { background-position: 0% 50%, 100% 0%, 0% 50%; }
+}
+
+/* ===== FLOATING PARTICLES ===== */
+.main::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 2%),
+        radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 2%),
+        radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.12) 0%, transparent 1.5%),
+        radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 2%),
+        radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 3%);
+    background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 400px 400px;
+    animation: floatingParticles 25s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes floatingParticles {
+    0% { background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%, 50% 50%; }
+    100% { background-position: 100% 100%, 0% 0%, 100% 0%, 0% 100%, 0% 0%; }
+}
+
+/* ===== MYSTICAL AURA EFFECTS ===== */
+.mystical-aura-1 {
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    width: 24rem;
+    height: 24rem;
+    background: rgba(212, 175, 55, 0.05);
+    border-radius: 50%;
+    filter: blur(3rem);
+    animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.mystical-aura-2 {
+    position: fixed;
+    bottom: 33%;
+    right: 25%;
+    width: 20rem;
+    height: 20rem;
+    background: rgba(212, 175, 55, 0.03);
+    border-radius: 50%;
+    filter: blur(3rem);
+    animation: pulse 4s ease-in-out infinite 2s;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+}

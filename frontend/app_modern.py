@@ -5,6 +5,21 @@ import os
 from datetime import datetime
 from PIL import Image
 
+# Import custom components
+try:
+    from components.ui import (
+        mystical_header,
+        mystical_card,
+        mystical_progress,
+        mystical_alert,
+        confidence_indicator,
+        result_display_card,
+        create_sidebar_navigation
+    )
+except ImportError:
+    # Fallback if components are not available
+    pass
+
 # Import functions from utils file (inline import approach)
 try:
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

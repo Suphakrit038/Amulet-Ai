@@ -1,0 +1,168 @@
+/* ===== GLASSMORPHISM COMPONENTS ===== */
+.glassmorphic {
+    background: rgba(26, 26, 28, 0.7);
+    backdrop-filter: var(--glass-blur) var(--glass-saturation);
+    border: var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-shadow);
+}
+
+.glassmorphic-light {
+    background: rgba(26, 26, 28, 0.4);
+    backdrop-filter: blur(15px) saturate(1.5);
+    border: 1px solid rgba(212, 175, 55, 0.08);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.glassmorphic-heavy {
+    background: rgba(26, 26, 28, 0.9);
+    backdrop-filter: blur(25px) saturate(2);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ===== MYSTICAL GLOW EFFECTS ===== */
+.mystical-glow {
+    position: relative;
+}
+
+.mystical-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(212, 175, 55, 0.3) 25%, 
+        rgba(212, 175, 55, 0.1) 50%, 
+        transparent 75%
+    );
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-normal) ease;
+}
+
+.mystical-glow:hover::before {
+    opacity: 1;
+}
+
+/* ===== SHIMMER EFFECTS ===== */
+.shimmer-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-effect::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* ===== CARD COMPONENTS ===== */
+.card-base {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) ease;
+}
+
+.card-elevated {
+    background: rgba(26, 26, 28, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    transition: all var(--duration-normal) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-elevated:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+.card-elevated::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.card-elevated:hover::before {
+    left: 100%;
+}
+
+/* ===== RESULT CARDS ===== */
+.result-card {
+    background: rgba(26, 26, 28, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: var(--glass-shadow);
+    transition: all var(--duration-normal) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.result-card:hover::before {
+    left: 100%;
+}
+
+/* ===== CONFIDENCE INDICATORS ===== */
+.confidence-high {
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(34, 197, 94, 0.6));
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+.confidence-medium {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.8), rgba(251, 191, 36, 0.6));
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+.confidence-low {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.8), rgba(239, 68, 68, 0.6));
+    border-color: rgba(239, 68, 68, 0.4);
+}
