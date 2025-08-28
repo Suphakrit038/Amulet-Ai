@@ -491,138 +491,137 @@ with st.sidebar:
     <div style="text-align: center; padding: 2rem 1rem; 
                 background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
                 border-radius: var(--radius); margin-bottom: 2rem;">
-        <div style="font-size: 2rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));">📚</div>
-        <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading);">Mystical Guide</h2>
+        <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading);">คู่มือการใช้งาน</h2>
         <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-            Ancient Wisdom & Modern AI
+            ปัญญาโบราณ & AI ยุคใหม่
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    with st.expander("🎯 Analysis Steps", expanded=True):
+
+    with st.expander("ขั้นตอนการวิเคราะห์", expanded=True):
         st.markdown("""
-        ### Sacred Process
+        ### ขั้นตอนศักดิ์สิทธิ์
         
-        **1. Prepare Images** 📸
-        - Front view (required)
-        - Back view (required)
+        **1. เตรียมรูปภาพ**
+        - ด้านหน้า (จำเป็น)
+        - ด้านหลัง (จำเป็น)
         
-        **2. Upload Method** 📤
-        - File upload or
-        - Camera capture
+        **2. วิธีอัปโหลด**
+        - อัปโหลดไฟล์ หรือ
+        - ถ่ายภาพด้วยกล้อง
         
-        **3. AI Analysis** 🧠
-        - Deep learning processing
-        - Pattern recognition
-        - Historical matching
+        **3. วิเคราะห์ด้วย AI**
+        - ประมวลผลด้วย Deep Learning
+        - ตรวจจับลวดลาย
+        - เทียบกับฐานข้อมูลประวัติศาสตร์
         
-        **4. Results** 📊
-        - Classification confidence
-        - Price estimation
-        - Market recommendations
+        **4. ผลลัพธ์**
+        - ความมั่นใจในการจำแนก
+        - ประเมินราคา
+        - แนะนำตลาด
         """)
-    
-    with st.expander("⚡ System Info"):
+
+    with st.expander("ข้อมูลระบบ"):
         st.markdown("""
-        ### Technology Stack
+        ### เทคโนโลยีที่ใช้
         
-        **🧠 AI Engine**
+        **AI Engine**
         - TensorFlow 2.x
-        - Custom CNN Architecture
+        - โครงข่ายประสาทเทียมเฉพาะทาง
         - Transfer Learning
         
-        **🔧 Backend**
+        **ฝั่งเซิร์ฟเวอร์**
         - FastAPI Framework
         - Python 3.9+
         - REST API
         
-        **🎨 Frontend**
+        **ฝั่งผู้ใช้**
         - Streamlit
-        - Modern UI/UX
-        - Responsive Design
+        - UI/UX ทันสมัย
+        - รองรับทุกอุปกรณ์
         
-        ### Performance
+        ### ประสิทธิภาพ
         
-        📈 **Accuracy**: ~85%  
-        ⚡ **Processing**: 30-60 seconds  
-        🗄️ **Database**: 5,000+ amulets  
+        ความแม่นยำ: ~85%
+        ประมวลผล: 30-60 วินาที
+        ฐานข้อมูล: 5,000+ รายการ
         """)
-    
-    with st.expander("📷 Photography Tips"):
+
+    with st.expander("เคล็ดลับการถ่ายภาพ"):
         st.markdown("""
-        ### 💡 Lighting
+        ### แสงสว่าง
         
-        **✅ Best Practices:**
-        - Natural daylight
-        - Even illumination
-        - Avoid harsh shadows
+        ควรทำ:
+        - ใช้แสงธรรมชาติ
+        - แสงสม่ำเสมอทั่วทั้งวัตถุ
+        - หลีกเลี่ยงเงาเข้ม
         
-        **❌ Avoid:**
-        - Flash photography
-        - Uneven lighting
-        - Reflective surfaces
+        หลีกเลี่ยง:
+        - ใช้แฟลช
+        - แสงไม่สม่ำเสมอ
+        - พื้นผิวสะท้อนแสง
         
-        ### 📐 Camera Angle
+        ### มุมกล้อง
         
-        **✅ Optimal:**
-        - 90° perpendicular
-        - 20-30cm distance
-        - Center framing
+        เหมาะสม:
+        - ถ่ายตรง 90°
+        - ระยะห่าง 20-30 ซม.
+        - วางวัตถุไว้กลางภาพ
         
-        **❌ Avoid:**
-        - Tilted angles
-        - Too close/far
-        - Off-center placement
+        หลีกเลี่ยง:
+        - มุมเอียง
+        - ใกล้/ไกลเกินไป
+        - วางวัตถุไม่ตรงกลาง
         
-        ### 🎨 Background
+        ### พื้นหลัง
         
-        **✅ Recommended:**
-        - Plain white/cream
-        - Smooth surface
-        - No distractions
+        แนะนำ:
+        - สีขาว/ครีม เรียบ
+        - พื้นผิวเรียบ
+        - ไม่มีสิ่งรบกวน
         
-        **❌ Avoid:**
-        - Patterned backgrounds
-        - Cluttered scenes
-        - Reflective materials
+        หลีกเลี่ยง:
+        - พื้นหลังลาย
+        - ฉากรก
+        - วัสดุสะท้อนแสง
         """)
-    
-    with st.expander("⚠️ Important Notes"):
+
+    with st.expander("หมายเหตุสำคัญ"):
         st.warning("""
-        **System Status**: Beta Testing
+        สถานะระบบ: ทดสอบเบต้า
         
-        - Accuracy: ~80-85%
-        - Uses simulated data
-        - For reference only
+        - ความแม่นยำ: ~80-85%
+        - ใช้ข้อมูลจำลองบางส่วน
+        - ผลลัพธ์เพื่อการอ้างอิงเท่านั้น
         
-        **Privacy**: Images processed temporarily and deleted after analysis
+        ความเป็นส่วนตัว: ภาพจะถูกลบหลังวิเคราะห์เสร็จ
         """)
-    
+
     # Enhanced Stats
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; padding: 1rem; 
                 background: rgba(212, 175, 55, 0.05); 
                 border-radius: var(--radius); margin: 1rem 0;">
-        <h4 style="color: var(--color-accent); margin: 0;">📊 Live Stats</h4>
+        <h4 style="color: var(--color-accent); margin: 0;">สถิติการใช้งาน</h4>
     </div>
     """, unsafe_allow_html=True)
-    
+
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("🔍 Today", "247", "↗️ +42")
+        st.metric("วันนี้", "247", "+42")
     with col2:
-        st.metric("🎯 Accuracy", "87.2%", "↗️ +3.1%")
+        st.metric("ความแม่นยำ", "87.2%", "+3.1%")
 
 # Main Content Area
-st.markdown('<h1 class="main-title">🔮 Mystical Amulet Analysis</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Discover the ancient secrets within your sacred amulets using cutting-edge AI technology</p>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">ระบบวิเคราะห์พระเครื่องอัตโนมัติ</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">ค้นพบความลับในพระเครื่องของคุณด้วย AI อัจฉริยะ</p>', unsafe_allow_html=True)
 
 # Enhanced Upload Section
 st.markdown("""
 <div style="text-align: center; margin: 3rem 0 2rem 0;">
-    <h2 style="color: var(--color-foreground); margin: 0;">Sacred Image Analysis</h2>
-    <p style="color: var(--color-muted-foreground); font-size: 1rem;">Upload both sides for complete mystical insight</p>
+    <h2 style="color: var(--color-foreground); margin: 0;">วิเคราะห์ภาพพระเครื่อง</h2>
+    <p style="color: var(--color-muted-foreground); font-size: 1rem;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -633,26 +632,26 @@ with col_front:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
         <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
-            ⚡ Front Sacred View
+            ด้านหน้าพระเครื่อง
         </h3>
         <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
-            Primary analysis surface - Essential for identification
+            พื้นที่หลักสำหรับวิเคราะห์ จำเป็นต้องใช้
         </p>
     </div>
     """, unsafe_allow_html=True)
     
     # Tab for upload methods
-    tab1, tab2 = st.tabs(["📤 Upload", "📸 Camera"])
+    tab1, tab2 = st.tabs(["อัปโหลดไฟล์", "ถ่ายภาพ"])
     
     with tab1:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--color-accent);">📁</div>
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-                Select Sacred Image
+                เลือกภาพด้านหน้า
             </div>
             <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
-                Limit 10MB • Multiple formats supported
+                จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -728,26 +727,26 @@ with col_back:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
         <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
-            🔮 Back Sacred View
+            ด้านหลังพระเครื่อง
         </h3>
         <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
-            Hidden mysteries revealed - Complete the mystical analysis
+            เผยความลับที่ซ่อนอยู่ - เพื่อการวิเคราะห์ที่สมบูรณ์
         </p>
     </div>
     """, unsafe_allow_html=True)
     
     # Tab for upload methods
-    tab1, tab2 = st.tabs(["📤 Upload", "📸 Camera"])
+    tab1, tab2 = st.tabs(["อัปโหลดไฟล์", "ถ่ายภาพ"])
     
     with tab1:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--color-accent);">📁</div>
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-                Select Sacred Image
+                เลือกภาพด้านหลัง
             </div>
             <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
-                Limit 10MB • Multiple formats supported
+                จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -764,17 +763,17 @@ with col_back:
     with tab2:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--color-accent);">📷</div>
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">ถ่ายภาพ</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-                Mystical Camera
+                กล้องถ่ายภาพ
             </div>
             <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
-                Capture the hidden essence
+                ถ่ายภาพด้านหลังโดยตรง
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🔮 Activate Mystical Camera", key="back_camera_btn", help="Open camera for back image"):
+        if st.button("เปิดกล้องถ่ายภาพ", key="back_camera_btn", help="เปิดกล้องสำหรับภาพด้านหลัง"):
             st.session_state.show_back_camera = True
         
         if st.session_state.get('show_back_camera', False):
@@ -785,7 +784,7 @@ with col_back:
             if back_camera:
                 back = back_camera
                 back_source = "camera"
-                if st.button("✨ Use This Sacred Image", key="back_camera_confirm"):
+                if st.button("ใช้ภาพนี้", key="back_camera_confirm"):
                     st.session_state.show_back_camera = False
                     st.rerun()
             else:
@@ -802,19 +801,19 @@ with col_back:
             st.markdown("""
             <div class="glassmorphic" style="padding: 1rem; text-align: center; margin: 1rem 0;">
                 <div style="color: var(--color-accent); font-weight: 600;">
-                    ✅ Sacred Image Validated
+                    ตรวจสอบภาพสำเร็จ
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            st.image(processed_img, use_container_width=True, caption=f"Back View ({back_source})")
+            st.image(processed_img, use_container_width=True, caption=f"ด้านหลัง ({'กล้อง' if back_source=='camera' else 'อัปโหลด'})")
             st.session_state.back_processed = processed_bytes
             st.session_state.back_filename = back.name if hasattr(back, 'name') else f"camera_back_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
         else:
             st.markdown(f"""
             <div class="glassmorphic" style="padding: 1rem; text-align: center; margin: 1rem 0; border-color: rgba(239, 68, 68, 0.3);">
                 <div style="color: #ef4444; font-weight: 600;">
-                    ❌ Image Error: {error_msg}
+                    ข้อผิดพลาด: {error_msg}
                 </div>
             </div>
             """, unsafe_allow_html=True)
