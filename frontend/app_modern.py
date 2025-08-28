@@ -83,12 +83,23 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Modern CSS with Dark Theme and Glassmorphism
 st.markdown("""
+<style>
+    body, .stApp {
+        background: linear-gradient(135deg, #fafdff 0%, #e3f2fd 100%) !important;
+        color: #18181b !important;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+</style>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
     
     :root {
+                    .stApp {
+                        background: #fff !important;
+                        color: #18181b !important;
+                        font-family: var(--font-sans);
+                    }
         --color-background: #0a0a0b;
         --color-foreground: #f4f4f5;
         --color-card: #1a1a1c;
@@ -98,13 +109,33 @@ st.markdown("""
         --color-secondary: #2d2a24;
         --color-secondary-foreground: #f4f4f5;
         --color-muted: #27272a;
+                    .glassmorphic {
+                        background: #18181b !important;
+                        color: #fff !important;
+                        backdrop-filter: blur(20px) saturate(1.8);
+                        border: 1px solid #00b0ff22;
+                        border-radius: var(--radius);
+                        box-shadow: 
+                            0 8px 32px rgba(0, 0, 0, 0.3),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                    }
         --color-muted-foreground: #a1a1aa;
         --color-accent: #d4af37;
         --color-accent-foreground: #0a0a0b;
+                    .mystical-glow {
+                        position: relative;
+                        background: #18181b !important;
+                        color: #fff !important;
+                    }
         --color-border: #27272a;
         --font-sans: 'Inter', system-ui, sans-serif;
         --font-heading: 'Playfair Display', serif;
         --radius: 0.75rem;
+                    .stExpander, .stTabs, .stButton, .stMetric, .stFileUploader, .stCameraInput {
+                        background: #18181b !important;
+                        color: #fff !important;
+                        border-radius: 18px !important;
+                    }
     }
     
     /* Global Styles */
@@ -491,8 +522,8 @@ with st.sidebar:
     <div style="text-align: center; padding: 2rem 1rem; 
                 background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
                 border-radius: var(--radius); margin-bottom: 2rem;">
-        <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading);">คู่มือการใช้งาน</h2>
-        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+    <h2 style="color: #00b0ff; margin: 0; font-family: var(--font-heading); font-weight: 700;">คู่มือการใช้งาน</h2>
+    <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-size: 0.9rem; font-weight: 700;">
             ปัญญาโบราณ & AI ยุคใหม่
         </p>
     </div>
@@ -603,7 +634,7 @@ with st.sidebar:
     <div style="text-align: center; padding: 1rem; 
                 background: rgba(212, 175, 55, 0.05); 
                 border-radius: var(--radius); margin: 1rem 0;">
-        <h4 style="color: var(--color-accent); margin: 0;">สถิติการใช้งาน</h4>
+    <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">สถิติการใช้งาน</h4>
     </div>
     """, unsafe_allow_html=True)
 
@@ -614,14 +645,44 @@ with st.sidebar:
         st.metric("ความแม่นยำ", "87.2%", "+3.1%")
 
 # Main Content Area
-st.markdown('<h1 class="main-title">ระบบวิเคราะห์พระเครื่องอัตโนมัติ</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">ค้นพบความลับในพระเครื่องของคุณด้วย AI อัจฉริยะ</p>', unsafe_allow_html=True)
+st.markdown("""
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 2.5rem; margin-bottom: 2.5rem;">
+    <div style="
+        background: rgba(255,255,255,0.18);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 32px;
+        border: 1.5px solid rgba(0,176,255,0.25);
+        padding: 2.5rem 2rem 2rem 2rem;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;">
+        <h1 style="
+            color: #00b0ff;
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin: 0 0 1rem 0;
+            letter-spacing: 1px;">
+            ระบบวิเคราะห์พระเครื่องอัตโนมัติ
+        </h1>
+        <p style="
+            color: #222;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;">
+            ค้นพบความลับในพระเครื่องของคุณด้วย AI อัจฉริยะ
+        </p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # Enhanced Upload Section
 st.markdown("""
 <div style="text-align: center; margin: 3rem 0 2rem 0;">
-    <h2 style="color: var(--color-foreground); margin: 0;">วิเคราะห์ภาพพระเครื่อง</h2>
-    <p style="color: var(--color-muted-foreground); font-size: 1rem;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
+    <h2 style="color: #ffffff; margin: 0; font-weight: 700;">วิเคราะห์ภาพพระเครื่อง</h2>
+    <p style="color: #b0b0b0; font-size: 1rem; font-weight: 700;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -631,10 +692,10 @@ col_front, col_back = st.columns(2, gap="large")
 with col_front:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
-        <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
+    <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหน้าพระเครื่อง
         </h3>
-        <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
+    <p style="color: #b0b0b0; text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
             พื้นที่หลักสำหรับวิเคราะห์ จำเป็นต้องใช้
         </p>
     </div>
@@ -646,11 +707,11 @@ with col_front:
     with tab1:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
-            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
+            <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหน้า
             </div>
-            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
+            <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
@@ -726,10 +787,10 @@ with col_front:
 with col_back:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
-        <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
+    <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหลังพระเครื่อง
         </h3>
-        <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
+    <p style="color: #b0b0b0; text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
             เผยความลับที่ซ่อนอยู่ - เพื่อการวิเคราะห์ที่สมบูรณ์
         </p>
     </div>
@@ -741,11 +802,11 @@ with col_back:
     with tab1:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
-            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
+            <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหลัง
             </div>
-            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
+            <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
@@ -763,11 +824,11 @@ with col_back:
     with tab2:
         st.markdown("""
         <div class="upload-zone">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">ถ่ายภาพ</div>
-            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">ถ่ายภาพ</div>
+            <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 กล้องถ่ายภาพ
             </div>
-            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
+            <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 ถ่ายภาพด้านหลังโดยตรง
             </div>
         </div>
@@ -827,20 +888,20 @@ if (front and hasattr(st.session_state, 'front_processed') and
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔮</div>
-        <h3 style="color: var(--color-accent); margin: 0;">Ready for Mystical Analysis</h3>
-        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
-            Both sacred images prepared - Ancient AI awaits your command
+        <h3 style="color: #00b0ff; margin: 0; font-weight: 700;">พร้อมสำหรับการวิเคราะห์</h3>
+        <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
+            อัปโหลดภาพทั้งสองด้านแล้ว สามารถเริ่มวิเคราะห์ได้ทันที
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("🌟 Begin Ancient Analysis", type="primary", help="Start AI analysis of your amulet"):
+    if st.button("เริ่มวิเคราะห์พระเครื่อง", type="primary", help="เริ่มวิเคราะห์พระเครื่องด้วย AI"):
         files = {
             "front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg"),
             "back": (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
         }
         
-        with st.spinner("🔮 Ancient spirits are analyzing your sacred amulet... Please wait..."):
+    with st.spinner("กำลังวิเคราะห์พระเครื่อง กรุณารอสักครู่..."):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
                 
@@ -851,9 +912,9 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     st.markdown("""
                     <div class="result-card mystical-glow" style="text-align: center; margin: 2rem 0;">
                         <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 2s infinite;">⚡</div>
-                        <h2 style="color: var(--color-accent); margin: 0;">Mystical Analysis Complete!</h2>
-                        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
-                            The ancient spirits have revealed their wisdom
+                        <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์เสร็จสิ้น</h2>
+                        <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
+                            ผลลัพธ์การวิเคราะห์แสดงด้านล่างนี้
                         </p>
                     </div>
                     """, unsafe_allow_html=True)
@@ -862,8 +923,8 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     st.markdown("---")
                     st.markdown("""
                     <div style="text-align: center; margin: 2rem 0;">
-                        <h2 style="color: var(--color-foreground); margin: 0;">🏆 Primary Revelation</h2>
-                        <p style="color: var(--color-muted-foreground);">The most likely sacred identity</p>
+                        <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">ผลลัพธ์หลัก</h2>
+                        <p style="color: #b0b0b0; font-weight: 700;">พระเครื่องที่มีความเป็นไปได้สูงสุด</p>
                     </div>
                     """, unsafe_allow_html=True)
                     
@@ -893,8 +954,8 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                 {confidence_percent:.1f}% Confidence
                             </span>
                         </div>
-                        <div style="font-size: 0.9rem; color: var(--color-muted-foreground);">
-                            Primary mystical classification from ancient AI wisdom
+                        <div style="font-size: 0.9rem; color: #b0b0b0; font-weight: 700;">
+                            การจัดหมวดหมู่โดย AI
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
@@ -1062,21 +1123,21 @@ else:
     else:
         missing_text = " and ".join(missing_images)
         st.markdown(f"""
-        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
+        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0; background: #fff; border-radius: 12px;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
-            <h3 style="color: var(--color-accent); margin: 0;">Begin Your Mystical Journey</h3>
-            <p style="color: var(--color-muted-foreground); margin: 1rem 0;">
-                Please upload {missing_text} to unlock the ancient wisdom
+            <h3 style="color: #ffd600; margin: 0; font-weight: 700;">เริ่มต้นการวิเคราะห์พระเครื่อง</h3>
+            <p style="color: #b0b0b0; margin: 1rem 0; font-weight: 700;">
+                กรุณาอัปโหลด{missing_text}เพื่อปลดล็อกการวิเคราะห์
             </p>
             <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05)); 
                         padding: 1rem; border-radius: var(--radius); margin: 1rem 0;
                         border: 1px solid rgba(239, 68, 68, 0.2);">
-                <p style="color: #ef4444; font-weight: 600; margin: 0;">
-                    ⚠️ Both sacred views are required for complete mystical analysis
+                <p style="color: #ef4444; font-weight: 700; margin: 0;">
+                    ⚠️ ต้องอัปโหลดทั้งสองด้านจึงจะสามารถวิเคราะห์ได้ครบถ้วน
                 </p>
             </div>
-            <div style="color: var(--color-muted-foreground); font-size: 0.9rem; opacity: 0.8;">
-                💡 Tip: Well-lit images reveal more mystical secrets
+            <div style="color: #ffd600; font-size: 0.9rem; opacity: 0.8; font-weight: 700;">
+                💡 เคล็ดลับ: ภาพที่มีแสงสว่างเพียงพอจะช่วยให้วิเคราะห์ได้แม่นยำขึ้น
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1084,9 +1145,9 @@ else:
 # Enhanced Footer Section
 st.markdown("---")
 st.markdown("""
-<div style="text-align: center; margin: 3rem 0 2rem 0;">
-    <h2 style="color: var(--color-foreground); margin: 0;">🔮 Mystical Technology</h2>
-    <p style="color: var(--color-muted-foreground);">Powered by ancient wisdom and modern AI</p>
+<div style="text-align: center; margin: 3rem 0 2rem 0; background: #fff; border-radius: 12px; padding: 2rem 1rem;">
+    <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">เทคโนโลยีวิเคราะห์พระเครื่อง</h2>
+    <p style="color: #b0b0b0; font-weight: 700;">ขับเคลื่อนด้วยปัญญาโบราณและ AI สมัยใหม่</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1094,58 +1155,58 @@ tech_col1, tech_col2, tech_col3 = st.columns(3)
 
 with tech_col1:
     st.markdown("""
-    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-        <h4 style="color: var(--color-accent); margin: 0;">AI Neural Networks</h4>
-        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
-            Deep learning algorithms trained on ancient mystical patterns
+        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">ปัญญาประดิษฐ์ AI</h4>
+        <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
+            อัลกอริทึม Deep Learning ที่ฝึกกับลวดลายพระเครื่องโบราณ
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 with tech_col2:
     st.markdown("""
-    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
-        <h4 style="color: var(--color-accent); margin: 0;">Multi-Format Vision</h4>
-        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
-            Advanced image processing for all sacred formats
+        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">รองรับหลายฟอร์แมต</h4>
+        <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
+            ประมวลผลภาพพระเครื่องได้ทุกฟอร์แมต
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 with tech_col3:
     st.markdown("""
-    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
-        <h4 style="color: var(--color-accent); margin: 0;">Real-Time Analysis</h4>
-        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
-            Lightning-fast mystical insights in seconds
+        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์แบบเรียลไทม์</h4>
+        <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
+            วิเคราะห์ผลได้อย่างรวดเร็วในไม่กี่วินาที
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 # Enhanced Developer Info
-with st.expander("🔧 Developer Mystical Portal"):
+with st.expander("🔧 ข้อมูลสำหรับนักพัฒนา"):
     st.markdown(f"""
     <div class="glassmorphic" style="padding: 1.5rem;">
-        <h4 style="color: var(--color-accent); margin: 0 0 1rem 0;">Sacred Development Details</h4>
+        <h4 style="color: #00b0ff; margin: 0 0 1rem 0; font-weight: 700;">รายละเอียดสำหรับนักพัฒนา</h4>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-family: monospace;">
             <div>
-                <strong style="color: var(--color-foreground);">API Endpoint:</strong><br>
-                <code style="color: var(--color-accent);">{API_URL}</code>
+                <strong style="color: #222; font-weight: 700;">API Endpoint:</strong><br>
+                <code style="color: #00b0ff;">{API_URL}</code>
             </div>
             <div>
-                <strong style="color: var(--color-foreground);">Last Updated:</strong><br>
-                <code style="color: var(--color-accent);">August 28, 2025</code>
+                <strong style="color: #222; font-weight: 700;">อัปเดตล่าสุด:</strong><br>
+                <code style="color: #00b0ff;">28 สิงหาคม 2025</code>
             </div>
             <div>
-                <strong style="color: var(--color-foreground);">Version:</strong><br>
-                <code style="color: var(--color-accent);">Mystical v2.0.0</code>
+                <strong style="color: #222; font-weight: 700;">เวอร์ชัน:</strong><br>
+                <code style="color: #00b0ff;">Mystical v2.0.0</code>
             </div>
             <div>
-                <strong style="color: var(--color-foreground);">Framework:</strong><br>
-                <code style="color: var(--color-accent);">Streamlit + FastAPI</code>
+                <strong style="color: #222; font-weight: 700;">เฟรมเวิร์ก:</strong><br>
+                <code style="color: #00b0ff;">Streamlit + FastAPI</code>
             </div>
         </div>
     </div>
