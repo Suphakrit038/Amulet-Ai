@@ -1,3 +1,4 @@
+
 import streamlit as st
 import requests
 import sys
@@ -36,12 +37,12 @@ except ImportError:
     MAX_FILE_SIZE_MB = 10
     SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'bmp', 'tiff', 'tif']
     FORMAT_DISPLAY = 'JPG, JPEG, PNG, WEBP, HEIC, HEIF, BMP, TIFF, TIF'
-    
+
     def validate_and_convert_image(uploaded_file):
         try:
             if uploaded_file.size > MAX_FILE_SIZE_MB * 1024 * 1024:
                 return False, None, None, f"ไฟล์ใหญ่เกิน {MAX_FILE_SIZE_MB}MB"
-            
+
             img = Image.open(uploaded_file)
             if img.mode in ('RGBA', 'LA', 'P'):
                 background = Image.new('RGB', img.size, (255, 255, 255))
@@ -51,16 +52,16 @@ except ImportError:
                 img = background
             elif img.mode != 'RGB':
                 img = img.convert('RGB')
-            
+
             import io
             img_bytes = io.BytesIO()
             img.save(img_bytes, format='JPEG', quality=90)
             img_bytes = img_bytes.getvalue()
-            
+
             return True, img, img_bytes, None
         except Exception as e:
             return False, None, None, f"ไม่สามารถประมวลผลภาพได้: {str(e)}"
-    
+
     def send_predict_request(files, api_url, timeout=60):
         try:
             response = requests.post(
@@ -83,6 +84,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Enhanced Modern CSS with Dark Theme and Glassmorphism
 st.markdown("""
 <style>
     body, .stApp {
@@ -522,6 +524,8 @@ with st.sidebar:
     <div style="text-align: center; padding: 2rem 1rem; 
                 background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
                 border-radius: var(--radius); margin-bottom: 2rem;">
+        <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading);">คู่มือการใช้งาน</h2>
+        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
     <h2 style="color: #00b0ff; margin: 0; font-family: var(--font-heading); font-weight: 700;">คู่มือการใช้งาน</h2>
     <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-size: 0.9rem; font-weight: 700;">
             ปัญญาโบราณ & AI ยุคใหม่
@@ -634,6 +638,7 @@ with st.sidebar:
     <div style="text-align: center; padding: 1rem; 
                 background: rgba(212, 175, 55, 0.05); 
                 border-radius: var(--radius); margin: 1rem 0;">
+        <h4 style="color: var(--color-accent); margin: 0;">สถิติการใช้งาน</h4>
     <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">สถิติการใช้งาน</h4>
     </div>
     """, unsafe_allow_html=True)
@@ -645,6 +650,8 @@ with st.sidebar:
         st.metric("ความแม่นยำ", "87.2%", "+3.1%")
 
 # Main Content Area
+st.markdown('<h1 class="main-title">ระบบวิเคราะห์พระเครื่องอัตโนมัติ</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">ค้นพบความลับในพระเครื่องของคุณด้วย AI อัจฉริยะ</p>', unsafe_allow_html=True)
 st.markdown("""
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 2.5rem; margin-bottom: 2.5rem;">
     <div style="
@@ -681,6 +688,8 @@ st.markdown("""
 # Enhanced Upload Section
 st.markdown("""
 <div style="text-align: center; margin: 3rem 0 2rem 0;">
+    <h2 style="color: var(--color-foreground); margin: 0;">วิเคราะห์ภาพพระเครื่อง</h2>
+    <p style="color: var(--color-muted-foreground); font-size: 1rem;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
     <h2 style="color: #ffffff; margin: 0; font-weight: 700;">วิเคราะห์ภาพพระเครื่อง</h2>
     <p style="color: #b0b0b0; font-size: 1rem; font-weight: 700;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
 </div>
@@ -692,31 +701,36 @@ col_front, col_back = st.columns(2, gap="large")
 with col_front:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
+        <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
     <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหน้าพระเครื่อง
         </h3>
+        <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
     <p style="color: #b0b0b0; text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
             พื้นที่หลักสำหรับวิเคราะห์ จำเป็นต้องใช้
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     # Tab for upload methods
     tab1, tab2 = st.tabs(["อัปโหลดไฟล์", "ถ่ายภาพ"])
-    
+
     with tab1:
         st.markdown("""
         <div class="upload-zone">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
+            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
             <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหน้า
             </div>
+            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
             <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         front_file = st.file_uploader(
             "Choose front image", 
             type=SUPPORTED_FORMATS,
@@ -725,7 +739,7 @@ with col_front:
         )
         front = front_file
         front_source = "upload"
-    
+
     with tab2:
         st.markdown("""
         <div class="upload-zone">
@@ -738,10 +752,10 @@ with col_front:
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("🔮 Activate Mystical Camera", key="front_camera_btn", help="Open camera for front image"):
             st.session_state.show_front_camera = True
-        
+
         if st.session_state.get('show_front_camera', False):
             front_camera = st.camera_input(
                 "Capture front sacred view",
@@ -759,7 +773,7 @@ with col_front:
         else:
             front = front_file if 'front_file' in locals() and front_file else None
             front_source = "upload"
-    
+
     # Display front image
     if front:
         is_valid, processed_img, processed_bytes, error_msg = validate_and_convert_image(front)
@@ -771,7 +785,7 @@ with col_front:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            
+
             st.image(processed_img, use_container_width=True, caption=f"Front View ({front_source})")
             st.session_state.front_processed = processed_bytes
             st.session_state.front_filename = front.name if hasattr(front, 'name') else f"camera_front_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
@@ -787,31 +801,36 @@ with col_front:
 with col_back:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
+        <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
     <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหลังพระเครื่อง
         </h3>
+        <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
     <p style="color: #b0b0b0; text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
             เผยความลับที่ซ่อนอยู่ - เพื่อการวิเคราะห์ที่สมบูรณ์
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     # Tab for upload methods
     tab1, tab2 = st.tabs(["อัปโหลดไฟล์", "ถ่ายภาพ"])
-    
+
     with tab1:
         st.markdown("""
         <div class="upload-zone">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
+            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
             <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหลัง
             </div>
+            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
             <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         back_file = st.file_uploader(
             "Choose back image", 
             type=SUPPORTED_FORMATS,
@@ -820,23 +839,26 @@ with col_back:
         )
         back = back_file
         back_source = "upload"
-    
+
     with tab2:
         st.markdown("""
         <div class="upload-zone">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">ถ่ายภาพ</div>
+            <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">ถ่ายภาพ</div>
             <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 กล้องถ่ายภาพ
             </div>
+            <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
             <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
                 ถ่ายภาพด้านหลังโดยตรง
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("เปิดกล้องถ่ายภาพ", key="back_camera_btn", help="เปิดกล้องสำหรับภาพด้านหลัง"):
             st.session_state.show_back_camera = True
-        
+
         if st.session_state.get('show_back_camera', False):
             back_camera = st.camera_input(
                 "Capture back sacred view",
@@ -854,7 +876,7 @@ with col_back:
         else:
             back = back_file if 'back_file' in locals() and back_file else None
             back_source = "upload"
-    
+
     # Display back image
     if back:
         is_valid, processed_img, processed_bytes, error_msg = validate_and_convert_image(back)
@@ -866,7 +888,7 @@ with col_back:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            
+
             st.image(processed_img, use_container_width=True, caption=f"ด้านหลัง ({'กล้อง' if back_source=='camera' else 'อัปโหลด'})")
             st.session_state.back_processed = processed_bytes
             st.session_state.back_filename = back.name if hasattr(back, 'name') else f"camera_back_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
@@ -884,52 +906,58 @@ st.markdown("---")
 # Enhanced Analysis Section
 if (front and hasattr(st.session_state, 'front_processed') and 
     back and hasattr(st.session_state, 'back_processed')):
-    
+
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔮</div>
+        <h3 style="color: var(--color-accent); margin: 0;">Ready for Mystical Analysis</h3>
+        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
+            Both sacred images prepared - Ancient AI awaits your command
         <h3 style="color: #00b0ff; margin: 0; font-weight: 700;">พร้อมสำหรับการวิเคราะห์</h3>
         <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
             อัปโหลดภาพทั้งสองด้านแล้ว สามารถเริ่มวิเคราะห์ได้ทันที
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     if st.button("เริ่มวิเคราะห์พระเครื่อง", type="primary", help="เริ่มวิเคราะห์พระเครื่องด้วย AI"):
         files = {
             "front": (st.session_state.front_filename, st.session_state.front_processed, "image/jpeg"),
             "back": (st.session_state.back_filename, st.session_state.back_processed, "image/jpeg")
         }
-        
-    with st.spinner("กำลังวิเคราะห์พระเครื่อง กรุณารอสักครู่..."):
+        with st.spinner("กำลังวิเคราะห์พระเครื่อง กรุณารอสักครู่..."):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
-                
                 if r.ok:
                     data = r.json()
-                    
+
                     # Enhanced Success Message
                     st.markdown("""
                     <div class="result-card mystical-glow" style="text-align: center; margin: 2rem 0;">
                         <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 2s infinite;">⚡</div>
+                        <h2 style="color: var(--color-accent); margin: 0;">Mystical Analysis Complete!</h2>
+                        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
+                            The ancient spirits have revealed their wisdom
                         <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์เสร็จสิ้น</h2>
                         <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
                             ผลลัพธ์การวิเคราะห์แสดงด้านล่างนี้
                         </p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     # Enhanced Top-1 Result
                     st.markdown("---")
                     st.markdown("""
                     <div style="text-align: center; margin: 2rem 0;">
+                        <h2 style="color: var(--color-foreground); margin: 0;">🏆 Primary Revelation</h2>
+                        <p style="color: var(--color-muted-foreground);">The most likely sacred identity</p>
                         <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">ผลลัพธ์หลัก</h2>
                         <p style="color: #b0b0b0; font-weight: 700;">พระเครื่องที่มีความเป็นไปได้สูงสุด</p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     confidence_percent = data['top1']['confidence'] * 100
-                    
+
                     # Enhanced confidence styling
                     if confidence_percent >= 80:
                         conf_gradient = "linear-gradient(135deg, #22c55e, #16a34a)"
@@ -940,7 +968,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     else:
                         conf_gradient = "linear-gradient(135deg, #ef4444, #dc2626)"
                         conf_color = "#ef4444"
-                    
+
                     st.markdown(f"""
                     <div class="result-card mystical-glow" style="text-align: center; 
                          background: {conf_gradient.replace('linear-gradient', 'linear-gradient').replace('#22c55e, #16a34a', 'rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05)')};
@@ -954,12 +982,14 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                 {confidence_percent:.1f}% Confidence
                             </span>
                         </div>
+                        <div style="font-size: 0.9rem; color: var(--color-muted-foreground);">
+                            Primary mystical classification from ancient AI wisdom
                         <div style="font-size: 0.9rem; color: #b0b0b0; font-weight: 700;">
                             การจัดหมวดหมู่โดย AI
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     # Enhanced Top-3 Results
                     st.markdown("---")
                     st.markdown("""
@@ -968,10 +998,10 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <p style="color: var(--color-muted-foreground);">Alternative sacred identifications</p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     for i, item in enumerate(data['topk'], 1):
                         confidence_pct = item['confidence'] * 100
-                        
+
                         # Medal icons and colors
                         if i == 1:
                             icon, color = "🥇", "#d4af37"
@@ -979,7 +1009,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             icon, color = "🥈", "#c0c0c0"
                         else:
                             icon, color = "🥉", "#cd7f32"
-                        
+
                         st.markdown(f"""
                         <div class="glassmorphic mystical-glow" style="
                             padding: 1.5rem; margin: 1rem 0; 
@@ -1001,7 +1031,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    
+
                     # Enhanced Price Valuation
                     st.markdown("---")
                     st.markdown("""
@@ -1010,7 +1040,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <p style="color: var(--color-muted-foreground);">Sacred market estimations</p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     price_col1, price_col2, price_col3 = st.columns(3)
                     with price_col1:
                         st.markdown(f"""
@@ -1022,7 +1052,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    
+
                     with price_col2:
                         st.markdown(f"""
                         <div class="glassmorphic" style="padding: 1.5rem; text-align: center; border-color: var(--color-accent);">
@@ -1033,7 +1063,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    
+
                     with price_col3:
                         st.markdown(f"""
                         <div class="glassmorphic" style="padding: 1.5rem; text-align: center;">
@@ -1044,7 +1074,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    
+
                     # Enhanced Recommendations
                     st.markdown("---")
                     st.markdown("""
@@ -1053,7 +1083,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <p style="color: var(--color-muted-foreground);">Recommended channels for sharing your treasure</p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
                     for i, rec in enumerate(data["recommendations"], 1):
                         with st.expander(f"🏪 {rec['market']}", expanded=i==1):
                             st.markdown(f"""
@@ -1062,12 +1092,12 @@ if (front and hasattr(st.session_state, 'front_processed') and
                                 <p style="color: var(--color-foreground); margin: 0;">{rec['reason']}</p>
                             </div>
                             """, unsafe_allow_html=True)
-                            
+
                             if rec['market'] == "Facebook Marketplace":
                                 st.info("🌐 Ideal for reaching general collectors and enthusiasts")
                             elif rec['market'] == "Shopee":
                                 st.info("🛡️ Secure platform with buyer protection and reviews")
-                
+
                 else:
                     st.markdown(f"""
                     <div class="result-card" style="border-color: rgba(239, 68, 68, 0.3); text-align: center;">
@@ -1076,7 +1106,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <p style="color: var(--color-muted-foreground);">Error {r.status_code}: {r.text}</p>
                     </div>
                     """, unsafe_allow_html=True)
-                    
+
             except requests.exceptions.Timeout:
                 st.markdown("""
                 <div class="result-card" style="border-color: rgba(251, 191, 36, 0.3); text-align: center;">
@@ -1109,7 +1139,7 @@ else:
         missing_images.append("Front Sacred View")
     if not (back and hasattr(st.session_state, 'back_processed')):
         missing_images.append("Back Sacred View")
-    
+
     if (front and not hasattr(st.session_state, 'front_processed')) or (back and not hasattr(st.session_state, 'back_processed')):
         st.markdown("""
         <div class="glassmorphic" style="padding: 2rem; text-align: center; margin: 2rem 0;">
@@ -1123,8 +1153,12 @@ else:
     else:
         missing_text = " and ".join(missing_images)
         st.markdown(f"""
+        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
         <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0; background: #fff; border-radius: 12px;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
+            <h3 style="color: var(--color-accent); margin: 0;">Begin Your Mystical Journey</h3>
+            <p style="color: var(--color-muted-foreground); margin: 1rem 0;">
+                Please upload {missing_text} to unlock the ancient wisdom
             <h3 style="color: #ffd600; margin: 0; font-weight: 700;">เริ่มต้นการวิเคราะห์พระเครื่อง</h3>
             <p style="color: #b0b0b0; margin: 1rem 0; font-weight: 700;">
                 กรุณาอัปโหลด{missing_text}เพื่อปลดล็อกการวิเคราะห์
@@ -1132,10 +1166,14 @@ else:
             <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05)); 
                         padding: 1rem; border-radius: var(--radius); margin: 1rem 0;
                         border: 1px solid rgba(239, 68, 68, 0.2);">
+                <p style="color: #ef4444; font-weight: 600; margin: 0;">
+                    ⚠️ Both sacred views are required for complete mystical analysis
                 <p style="color: #ef4444; font-weight: 700; margin: 0;">
                     ⚠️ ต้องอัปโหลดทั้งสองด้านจึงจะสามารถวิเคราะห์ได้ครบถ้วน
                 </p>
             </div>
+            <div style="color: var(--color-muted-foreground); font-size: 0.9rem; opacity: 0.8;">
+                💡 Tip: Well-lit images reveal more mystical secrets
             <div style="color: #ffd600; font-size: 0.9rem; opacity: 0.8; font-weight: 700;">
                 💡 เคล็ดลับ: ภาพที่มีแสงสว่างเพียงพอจะช่วยให้วิเคราะห์ได้แม่นยำขึ้น
             </div>
@@ -1145,6 +1183,9 @@ else:
 # Enhanced Footer Section
 st.markdown("---")
 st.markdown("""
+<div style="text-align: center; margin: 3rem 0 2rem 0;">
+    <h2 style="color: var(--color-foreground); margin: 0;">🔮 Mystical Technology</h2>
+    <p style="color: var(--color-muted-foreground);">Powered by ancient wisdom and modern AI</p>
 <div style="text-align: center; margin: 3rem 0 2rem 0; background: #fff; border-radius: 12px; padding: 2rem 1rem;">
     <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">เทคโนโลยีวิเคราะห์พระเครื่อง</h2>
     <p style="color: #b0b0b0; font-weight: 700;">ขับเคลื่อนด้วยปัญญาโบราณและ AI สมัยใหม่</p>
@@ -1155,8 +1196,12 @@ tech_col1, tech_col2, tech_col3 = st.columns(3)
 
 with tech_col1:
     st.markdown("""
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
     <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+        <h4 style="color: var(--color-accent); margin: 0;">AI Neural Networks</h4>
+        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+            Deep learning algorithms trained on ancient mystical patterns
         <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">ปัญญาประดิษฐ์ AI</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             อัลกอริทึม Deep Learning ที่ฝึกกับลวดลายพระเครื่องโบราณ
@@ -1166,8 +1211,12 @@ with tech_col1:
 
 with tech_col2:
     st.markdown("""
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
     <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
+        <h4 style="color: var(--color-accent); margin: 0;">Multi-Format Vision</h4>
+        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+            Advanced image processing for all sacred formats
         <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">รองรับหลายฟอร์แมต</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             ประมวลผลภาพพระเครื่องได้ทุกฟอร์แมต
@@ -1177,8 +1226,12 @@ with tech_col2:
 
 with tech_col3:
     st.markdown("""
+    <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center;">
     <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; height: 200px; display: flex; flex-direction: column; justify-content: center; background: #fff; border-radius: 10px;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+        <h4 style="color: var(--color-accent); margin: 0;">Real-Time Analysis</h4>
+        <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+            Lightning-fast mystical insights in seconds
         <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์แบบเรียลไทม์</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             วิเคราะห์ผลได้อย่างรวดเร็วในไม่กี่วินาที
@@ -1190,21 +1243,30 @@ with tech_col3:
 with st.expander("🔧 ข้อมูลสำหรับนักพัฒนา"):
     st.markdown(f"""
     <div class="glassmorphic" style="padding: 1.5rem;">
+        <h4 style="color: var(--color-accent); margin: 0 0 1rem 0;">Sacred Development Details</h4>
         <h4 style="color: #00b0ff; margin: 0 0 1rem 0; font-weight: 700;">รายละเอียดสำหรับนักพัฒนา</h4>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-family: monospace;">
             <div>
+                <strong style="color: var(--color-foreground);">API Endpoint:</strong><br>
+                <code style="color: var(--color-accent);">{API_URL}</code>
                 <strong style="color: #222; font-weight: 700;">API Endpoint:</strong><br>
                 <code style="color: #00b0ff;">{API_URL}</code>
             </div>
             <div>
+                <strong style="color: var(--color-foreground);">Last Updated:</strong><br>
+                <code style="color: var(--color-accent);">August 28, 2025</code>
                 <strong style="color: #222; font-weight: 700;">อัปเดตล่าสุด:</strong><br>
                 <code style="color: #00b0ff;">28 สิงหาคม 2025</code>
             </div>
             <div>
+                <strong style="color: var(--color-foreground);">Version:</strong><br>
+                <code style="color: var(--color-accent);">Mystical v2.0.0</code>
                 <strong style="color: #222; font-weight: 700;">เวอร์ชัน:</strong><br>
                 <code style="color: #00b0ff;">Mystical v2.0.0</code>
             </div>
             <div>
+                <strong style="color: var(--color-foreground);">Framework:</strong><br>
+                <code style="color: var(--color-accent);">Streamlit + FastAPI</code>
                 <strong style="color: #222; font-weight: 700;">เฟรมเวิร์ก:</strong><br>
                 <code style="color: #00b0ff;">Streamlit + FastAPI</code>
             </div>
