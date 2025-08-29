@@ -6,6 +6,17 @@ import os
 from datetime import datetime
 from PIL import Image
 
+# Small helper to render reusable upload cards
+def upload_card(title_th, key, help_text=""):
+    st.markdown(f"""
+    <div class="card" style="text-align:center; margin-bottom:0.75rem;">
+        <h3 style="margin:0 0 .5rem 0; color: var(--card-fg);">{title_th}</h3>
+        <p style="margin:0; color: var(--muted); font-size:0.9rem;">{help_text}</p>
+    </div>
+    """, unsafe_allow_html=True)
+    file = st.file_uploader("", type=SUPPORTED_FORMATS, key=key, label_visibility="collapsed")
+    return file
+
 # Import custom components
 try:
     from components.ui import (
@@ -74,7 +85,7 @@ except ImportError:
             raise e
 
 # API Configuration
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("AMULET_API_URL", "http://localhost:8000")
 
 # Page Configuration
 st.set_page_config(
@@ -84,416 +95,48 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Modern CSS with Dark Theme and Glassmorphism
+# Enhanced Modern CSS theme (single palette)
 st.markdown("""
 <style>
-    body, .stApp {
-        background: linear-gradient(135deg, #fafdff 0%, #e3f2fd 100%) !important;
-        color: #18181b !important;
-        font-family: 'Inter', system-ui, sans-serif;
-    }
-</style>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-    
-    :root {
-                    .stApp {
-                        background: #fff !important;
-                        color: #18181b !important;
-                        font-family: var(--font-sans);
-                    }
-        --color-background: #0a0a0b;
-        --color-foreground: #f4f4f5;
-        --color-card: #1a1a1c;
-        --color-card-foreground: #f4f4f5;
-        --color-primary: #d4af37;
-        --color-primary-foreground: #0a0a0b;
-        --color-secondary: #2d2a24;
-        --color-secondary-foreground: #f4f4f5;
-        --color-muted: #27272a;
-                    .glassmorphic {
-                        background: #18181b !important;
-                        color: #fff !important;
-                        backdrop-filter: blur(20px) saturate(1.8);
-                        border: 1px solid #00b0ff22;
-                        border-radius: var(--radius);
-                        box-shadow: 
-                            0 8px 32px rgba(0, 0, 0, 0.3),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.05);
-                    }
-        --color-muted-foreground: #a1a1aa;
-        --color-accent: #d4af37;
-        --color-accent-foreground: #0a0a0b;
-                    .mystical-glow {
-                        position: relative;
-                        background: #18181b !important;
-                        color: #fff !important;
-                    }
-        --color-border: #27272a;
-        --font-sans: 'Inter', system-ui, sans-serif;
-        --font-heading: 'Playfair Display', serif;
-        --radius: 0.75rem;
-                    .stExpander, .stTabs, .stButton, .stMetric, .stFileUploader, .stCameraInput {
-                        background: #18181b !important;
-                        color: #fff !important;
-                        border-radius: 18px !important;
-                    }
-    }
-    
-    /* Global Styles */
-    .stApp {
-        background: var(--color-background);
-        color: var(--color-foreground);
-        font-family: var(--font-sans);
-    }
-    
-    /* Hide Streamlit components */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Enhanced Animated Background */
-    .main {
-        background: 
-            radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
-            linear-gradient(-45deg, #1a0f2e, #2d1b3d, #1a1a1c, #0a0a0b);
-        background-size: 800% 800%, 600% 600%, 400% 400%;
-        animation: gradientShift 20s ease infinite;
-        min-height: 100vh;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    @keyframes gradientShift {
-        0% { background-position: 0% 50%, 100% 0%, 0% 50%; }
-        25% { background-position: 100% 50%, 0% 100%, 100% 50%; }
-        50% { background-position: 100% 0%, 0% 0%, 50% 100%; }
-        75% { background-position: 0% 100%, 100% 50%, 0% 0%; }
-        100% { background-position: 0% 50%, 100% 0%, 0% 50%; }
-    }
-    
-    /* Floating Particles */
-    .main::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 2%),
-            radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 2%),
-            radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.12) 0%, transparent 1.5%),
-            radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 2%),
-            radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 3%);
-        background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px, 400px 400px;
-        animation: floatingParticles 25s linear infinite;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    @keyframes floatingParticles {
-        0% { background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%, 50% 50%; }
-        100% { background-position: 100% 100%, 0% 0%, 100% 0%, 0% 100%, 0% 0%; }
-    }
-    
-    /* Glassmorphism Cards */
-    .glassmorphic {
-        background: rgba(26, 26, 28, 0.7);
-        backdrop-filter: blur(20px) saturate(1.8);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        border-radius: var(--radius);
-        box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-    
-    /* Mystical Glow Effects */
-    .mystical-glow {
-        position: relative;
-    }
-    
-    .mystical-glow::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: inherit;
-        padding: 2px;
-        background: linear-gradient(45deg, 
-            transparent 0%, 
-            rgba(212, 175, 55, 0.3) 25%, 
-            rgba(212, 175, 55, 0.1) 50%, 
-            transparent 75%
-        );
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        mask-composite: xor;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .mystical-glow:hover::before {
-        opacity: 1;
-    }
-    
-    /* Enhanced Header */
-    .app-header {
-        background: rgba(26, 26, 28, 0.95);
-        backdrop-filter: blur(25px) saturate(1.8);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        padding: 1rem 2rem;
-        margin: -1rem -2rem 2rem -2rem;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-    
-    .brand-container {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    .brand-logo {
-        width: 3rem;
-        height: 3rem;
-        background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
-        border-radius: var(--radius);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: var(--color-background);
-        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-    }
-    
-    .brand-text h1 {
-        font-family: var(--font-heading);
-        font-size: 1.75rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 0;
-        line-height: 1;
-    }
-    
-    .brand-text p {
-        font-size: 0.875rem;
-        color: var(--color-muted-foreground);
-        margin: 0;
-        font-weight: 500;
-    }
-    
-    /* Enhanced Upload Zones */
-    .upload-zone {
-        background: rgba(26, 26, 28, 0.4);
-        backdrop-filter: blur(15px);
-        border: 2px dashed rgba(212, 175, 55, 0.3);
-        border-radius: var(--radius);
-        padding: 2rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .upload-zone:hover {
-        border-color: rgba(212, 175, 55, 0.6);
-        background: rgba(26, 26, 28, 0.6);
-        transform: scale(1.02);
-    }
-    
-    .upload-zone::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
-        animation: shimmer 3s infinite;
-        pointer-events: none;
-    }
-    
-    @keyframes shimmer {
-        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-    }
-    
-    /* Enhanced Result Cards */
-    .result-card {
-        background: rgba(26, 26, 28, 0.8);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        border-radius: var(--radius);
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .result-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(212, 175, 55, 0.4);
-        box-shadow: 
-            0 16px 48px rgba(0, 0, 0, 0.4),
-            0 0 30px rgba(212, 175, 55, 0.1);
-    }
-    
-    .result-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
-        transition: left 0.6s;
-    }
-    
-    .result-card:hover::before {
-        left: 100%;
-    }
-    
-    /* Enhanced Buttons */
-    .btn-mystical {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.9), rgba(212, 175, 55, 0.7));
-        border: 1px solid rgba(212, 175, 55, 0.4);
-        color: var(--color-background);
-        font-weight: 600;
-        border-radius: var(--radius);
-        padding: 0.75rem 2rem;
-        box-shadow: 
-            0 4px 15px rgba(212, 175, 55, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        font-family: var(--font-sans);
-    }
-    
-    .btn-mystical:hover {
-        transform: translateY(-2px);
-        box-shadow: 
-            0 8px 25px rgba(212, 175, 55, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Enhanced Sidebar */
-    section[data-testid="stSidebar"] {
-        background: rgba(26, 26, 28, 0.95) !important;
-        backdrop-filter: blur(25px) saturate(1.5) !important;
-        border-right: 1px solid rgba(212, 175, 55, 0.1) !important;
-    }
-    
-    .css-1d391kg {
-        background: rgba(26, 26, 28, 0.95);
-        backdrop-filter: blur(25px) saturate(1.5);
-    }
-    
-    /* Enhanced Typography */
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-heading);
-        color: var(--color-foreground);
-        font-weight: 600;
-        letter-spacing: -0.025em;
-    }
-    
-    .main-title {
-        font-size: 3rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin: 2rem 0;
-        animation: titleGlow 3s ease-in-out infinite alternate;
-    }
-    
-    @keyframes titleGlow {
-        0% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
-        100% { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6)); }
-    }
-    
-    .subtitle {
-        text-align: center;
-        color: var(--color-muted-foreground);
-        font-size: 1.125rem;
-        margin-bottom: 3rem;
-    }
-    
-    /* Enhanced Metrics */
-    div[data-testid="metric-container"] {
-        background: rgba(26, 26, 28, 0.6);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Enhanced Progress Indicators */
-    .stProgress > div > div {
-        background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
-        border-radius: var(--radius);
-    }
-    
-    /* Enhanced Tabs */
-    .stTabs > div > div > div > div {
-        background: rgba(26, 26, 28, 0.6);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        border-radius: var(--radius);
-    }
-    
-    /* Enhanced File Uploader */
-    .uploadedFile {
-        background: rgba(26, 26, 28, 0.6);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        border-radius: var(--radius);
-    }
-    
-    /* Enhanced Success/Error Messages */
-    .element-container .stAlert {
-        background: rgba(26, 26, 28, 0.8);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        border-radius: var(--radius);
-    }
-    
-    /* Hide Streamlit branding */
-    .css-15zrgzn {display: none}
-    .css-eczf16 {display: none}
-    .css-jn99sy {display: none}
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .main-title {
-            font-size: 2rem;
-        }
-        
-        .app-header {
-            padding: 1rem;
-            margin: -1rem -1rem 2rem -1rem;
-        }
-        
-        .brand-logo {
-            width: 2.5rem;
-            height: 2.5rem;
-            font-size: 1.25rem;
-        }
-        
-        .brand-text h1 {
-            font-size: 1.5rem;
-        }
-    }
+:root{
+    --bg:#fefdfc; --fg:#1b1b1f; --muted:#6b7280;
+    --card:#2c2b31; --card-fg:#ffffff;
+    --accent:#e6aa33; --banner:#2b314c; --surface:#b7bee7;
+    --radius:14px;
+    --success:#22c55e; --warning:#f59e0b; --danger:#ef4444;
+    --medal-gold:#d4af37; --medal-silver:#c0c0c0; --medal-bronze:#cd7f32;
+
+    /* Aliases */
+    --color-background:var(--bg);
+    --color-foreground:var(--fg);
+    --color-muted-foreground:var(--muted);
+    --color-card:var(--card);
+    --color-accent:var(--accent);
+
+    /* Confidence gradients */
+    --success-grad:linear-gradient(135deg,var(--success), color-mix(in srgb,var(--success) 70%, black));
+    --warning-grad:linear-gradient(135deg,var(--warning), color-mix(in srgb,var(--warning) 70%, black));
+    --danger-grad: linear-gradient(135deg,var(--danger), color-mix(in srgb,var(--danger) 70%, black));
+}
+
+.stApp{ background:var(--bg); color:var(--fg); font-family:'Inter',system-ui,sans-serif; }
+section[data-testid="stSidebar"]{ background:var(--banner)!important; color:#fff!important; }
+h1,h2,h3,h4{ font-family: 'Playfair Display', serif; }
+.card{ background:var(--card); color:var(--card-fg); border:1px solid #ffffff1f; border-radius:var(--radius); padding:1rem; }
+.glassmorphic{ background:rgba(44,43,49,.96); color:var(--card-fg); border:1px solid color-mix(in srgb,var(--accent) 18%,transparent); border-radius:var(--radius); }
+.textarea-surface{ background:var(--surface); border-radius:var(--radius); padding:.75rem; }
+.btn-accent{ background:var(--accent); color:#261a00; border:none; border-radius:var(--radius); padding:.65rem 1rem; font-weight:600; }
+.file-drop{ border:2px dashed color-mix(in srgb,var(--accent) 55%,transparent); border-radius:var(--radius); }
+.upload-zone{ border:2px dashed color-mix(in srgb,var(--accent) 35%,transparent); border-radius:var(--radius); padding:1.25rem; }
+.result-card{ background:#fff; border:1px solid color-mix(in srgb,var(--accent) 8%,transparent); border-radius:var(--radius); }
+#MainMenu, footer, header { visibility: hidden; }
+@media (max-width:768px){ .main-title{ font-size:2rem; } }
+/* Helpers */
+.muted{ color:var(--color-muted-foreground); }
+.accent{ color:var(--color-accent); }
+.success{ color:var(--success); }
+.warning{ color:var(--warning); }
+.danger{ color:var(--danger); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -522,12 +165,12 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div style="text-align: center; padding: 2rem 1rem; 
-                background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+                background: linear-gradient(135deg, rgba(230,170,51,0.1), rgba(230,170,51,0.05));
                 border-radius: var(--radius); margin-bottom: 2rem;">
         <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading);">คู่มือการใช้งาน</h2>
         <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-    <h2 style="color: #00b0ff; margin: 0; font-family: var(--font-heading); font-weight: 700;">คู่มือการใช้งาน</h2>
-    <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-size: 0.9rem; font-weight: 700;">
+    <h2 style="color: var(--color-accent); margin: 0; font-family: var(--font-heading); font-weight: 700;">คู่มือการใช้งาน</h2>
+    <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-size: 0.9rem; font-weight: 700;">
             ปัญญาโบราณ & AI ยุคใหม่
         </p>
     </div>
@@ -636,10 +279,10 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; padding: 1rem; 
-                background: rgba(212, 175, 55, 0.05); 
+                background: rgba(230,170,51,0.05); 
                 border-radius: var(--radius); margin: 1rem 0;">
         <h4 style="color: var(--color-accent); margin: 0;">สถิติการใช้งาน</h4>
-    <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">สถิติการใช้งาน</h4>
+    <h4 style="color: var(--color-accent); margin: 0; font-weight: 700;">สถิติการใช้งาน</h4>
     </div>
     """, unsafe_allow_html=True)
 
@@ -655,18 +298,18 @@ st.markdown('<p class="subtitle">ค้นพบความลับในพ�
 st.markdown("""
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 2.5rem; margin-bottom: 2.5rem;">
     <div style="
-        background: rgba(255,255,255,0.18);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-radius: 32px;
-        border: 1.5px solid rgba(0,176,255,0.25);
-        padding: 2.5rem 2rem 2rem 2rem;
-        max-width: 600px;
-        width: 100%;
-        text-align: center;">
+    background: rgba(255,255,255,0.18);
+    box-shadow: 0 8px 32px 0 color-mix(in srgb,var(--accent) 10%, rgba(31,38,135,0.08));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 32px;
+    border: 1.5px solid color-mix(in srgb,var(--accent) 40%, transparent);
+    padding: 2.5rem 2rem 2rem 2rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;">
         <h1 style="
-            color: #00b0ff;
+            color: var(--color-accent);
             font-size: 2.6rem;
             font-weight: 800;
             margin: 0 0 1rem 0;
@@ -674,7 +317,7 @@ st.markdown("""
             ระบบวิเคราะห์พระเครื่องอัตโนมัติ
         </h1>
         <p style="
-            color: #222;
+            color: var(--color-foreground);
             font-size: 1.25rem;
             font-weight: 700;
             margin: 0;
@@ -690,8 +333,8 @@ st.markdown("""
 <div style="text-align: center; margin: 3rem 0 2rem 0;">
     <h2 style="color: var(--color-foreground); margin: 0;">วิเคราะห์ภาพพระเครื่อง</h2>
     <p style="color: var(--color-muted-foreground); font-size: 1rem;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
-    <h2 style="color: #ffffff; margin: 0; font-weight: 700;">วิเคราะห์ภาพพระเครื่อง</h2>
-    <p style="color: #b0b0b0; font-size: 1rem; font-weight: 700;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
+    <h2 style="color: var(--card-fg); margin: 0; font-weight: 700;">วิเคราะห์ภาพพระเครื่อง</h2>
+    <p style="color: var(--color-muted-foreground); font-size: 1rem; font-weight: 700;">อัปโหลดทั้งสองด้านเพื่อการวิเคราะห์ที่สมบูรณ์</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -702,11 +345,11 @@ with col_front:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
         <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
-    <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
+    <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหน้าพระเครื่อง
         </h3>
         <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
-    <p style="color: #b0b0b0; text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
+    <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0; font-weight: 700;">
             พื้นที่หลักสำหรับวิเคราะห์ จำเป็นต้องใช้
         </p>
     </div>
@@ -720,12 +363,12 @@ with col_front:
         <div class="upload-zone">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
-            <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent); font-weight: 700;">เลือกไฟล์</div>
+            <div style="color: var(--card-fg); font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหน้า
             </div>
             <div style="color: var(--color-muted-foreground); font-size: 0.9rem;">
-            <div style="color: #b0b0b0; font-size: 0.9rem; font-weight: 700;">
+            <div style="color: var(--color-muted-foreground); font-size: 0.9rem; font-weight: 700;">
                 จำกัด 10MB • รองรับหลายฟอร์แมต
             </div>
         </div>
@@ -802,7 +445,7 @@ with col_back:
     st.markdown("""
     <div class="glassmorphic mystical-glow" style="padding: 1.5rem; margin-bottom: 1rem;">
         <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0;">
-    <h3 style="color: #00b0ff; text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
+    <h3 style="color: var(--color-accent); text-align: center; margin: 0 0 1rem 0; font-weight: 700;">
             ด้านหลังพระเครื่อง
         </h3>
         <p style="color: var(--color-muted-foreground); text-align: center; font-size: 0.9rem; margin: 0;">
@@ -820,7 +463,7 @@ with col_back:
         <div class="upload-zone">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">เลือกไฟล์</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">เลือกไฟล์</div>
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent); font-weight: 700;">เลือกไฟล์</div>
             <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 เลือกภาพด้านหลัง
             </div>
@@ -845,7 +488,7 @@ with col_back:
         <div class="upload-zone">
             <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent);">ถ่ายภาพ</div>
             <div style="color: var(--color-foreground); font-size: 1.1rem; margin-bottom: 0.5rem;">
-            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: #00b0ff; font-weight: 700;">ถ่ายภาพ</div>
+            <div style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--color-accent); font-weight: 700;">ถ่ายภาพ</div>
             <div style="color: #ffffff; font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700;">
                 กล้องถ่ายภาพ
             </div>
@@ -913,8 +556,8 @@ if (front and hasattr(st.session_state, 'front_processed') and
         <h3 style="color: var(--color-accent); margin: 0;">Ready for Mystical Analysis</h3>
         <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
             Both sacred images prepared - Ancient AI awaits your command
-        <h3 style="color: #00b0ff; margin: 0; font-weight: 700;">พร้อมสำหรับการวิเคราะห์</h3>
-        <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
+    <h3 style="color: var(--color-accent); margin: 0; font-weight: 700;">พร้อมสำหรับการวิเคราะห์</h3>
+    <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-weight: 700;">
             อัปโหลดภาพทั้งสองด้านแล้ว สามารถเริ่มวิเคราะห์ได้ทันที
         </p>
     </div>
@@ -929,7 +572,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
                 if r.ok:
-                    data = r.json()
+                    data = r.json() if r.content else {}
 
                     # Enhanced Success Message
                     st.markdown("""
@@ -938,8 +581,8 @@ if (front and hasattr(st.session_state, 'front_processed') and
                         <h2 style="color: var(--color-accent); margin: 0;">Mystical Analysis Complete!</h2>
                         <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0;">
                             The ancient spirits have revealed their wisdom
-                        <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์เสร็จสิ้น</h2>
-                        <p style="color: #b0b0b0; margin: 0.5rem 0 0 0; font-weight: 700;">
+                        <h2 style="color: var(--color-accent); margin: 0; font-weight: 700;">วิเคราะห์เสร็จสิ้น</h2>
+                        <p style="color: var(--color-muted-foreground); margin: 0.5rem 0 0 0; font-weight: 700;">
                             ผลลัพธ์การวิเคราะห์แสดงด้านล่างนี้
                         </p>
                     </div>
@@ -951,40 +594,38 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     <div style="text-align: center; margin: 2rem 0;">
                         <h2 style="color: var(--color-foreground); margin: 0;">🏆 Primary Revelation</h2>
                         <p style="color: var(--color-muted-foreground);">The most likely sacred identity</p>
-                        <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">ผลลัพธ์หลัก</h2>
-                        <p style="color: #b0b0b0; font-weight: 700;">พระเครื่องที่มีความเป็นไปได้สูงสุด</p>
+                        <h2 style="color: var(--color-accent); margin: 0; font-weight: 700;">ผลลัพธ์หลัก</h2>
+                        <p style="color: var(--color-muted-foreground); font-weight: 700;">พระเครื่องที่มีความเป็นไปได้สูงสุด</p>
                     </div>
                     """, unsafe_allow_html=True)
 
-                    confidence_percent = data['top1']['confidence'] * 100
+                    top1 = data.get('top1') or {}
+                    topk = data.get('topk') or []
+                    valuation = data.get('valuation') or {}
+                    confidence_percent = float(top1.get('confidence', 0)) * 100.0
 
                     # Enhanced confidence styling
-                    if confidence_percent >= 80:
-                        conf_gradient = "linear-gradient(135deg, #22c55e, #16a34a)"
-                        conf_color = "#22c55e"
-                    elif confidence_percent >= 60:
-                        conf_gradient = "linear-gradient(135deg, #f59e0b, #d97706)"
-                        conf_color = "#f59e0b"
-                    else:
-                        conf_gradient = "linear-gradient(135deg, #ef4444, #dc2626)"
-                        conf_color = "#ef4444"
+                    # use semantic token tiers for confidence visuals
+                    conf_tier = "success" if confidence_percent >= 80 else "warning" if confidence_percent >= 60 else "danger"
+                    grad_var = f"var(--{conf_tier}-grad)"
+                    solid_var = f"var(--{conf_tier})"
 
                     st.markdown(f"""
                     <div class="result-card mystical-glow" style="text-align: center; 
-                         background: {conf_gradient.replace('linear-gradient', 'linear-gradient').replace('#22c55e, #16a34a', 'rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05)')};
-                         border-color: {conf_color}33;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px {conf_color}77);">👑</div>
+                         background: color-mix(in srgb, {solid_var} 10%, white);
+                         border-color: color-mix(in srgb, {solid_var} 20%, transparent);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px color-mix(in srgb, {solid_var} 45%, transparent));">👑</div>
                         <h2 style="color: var(--color-accent); font-size: 1.8rem; margin: 0;">
-                            {data['top1']['class_name']}
+                            {data.get('top1', {{}}).get('class_name', 'Unknown')}
                         </h2>
                         <div style="margin: 1rem 0; font-size: 1.5rem;">
-                            <span style="background: {conf_gradient}; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                            <span style="background: {grad_var}; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
                                 {confidence_percent:.1f}% Confidence
                             </span>
                         </div>
                         <div style="font-size: 0.9rem; color: var(--color-muted-foreground);">
                             Primary mystical classification from ancient AI wisdom
-                        <div style="font-size: 0.9rem; color: #b0b0b0; font-weight: 700;">
+                        <div style="font-size: 0.9rem; color: var(--color-muted-foreground); font-weight: 700;">
                             การจัดหมวดหมู่โดย AI
                         </div>
                     </div>
@@ -999,16 +640,16 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     </div>
                     """, unsafe_allow_html=True)
 
-                    for i, item in enumerate(data['topk'], 1):
-                        confidence_pct = item['confidence'] * 100
+                    for i, item in enumerate(topk, 1):
+                        confidence_pct = float(item.get('confidence', 0)) * 100.0
 
                         # Medal icons and colors
                         if i == 1:
-                            icon, color = "🥇", "#d4af37"
+                            icon, color = "🥇", "var(--medal-gold)"
                         elif i == 2:
-                            icon, color = "🥈", "#c0c0c0"
+                            icon, color = "🥈", "var(--medal-silver)"
                         else:
-                            icon, color = "🥉", "#cd7f32"
+                            icon, color = "🥉", "var(--medal-bronze)"
 
                         st.markdown(f"""
                         <div class="glassmorphic mystical-glow" style="
@@ -1084,7 +725,7 @@ if (front and hasattr(st.session_state, 'front_processed') and
                     </div>
                     """, unsafe_allow_html=True)
 
-                    for i, rec in enumerate(data["recommendations"], 1):
+                    for i, rec in enumerate(data.get("recommendations", []), 1):
                         with st.expander(f"🏪 {rec['market']}", expanded=i==1):
                             st.markdown(f"""
                             <div class="glassmorphic" style="padding: 1rem;">
@@ -1153,22 +794,22 @@ else:
     else:
         missing_text = " and ".join(missing_images)
         st.markdown(f"""
-        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
-        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0; background: #fff; border-radius: 12px;">
+            <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0;">
+        <div class="glassmorphic mystical-glow" style="padding: 2rem; text-align: center; margin: 2rem 0; background: var(--card-fg); border-radius: 12px;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
             <h3 style="color: var(--color-accent); margin: 0;">Begin Your Mystical Journey</h3>
             <p style="color: var(--color-muted-foreground); margin: 1rem 0;">
                 Please upload {missing_text} to unlock the ancient wisdom
-            <h3 style="color: #ffd600; margin: 0; font-weight: 700;">เริ่มต้นการวิเคราะห์พระเครื่อง</h3>
-            <p style="color: #b0b0b0; margin: 1rem 0; font-weight: 700;">
+            <h3 style="color: var(--warning); margin: 0; font-weight: 700;">เริ่มต้นการวิเคราะห์พระเครื่อง</h3>
+            <p style="color: var(--color-muted-foreground); margin: 1rem 0; font-weight: 700;">
                 กรุณาอัปโหลด{missing_text}เพื่อปลดล็อกการวิเคราะห์
             </p>
-            <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05)); 
+                <div style="background: linear-gradient(135deg, color-mix(in srgb,var(--danger) 30%, white), color-mix(in srgb,var(--danger) 10%, white)); 
                         padding: 1rem; border-radius: var(--radius); margin: 1rem 0;
-                        border: 1px solid rgba(239, 68, 68, 0.2);">
-                <p style="color: #ef4444; font-weight: 600; margin: 0;">
+                        border: 1px solid color-mix(in srgb,var(--danger) 20%, transparent);">
+                <p style="color: var(--danger); font-weight: 600; margin: 0;">
                     ⚠️ Both sacred views are required for complete mystical analysis
-                <p style="color: #ef4444; font-weight: 700; margin: 0;">
+                <p style="color: var(--danger); font-weight: 700; margin: 0;">
                     ⚠️ ต้องอัปโหลดทั้งสองด้านจึงจะสามารถวิเคราะห์ได้ครบถ้วน
                 </p>
             </div>
@@ -1187,8 +828,8 @@ st.markdown("""
     <h2 style="color: var(--color-foreground); margin: 0;">🔮 Mystical Technology</h2>
     <p style="color: var(--color-muted-foreground);">Powered by ancient wisdom and modern AI</p>
 <div style="text-align: center; margin: 3rem 0 2rem 0; background: #fff; border-radius: 12px; padding: 2rem 1rem;">
-    <h2 style="color: #00b0ff; margin: 0; font-weight: 700;">เทคโนโลยีวิเคราะห์พระเครื่อง</h2>
-    <p style="color: #b0b0b0; font-weight: 700;">ขับเคลื่อนด้วยปัญญาโบราณและ AI สมัยใหม่</p>
+        <h2 style="color: var(--color-accent); margin: 0; font-weight: 700;">เทคโนโลยีวิเคราะห์พระเครื่อง</h2>
+    <p style="color: var(--color-muted-foreground); font-weight: 700;">ขับเคลื่อนด้วยปัญญาโบราณและ AI สมัยใหม่</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1202,7 +843,7 @@ with tech_col1:
         <h4 style="color: var(--color-accent); margin: 0;">AI Neural Networks</h4>
         <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
             Deep learning algorithms trained on ancient mystical patterns
-        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">ปัญญาประดิษฐ์ AI</h4>
+    <h4 style="color: var(--color-accent); margin: 0; font-weight: 700;">ปัญญาประดิษฐ์ AI</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             อัลกอริทึม Deep Learning ที่ฝึกกับลวดลายพระเครื่องโบราณ
         </p>
@@ -1217,7 +858,7 @@ with tech_col2:
         <h4 style="color: var(--color-accent); margin: 0;">Multi-Format Vision</h4>
         <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
             Advanced image processing for all sacred formats
-        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">รองรับหลายฟอร์แมต</h4>
+    <h4 style="color: var(--color-accent); margin: 0; font-weight: 700;">รองรับหลายฟอร์แมต</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             ประมวลผลภาพพระเครื่องได้ทุกฟอร์แมต
         </p>
@@ -1232,7 +873,7 @@ with tech_col3:
         <h4 style="color: var(--color-accent); margin: 0;">Real-Time Analysis</h4>
         <p style="color: var(--color-muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
             Lightning-fast mystical insights in seconds
-        <h4 style="color: #00b0ff; margin: 0; font-weight: 700;">วิเคราะห์แบบเรียลไทม์</h4>
+    <h4 style="color: var(--color-accent); margin: 0; font-weight: 700;">วิเคราะห์แบบเรียลไทม์</h4>
         <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0.5rem 0 0 0; font-weight: 700;">
             วิเคราะห์ผลได้อย่างรวดเร็วในไม่กี่วินาที
         </p>
@@ -1244,31 +885,31 @@ with st.expander("🔧 ข้อมูลสำหรับนักพัฒน
     st.markdown(f"""
     <div class="glassmorphic" style="padding: 1.5rem;">
         <h4 style="color: var(--color-accent); margin: 0 0 1rem 0;">Sacred Development Details</h4>
-        <h4 style="color: #00b0ff; margin: 0 0 1rem 0; font-weight: 700;">รายละเอียดสำหรับนักพัฒนา</h4>
+    <h4 style="color: var(--color-accent); margin: 0 0 1rem 0; font-weight: 700;">รายละเอียดสำหรับนักพัฒนา</h4>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-family: monospace;">
             <div>
                 <strong style="color: var(--color-foreground);">API Endpoint:</strong><br>
                 <code style="color: var(--color-accent);">{API_URL}</code>
                 <strong style="color: #222; font-weight: 700;">API Endpoint:</strong><br>
-                <code style="color: #00b0ff;">{API_URL}</code>
+                <code style="color: var(--color-accent);">{API_URL}</code>
             </div>
             <div>
                 <strong style="color: var(--color-foreground);">Last Updated:</strong><br>
                 <code style="color: var(--color-accent);">August 28, 2025</code>
                 <strong style="color: #222; font-weight: 700;">อัปเดตล่าสุด:</strong><br>
-                <code style="color: #00b0ff;">28 สิงหาคม 2025</code>
+                <code style="color: var(--color-accent);">28 สิงหาคม 2025</code>
             </div>
             <div>
                 <strong style="color: var(--color-foreground);">Version:</strong><br>
                 <code style="color: var(--color-accent);">Mystical v2.0.0</code>
                 <strong style="color: #222; font-weight: 700;">เวอร์ชัน:</strong><br>
-                <code style="color: #00b0ff;">Mystical v2.0.0</code>
+                <code style="color: var(--color-accent);">Mystical v2.0.0</code>
             </div>
             <div>
                 <strong style="color: var(--color-foreground);">Framework:</strong><br>
                 <code style="color: var(--color-accent);">Streamlit + FastAPI</code>
                 <strong style="color: #222; font-weight: 700;">เฟรมเวิร์ก:</strong><br>
-                <code style="color: #00b0ff;">Streamlit + FastAPI</code>
+                <code style="color: var(--color-accent);">Streamlit + FastAPI</code>
             </div>
         </div>
     </div>
