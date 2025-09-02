@@ -1,0 +1,144 @@
+{
+  "🎯": "Advanced Amulet AI Configuration",
+  "description": "Configuration for high-quality amulet recognition system with self-supervised learning",
+  
+  "_comment_data_paths": "=== DATA CONFIGURATION ===",
+  "dataset_path": "dataset",
+  "organized_path": "dataset_organized", 
+  "split_path": "dataset_split",
+  
+  "_comment_model": "=== MODEL CONFIGURATION ===",
+  "model_name": "efficientnet-b4",
+  "embedding_dim": 512,
+  "num_classes": 6,
+  
+  "_comment_training": "=== TRAINING CONFIGURATION ===",
+  "batch_size": 16,
+  "learning_rate": 0.0001,
+  "num_epochs": 100,
+  "warmup_epochs": 10,
+  "patience": 15,
+  
+  "_comment_self_supervised": "=== SELF-SUPERVISED LEARNING ===",
+  "temperature": 0.1,
+  "contrastive_weight": 1.0,
+  
+  "_comment_quality": "=== QUALITY THRESHOLDS ===",
+  "min_quality_score": 0.8,
+  
+  "_comment_output": "=== OUTPUT CONFIGURATION ===",
+  "output_dir": "training_output",
+  "save_best_only": true,
+  "log_interval": 10,
+  
+  "_comment_hardware": "=== HARDWARE CONFIGURATION ===",
+  "use_cuda": true,
+  "mixed_precision": true,
+  "num_workers": 4,
+  
+  "_comment_image_processing": "=== IMAGE PROCESSING SETTINGS ===",
+  "image_processing": {
+    "target_size": [512, 512],
+    "thumbnail_size": [300, 300],
+    "preserve_quality": true,
+    "noise_reduction": {
+      "enabled": true,
+      "h": 10.0,
+      "h_color": 10.0,
+      "template_window_size": 7,
+      "search_window_size": 21
+    },
+    "super_resolution": {
+      "enabled": true,
+      "upscale_factor": 1.5,
+      "method": "LANCZOS"
+    },
+    "sharpening": {
+      "enabled": true,
+      "kernel_type": "unsharp_mask",
+      "amount": 1.5,
+      "radius": 1.0,
+      "threshold": 0.05
+    },
+    "contrast_enhancement": {
+      "enabled": true,
+      "method": "CLAHE",
+      "clip_limit": 3.0,
+      "tile_grid_size": [8, 8]
+    }
+  },
+  
+  "_comment_embedding": "=== EMBEDDING CONFIGURATION ===",
+  "embedding_config": {
+    "dimension": 512,
+    "similarity_metric": "cosine",
+    "index_type": "IVFFlat",
+    "clustering": {
+      "enabled": true,
+      "n_clusters": 10,
+      "method": "kmeans"
+    },
+    "dimensionality_reduction": {
+      "enabled": true,
+      "method": "PCA",
+      "target_dim": 256
+    }
+  },
+  
+  "_comment_data_augmentation": "=== DATA AUGMENTATION (DISABLED) ===",
+  "data_augmentation": {
+    "enabled": false,
+    "rotation": false,
+    "flip": false,
+    "shift": false,
+    "zoom": false,
+    "note": "Disabled to preserve maximum image quality"
+  },
+  
+  "_comment_validation": "=== VALIDATION SETTINGS ===",
+  "validation": {
+    "split_ratio": 0.1,
+    "cross_validation": false,
+    "metrics": ["contrastive_loss", "embedding_quality", "similarity_accuracy"]
+  },
+  
+  "_comment_logging": "=== LOGGING CONFIGURATION ===",
+  "logging": {
+    "level": "INFO",
+    "save_logs": true,
+    "tensorboard": true,
+    "log_embeddings": true,
+    "log_images": true
+  },
+  
+  "_comment_advanced": "=== ADVANCED FEATURES ===",
+  "advanced_features": {
+    "gradient_clipping": {
+      "enabled": true,
+      "max_norm": 1.0
+    },
+    "weight_decay": 0.01,
+    "label_smoothing": 0.0,
+    "dropout": 0.1,
+    "batch_norm_momentum": 0.1
+  },
+  
+  "_comment_categories": "=== AMULET CATEGORIES ===",
+  "categories": [
+    "somdej-fatherguay",
+    "พระสมเด็จหลังรูปเหมือน", 
+    "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
+    "สมเด็จแหวกม่าน",
+    "ออกวัดหนองอีดุก",
+    "วัดหนองอีดุก"
+  ],
+  
+  "_comment_quick_start": "=== QUICK START CONFIG ===",
+  "quick_start": {
+    "enabled": false,
+    "num_epochs": 10,
+    "batch_size": 8,
+    "patience": 5,
+    "log_interval": 2
+  }
+}

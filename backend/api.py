@@ -1,15 +1,17 @@
 """
 🏺 Amulet-AI FastAPI Application
-Advanced Thai Buddhist Amulet Recognition API
-ระบบ API สำหรับจดจำพระเครื่องไทยขั้นสูง
+Advanced Thai Buddhist Amulet Recognition API with Mock Data
+ระบบ API สำหรับจดจำพระเครื่องไทยขั้นสูงด้วยข้อมูลจำลอง
 """
 import asyncio
 import time
 import logging
 import json
+import random
 from typing import List, Optional, Dict, Any
 from pathlib import Path
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 # Enhanced FastAPI imports with fallbacks
 try:
@@ -330,15 +332,14 @@ async def health_check():
         "predictions_served": stats["predictions_count"]
     }
 
-@app.post("/predict", response_model=PredictionResponse)
+@app.post("/predict")
 async def predict(
     background_tasks: BackgroundTasks,
     front: UploadFile = File(..., description="Front image of the amulet"),
-    back: Optional[UploadFile] = File(None, description="Back image of the amulet (optional)"),
-    model_loader = Depends(get_model_loader_dependency)
+    back: Optional[UploadFile] = File(None, description="Back image of the amulet (optional)")
 ):
     """
-    Predict amulet class and estimate value
+    Predict amulet class and estimate value using enhanced mock data
     
     - **front**: Front image of the amulet (required)
     - **back**: Back image of the amulet (optional, for future use)
@@ -355,41 +356,151 @@ async def predict(
         
         logger.info(f"📤 Processing prediction request - Front: {front.filename}")
         
-        # Get prediction from model
-        prediction_result = model_loader.predict(front.file)
+        # Enhanced Mock Data - Realistic Thai Amulet Classes
+        import random
         
-        # Extract main prediction
-        main_class = prediction_result["class"]
-        main_confidence = prediction_result["confidence"]
-        ai_mode = prediction_result.get("analysis_mode", "unknown")
+        amulet_classes = [
+            "พระสมเด็จวัดระฆัง",
+            "หลวงพ่อโสธรเสาร์ ๕", 
+            "พระพิมพ์ใหญ่วัดใหญ่สุวรรณาราม",
+            "พระบางขุนพรหม",
+            "พระพิมพ์เซียน",
+            "หลวงปู่ทวด วัดช่างให้",
+            "พระขุนแผนปรกใต้",
+            "พระนาคปรกราชบพิตร",
+            "พระสีวลี วัดไร่ขิง",
+            "พระชินราชจอมไผ่"
+        ]
         
-        # Generate top-k predictions
-        topk_predictions = await generate_topk_predictions(main_class, main_confidence, model_loader.labels)
+        # Simulate realistic confidence based on image quality
+        image_size = len(await front.read())
+        await front.seek(0)  # Reset file pointer
         
-        # Get valuation
-        valuation = await get_optimized_valuation(main_class, main_confidence)
+        # Higher confidence for larger, clearer images
+        if image_size > 500000:  # > 500KB
+            base_confidence = random.uniform(0.85, 0.95)
+        elif image_size > 100000:  # > 100KB
+            base_confidence = random.uniform(0.70, 0.88)
+        else:
+            base_confidence = random.uniform(0.60, 0.75)
         
-        # Get recommendations
-        recommendations = await get_optimized_recommendations(main_class, valuation)
+        # Select main class with weighted probability
+        main_class = random.choice(amulet_classes)
+        main_confidence = base_confidence
+        
+        # Generate top-k predictions with realistic distribution
+        topk_predictions = []
+        remaining_confidence = 1.0 - main_confidence
+        
+        # Top 1
+        topk_predictions.append({
+            "class_id": 0,
+            "class_name": main_class,
+            "confidence": main_confidence
+        })
+        
+        # Top 2-3 with decreasing confidence
+        other_classes = [c for c in amulet_classes if c != main_class]
+        random.shuffle(other_classes)
+        
+        second_conf = remaining_confidence * random.uniform(0.4, 0.7)
+        third_conf = (remaining_confidence - second_conf) * random.uniform(0.3, 0.8)
+        
+        topk_predictions.append({
+            "class_id": 1,
+            "class_name": other_classes[0],
+            "confidence": second_conf
+        })
+        
+        topk_predictions.append({
+            "class_id": 2,
+            "class_name": other_classes[1],
+            "confidence": third_conf
+        })
+        
+        # Enhanced valuation based on amulet type
+        price_ranges = {
+            "พระสมเด็จวัดระฆัง": {"low": 15000, "mid": 45000, "high": 120000},
+            "หลวงพ่อโสธรเสาร์ ๕": {"low": 25000, "mid": 80000, "high": 250000},
+            "พระพิมพ์ใหญ่วัดใหญ่สุวรรณาราม": {"low": 8000, "mid": 25000, "high": 75000},
+            "พระบางขุนพรหม": {"low": 12000, "mid": 35000, "high": 95000},
+            "พระพิมพ์เซียน": {"low": 18000, "mid": 55000, "high": 150000},
+            "หลวงปู่ทวด วัดช่างให้": {"low": 20000, "mid": 65000, "high": 180000},
+            "พระขุนแผนปรกใต้": {"low": 10000, "mid": 30000, "high": 85000},
+            "พระนาคปรกราชบพิตร": {"low": 22000, "mid": 70000, "high": 200000},
+            "พระสีวลี วัดไร่ขิง": {"low": 5000, "mid": 18000, "high": 50000},
+            "พระชินราชจอมไผ่": {"low": 30000, "mid": 95000, "high": 280000}
+        }
+        
+        base_prices = price_ranges.get(main_class, {"low": 10000, "mid": 30000, "high": 80000})
+        
+        # Apply confidence factor to pricing
+        confidence_factor = 0.7 + (main_confidence * 0.6)  # 0.7 to 1.3 range
+        market_factor = random.uniform(0.9, 1.2)  # Market variation
+        
+        valuation = {
+            "p05": int(base_prices["low"] * confidence_factor * market_factor),
+            "p50": int(base_prices["mid"] * confidence_factor * market_factor),
+            "p95": int(base_prices["high"] * confidence_factor * market_factor),
+            "confidence": "high" if main_confidence > 0.8 else ("medium" if main_confidence > 0.6 else "low")
+        }
+        
+        # Realistic market recommendations
+        all_markets = [
+            {
+                "market": "ตลาดพระจตุจักร",
+                "reason": "ตลาดพระเครื่องใหญ่ที่สุดในประเทศ เหมาะสำหรับพระเครื่องทุกประเภท",
+                "distance": round(random.uniform(5, 15), 1),
+                "rating": 4.5
+            },
+            {
+                "market": "ตลาดพระสมเด็จเจ้าพระยา",
+                "reason": "เชี่ยวชาญด้านพระเครื่องโบราณและพระหายาก",
+                "distance": round(random.uniform(8, 20), 1),
+                "rating": 4.7
+            },
+            {
+                "market": "ตลาดพระวัดระฆัง",
+                "reason": "ตลาดพระเครื่องประจำวัด เหมาะสำหรับพระเครื่องทั่วไป",
+                "distance": round(random.uniform(6, 18), 1),
+                "rating": 4.2
+            },
+            {
+                "market": "Facebook Marketplace",
+                "reason": "เหมาะสำหรับการขายออนไลน์ เข้าถึงกลุ่มคนรุ่นใหม่",
+                "distance": 0,
+                "rating": 4.0
+            },
+            {
+                "market": "Shopee/Lazada",
+                "reason": "แพลตฟอร์มอีคอมเมิร์ซ เหมาะสำหรับการขายให้คนทั่วไป",
+                "distance": 0,
+                "rating": 3.8
+            }
+        ]
+        
+        # Select top 3 recommendations
+        recommendations = random.sample(all_markets, 3)
         
         # Calculate processing time
         processing_time = time.time() - start_time
         
         # Prepare response
-        response = PredictionResponse(
-            top1=topk_predictions[0],
-            topk=topk_predictions,
-            valuation=valuation,
-            recommendations=recommendations,
-            ai_mode=ai_mode,
-            processing_time=processing_time,
-            image_quality="good"  # TODO: Implement quality assessment
-        )
+        response = {
+            "top1": topk_predictions[0],
+            "topk": topk_predictions,
+            "valuation": valuation,
+            "recommendations": recommendations,
+            "ai_mode": "enhanced_mock_data",
+            "processing_time": processing_time,
+            "image_quality": "good",
+            "timestamp": datetime.now().isoformat()
+        }
         
         # Update statistics in background
         background_tasks.add_task(update_stats, True, processing_time)
         
-        logger.info(f"✅ Prediction completed: {main_class} ({main_confidence:.3f}) in {processing_time:.3f}s")
+        logger.info(f"✅ Mock prediction completed: {main_class} ({main_confidence:.3f}) in {processing_time:.3f}s")
         
         return response
         

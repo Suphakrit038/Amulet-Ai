@@ -1,0 +1,21 @@
+{
+  "categories": {
+    "0": "somdej_fatherguay",
+    "1": "phra_somdej_lang_roop_muan",
+    "2": "somdej_pim_prok_pho_gao_bai",
+    "3": "somdej_waek_maan",
+    "4": "ook_wat_nong_ee_duk",
+    "5": "wat_nong_ee_duk"
+  },
+  "thai_to_english": {
+    "somdej-fatherguay": "somdej_fatherguay",
+    "พระสมเด็จหลังรูปเหมือน": "phra_somdej_lang_roop_muan",
+    "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ": "somdej_pim_prok_pho_gao_bai",
+    "สมเด็จแหวกม่าน": "somdej_waek_maan",
+    "ออกวัดหนองอีดุก": "ook_wat_nong_ee_duk",
+    "วัดหนองอีดุก": "wat_nong_ee_duk"
+  },
+  "naming_system": "thai_transliteration_karaoke",
+  "total_categories": 6,
+  "description": "Thai amulet categories with transliterated English names (karaoke style)"
+}

@@ -671,16 +671,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Sidebar: render via frontend.sidebar.render_sidebar
-try:
-    from frontend.sidebar import render_sidebar
-except Exception:
-    # fallback if running from the frontend folder directly
-    from sidebar import render_sidebar
 
-with st.sidebar:
-    # call the new modular sidebar renderer (defaults used)
-    render_sidebar()
 
 # Main Content
 st.markdown("""

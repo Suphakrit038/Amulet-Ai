@@ -481,52 +481,111 @@ if (
                 "image/jpeg",
             ),
         }
-        with st.spinner("กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
+        with st.spinner("🔍 กำลังประมวลผลด้วย AI Enhanced Mock Data... โปรดรอสักครู่"):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
                 if r.ok:
                     data = r.json()
 
-                    # ---- Primary Result ----
+                    # ---- Enhanced Primary Result Display ----
                     st.markdown("---")
-                    st.markdown("## ผลการวิเคราะห์")
+                    st.success("✅ วิเคราะห์เสร็จสิ้น!")
+                    
+                    # AI Mode indicator
+                    ai_mode = data.get("ai_mode", "mock_data")
+                    processing_time = data.get("processing_time", 0)
+                    
+                    col_header1, col_header2 = st.columns([3, 1])
+                    with col_header1:
+                        st.markdown("## 🎯 ผลการวิเคราะห์หลัก")
+                    with col_header2:
+                        st.info(f"🤖 โหมด: {ai_mode}")
+                        st.info(f"⏱️ เวลา: {processing_time:.2f}s")
+                    
                     top1 = data.get("top1", {})
                     conf_pct = float(top1.get("confidence", 0.0)) * 100.0
                     class_name = top1.get("class_name", "Unknown")
+                    
+                    # Enhanced confidence display
+                    confidence_color = "🟢" if conf_pct > 80 else "🟡" if conf_pct > 60 else "🔴"
                     st.markdown(
-                        f"**{class_name}** — ความน่าจะเป็น: **{conf_pct:.1f}%**"
+                        f"### {confidence_color} **{class_name}**"
                     )
+                    st.markdown(f"**ความน่าจะเป็น:** {conf_pct:.1f}%")
+                    
+                    # Progress bar for confidence
+                    st.progress(conf_pct/100, text=f"ความมั่นใจ: {conf_pct:.1f}%")
 
-                    # ---- Top-K ----
-                    st.markdown("### ตัวเลือกอื่นๆ (Top-3)")
+                    # ---- Enhanced Top-K Table ----
+                    st.markdown("### 📊 รายงานความน่าจะเป็นทั้งหมด")
+                    topk_data = []
                     for i, item in enumerate(data.get("topk", [])[:3], 1):
                         p = float(item.get("confidence", 0.0)) * 100.0
-                        st.markdown(
-                            f"{i}. **{item.get('class_name','—')}** — `{p:.1f}%`"
-                        )
+                        emoji = "🥇" if i == 1 else "🥈" if i == 2 else "🥉"
+                        topk_data.append({
+                            "อันดับ": f"{emoji} #{i}",
+                            "พระเครื่อง": item.get('class_name','—'),
+                            "ความน่าจะเป็น": f"{p:.1f}%",
+                            "คะแนน": f"{item.get('confidence', 0):.3f}"
+                        })
+                    
+                    if topk_data:
+                        st.table(topk_data)
 
-                    # ---- Valuation ----
-                    st.markdown("### ช่วงราคาประเมิน")
+                    # ---- Enhanced Valuation Display ----
+                    st.markdown("### 💰 ประเมินราคาตลาด")
                     v = data.get("valuation", {})
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        st.metric("ราคาต่ำ (P05)", f"{v.get('p05','–'):,} ฿" if v.get("p05") else "–")
-                    with c2:
-                        st.metric("ราคากลาง (P50)", f"{v.get('p50','–'):,} ฿" if v.get("p50") else "–")
-                    with c3:
-                        st.metric("ราคาสูง (P95)", f"{v.get('p95','–'):,} ฿" if v.get("p95") else "–")
+                    if v:
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            low_price = v.get('p05', 0)
+                            st.metric("💵 ราคาต่ำสุด", f"฿{low_price:,}" if low_price else "–")
+                        with col2:
+                            mid_price = v.get('p50', 0)
+                            st.metric("💸 ราคาเฉลี่ย", f"฿{mid_price:,}" if mid_price else "–")
+                        with col3:
+                            high_price = v.get('p95', 0)
+                            st.metric("💎 ราคาสูงสุด", f"฿{high_price:,}" if high_price else "–")
+                        
+                        # Confidence indicator
+                        val_confidence = v.get('confidence', 'medium')
+                        confidence_emoji = "🎯" if val_confidence == "high" else "⚡" if val_confidence == "medium" else "⚠️"
+                        st.info(f"{confidence_emoji} ความเชื่อมั่นในการประเมิน: **{val_confidence.upper()}**")
 
-                    # ---- Recommendations ----
-                    st.markdown("### แนะนำช่องทางการขาย")
+                    # ---- Enhanced Recommendations ----
+                    st.markdown("### 🏪 แนะนำตลาดและช่องทางการขาย")
                     recs = data.get("recommendations", [])
                     if recs:
-                        for rec in recs:
-                            with st.expander(rec.get("market", "Market"), expanded=False):
-                                st.write(f"**เหตุผล:** {rec.get('reason','')}")
+                        for i, rec in enumerate(recs):
+                            market_name = rec.get("market", "Market")
+                            rating = rec.get("rating", 0)
+                            distance = rec.get("distance", 0)
+                            
+                            # Market type emoji
+                            market_emoji = "🌐" if distance == 0 else "🏪"
+                            rating_stars = "⭐" * int(rating) + "☆" * (5-int(rating))
+                            
+                            with st.expander(f"{market_emoji} {market_name} {rating_stars} ({rating}/5.0)", expanded=(i==0)):
+                                st.write(f"**📝 เหตุผล:** {rec.get('reason','')}")
+                                if distance > 0:
+                                    st.write(f"**📍 ระยะทาง:** {distance} กิโลเมตร")
+                                else:
+                                    st.write(f"**💻 ประเภท:** ออนไลน์")
+                                    
+                                # Add recommendation score
+                                st.progress(rating/5.0, text=f"คะแนนแนะนำ: {rating}/5.0")
                     else:
-                        st.caption("ยังไม่มีคำแนะนำ")
+                        st.warning("⚠️ ยังไม่มีคำแนะนำตลาดในขณะนี้")
+                        
+                    # Timestamp info
+                    timestamp = data.get("timestamp", "")
+                    if timestamp:
+                        st.caption(f"🕒 วิเคราะห์เมื่อ: {timestamp}")
+                        
                 else:
-                    st.error(f"เกิดข้อผิดพลาด: {r.status_code} - {r.text}")
+                    st.error(f"❌ เกิดข้อผิดพลาดจาก API: {r.status_code}")
+                    st.write(f"📄 รายละเอียด: {r.text}")
+                    
             except requests.exceptions.Timeout:
                 st.warning("การประมวลผลใช้เวลานานเกินไป ลองใหม่อีกครั้งหรือลดขนาดไฟล์")
             except requests.exceptions.ConnectionError:
