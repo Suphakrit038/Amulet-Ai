@@ -1,4 +1,8 @@
-# 🎯 Advanced Amulet AI - High-Quality Requirements
+# 🎯 Advanced Amulet AI - High-Quali# Similarity search and clustering (using alternatives that don't require compilation)
+# annoy>=1.17.0  # Requires Visual C++ Build Tools - using FAISS instead
+# nmslib>=2.1.1  # Requires Visual C++ Build Tools - using FAISS instead  
+umap-learn>=0.5.3
+# hdbscan>=0.8.29  # Requires Visual C++ Build Tools - using sklearn clustering insteadquirements
 # Requirements for maximum image quality ML system
 
 # Core ML and Deep Learning
@@ -47,7 +51,7 @@ streamlit>=1.25.0
 gradio>=3.40.0
 
 # Database & Storage
-sqlite3  # Built-in with Python
+# sqlite3  # Built-in with Python - removed from requirements
 sqlalchemy>=2.0.0
 redis>=4.6.0  # For caching
 h5py>=3.9.0  # For HDF5 storage
@@ -63,7 +67,9 @@ click>=8.1.0
 # Image Format Support
 pyheif>=0.7.1  # HEIC support
 pillow-heif>=0.13.0  # Better HEIC support
-rawpy>=0.18.1  # RAW image support
+# RAW image support (alternative to pyheif)
+# pyheif>=0.7.1  # Requires Visual C++ Build Tools - using pillow-heif instead
+pillow-heif>=0.16.0
 
 # Performance & Monitoring
 tensorboard>=2.13.0

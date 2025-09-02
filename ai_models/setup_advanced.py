@@ -147,7 +147,7 @@ class AdvancedAmuletAISetup:
         
         return gpu_info
     
-    def install_requirements(self, requirements_file: str = "requirements_advanced.txt") -> bool:
+    def install_requirements(self, requirements_file: str = "requirements_minimal.txt") -> bool:
         """Install Python requirements"""
         requirements_path = self.base_dir / requirements_file
         
