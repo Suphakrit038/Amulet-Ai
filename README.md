@@ -1,12 +1,14 @@
 # 🏺 Amulet-AI: Advanced Thai Buddhist Amulet Recognition System
+## ✨ **ตอนนี้ใช้ Real AI Model ที่เทรนจริงแล้ว!** 🚀
 
 [![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-green.svg)](https://fastapi.tiangolo.com)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.48+-red.svg)](https://streamlit.io)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.20+-orange.svg)](https://tensorflow.org)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](https://github.com)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
+[![Status](https://img.shields.io/badge/Status-Real%20AI%20Model-brightgreen.svg)](https://github.com)
 
-**🚀 ระบบปัญญาประดิษฐ์สำหรับการจดจำ วิเคราะห์ และประเมินราคาพระเครื่องไทยอย่างครบวงจร**
+**🚀 ระบบปัญญาประดิษฐ์สำหรับการจดจำ วิเคราะห์ และประเมินราคาพระเครื่องไทยอย่างครบวงจร**  
+**💡 ใช้ Deep Learning Models ที่เทรนจากข้อมูลจริง ไม่ใช่ Mock Data อีกต่อไป!**
 
 ---
 
@@ -2558,9 +2560,9 @@ Maintainers:
 | 3 | ฐานสิงห์ | Lion-base Buddha | ฿12,000 - ฿85,000 |
 | 4 | สีวลี | Sivali amulet | ฿5,000 - ฿50,000 |
 
-## 🚀 **Quick Start - Optimized Version**
+## 🚀 **Quick Start - Real AI Model Version** ✨
 
-### **Option 1: Optimized System (Recommended)**
+### **🔥 Option 1: Complete Real AI System (แนะนำ!)**
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -2569,20 +2571,38 @@ cd Amulet-Ai
 # Install dependencies  
 pip install -r requirements.txt
 
-# Start optimized system - One command for everything!
-python scripts/start_optimized_system.py
+# เริ่มระบบ AI จริง - รวมทั้ง Backend + Frontend!
+python launch_real_ai_system.py
 ```
 
-### **Option 2: Individual Optimized Components**
+### **🎯 Option 2: Real AI สำหรับ Windows (.bat)**
 ```bash
-# Backend API (Production-ready)
-python backend/optimized_api.py
+# เริ่มระบบครบ (Backend + Frontend)
+launch_real_ai_complete.bat
 
-# Frontend UI 
-streamlit run frontend/app_streamlit.py --server.port 8501
+# หรือเริ่มแค่ Backend 
+launch_real_ai_backend.bat
+```
 
-# Testing API (Lightweight)
-python backend/test_api.py
+### **⚙️ Option 3: แยก Components (สำหรับ Developer)**
+```bash
+# Real AI Backend (Port 8001)
+python backend/api_with_real_model.py
+
+# Frontend UI (Port 8501)
+streamlit run frontend/app_streamlit.py
+
+# ตรวจสอบ API Documentation
+# ไปที่: http://127.0.0.1:8001/docs
+```
+
+### **📊 ตรวจสอบสถานะ AI Model**
+```bash
+# ตรวจสอบว่า Real Model โหลดแล้วหรือยัง
+curl http://127.0.0.1:8001/health
+
+# ดูข้อมูล Model ที่โหลด
+curl http://127.0.0.1:8001/model-info
 ```
 
 ### **Option 3: Docker Deployment**

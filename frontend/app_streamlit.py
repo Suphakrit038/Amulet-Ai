@@ -90,13 +90,13 @@ except Exception:
         return requests.post(url, files=prepared, timeout=timeout)
 
 # ==========================================================
-# Config (prefer the first file's constants)
+# Config - ตอนนี้ใช้ AI Model จริงแล้ว! 🚀
 # ==========================================================
-API_URL = "http://127.0.0.1:8000"
+API_URL = "http://127.0.0.1:8001"  # Real AI Model Backend  
+# API_URL = "http://127.0.0.1:8000"  # Mock API (หากต้องการทดสอบ)
 
 st.set_page_config(
-    page_title="Amulet-AI",
-    page_icon="⟐",
+    page_title=" Amulet-AI",
     layout="wide",
 )
 
@@ -125,7 +125,6 @@ h1,h2,h3,h4 { font-family:'Playfair Display', serif; letter-spacing:-.02em; }
 
 /* ---- Expanded header classes (from file#2) ---- */
 .app-header { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; background:#fff; border:1px solid var(--color-border); border-radius:.75rem; }
-.logo { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; background:var(--color-accent); color:#fff; font-weight:800; }
 .header-text h1 { margin:.1rem 0; font-size:2rem; }
 .header-text p { margin:0; font-size:.95rem; color:var(--color-muted-foreground) }
 .header-subblock { display:flex; gap:1rem; margin-top:.35rem; flex-wrap:wrap; }
@@ -152,17 +151,17 @@ h1,h2,h3,h4 { font-family:'Playfair Display', serif; letter-spacing:-.02em; }
 st.markdown(
     """
 <div class="app-header">
-  <div class="logo">⟐</div>
   <div class="header-text">
-    <h1>Amulet-AI</h1>
-    <p>Ancient Intelligence for Thai Buddhist Amulets — authenticity insights, pattern understanding, and market guidance.</p>
+    <h1> Amulet-AI</h1>
+    <p>
+ปัญญาโบราณสำหรับพระเครื่องพุทธไทย — ข้อมูลเชิงลึกเกี่ยวกับความแท้ ความเข้าใจในรูปแบบ</p>
     <div class="header-subblock">
       <span class="badge">Accurate Classification</span>
       <span class="badge">Price Estimation</span>
       <span class="badge">Cultural Heritage</span>
     </div>
   </div>
-  <div class="crumbs"><span>Dashboard</span><span>›</span><span style="color:var(--color-foreground)">Analysis</span></div>
+  <div class="crumbs"><span>Dashboard</span></div>
 </div>
 """,
     unsafe_allow_html=True,
