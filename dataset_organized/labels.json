@@ -1,8 +1,56 @@
 {
-  "0": "somdej_fatherguay",
-  "1": "somdej_portrait_back", 
-  "2": "somdej_prok_bodhi",
-  "3": "somdej_waek_man",
-  "4": "wat_nong_e_duk",
-  "5": "wat_nong_e_duk_misc"
+  "categories": [
+    "somdej_fatherguay",
+    "buddha_in_vihara",
+    "somdej_lion_base",
+    "somdej_buddha_blessing",
+    "somdej_portrait_back",
+    "phra_san",
+    "phra_sivali",
+    "somdej_prok_bodhi",
+    "somdej_waek_man",
+    "wat_nong_e_duk"
+  ],
+  "mapping": {
+    "somdej_fatherguay": {
+      "thai_name": "สมเด็จหลวงพ่อกวย",
+      "original_folder": "somdej-fatherguay"
+    },
+    "buddha_in_vihara": {
+      "thai_name": "พระพุทธเจ้าในวิหาร",
+      "original_folder": "พระพุทธเจ้าในวิหาร"
+    },
+    "somdej_lion_base": {
+      "thai_name": "พระสมเด็จฐานสิงห์",
+      "original_folder": "พระสมเด็จฐานสิงห์"
+    },
+    "somdej_buddha_blessing": {
+      "thai_name": "พระสมเด็จประทานพร พุทธกวัก",
+      "original_folder": "พระสมเด็จประทานพร พุทธกวัก"
+    },
+    "somdej_portrait_back": {
+      "thai_name": "พระสมเด็จหลังรูปเหมือน",
+      "original_folder": "พระสมเด็จหลังรูปเหมือน"
+    },
+    "phra_san": {
+      "thai_name": "พระสรรค์",
+      "original_folder": "พระสรรค์"
+    },
+    "phra_sivali": {
+      "thai_name": "พระสิวลี",
+      "original_folder": "พระสิวลี"
+    },
+    "somdej_prok_bodhi": {
+      "thai_name": "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
+      "original_folder": "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ"
+    },
+    "somdej_waek_man": {
+      "thai_name": "สมเด็จแหวกม่าน",
+      "original_folder": "สมเด็จแหวกม่าน"
+    },
+    "wat_nong_e_duk": {
+      "thai_name": "ออกวัดหนองอีดุก",
+      "original_folder": "ออกวัดหนองอีดุก"
+    }
+  }
 }

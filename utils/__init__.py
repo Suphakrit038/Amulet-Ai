@@ -5,7 +5,7 @@ Utils Package
 
 # Import main utilities
 from .config_manager import config, get_config, set_config
-from .logger import default_logger, performance_tracker, log_info, log_error, log_warning
+from .logger import default_logger, default_performance_tracker as performance_tracker, log_info, log_error, log_warning
 from .error_handler import (
     AmuletError, ValidationError, ModelError, ImageProcessingError,
     handle_error, create_error_response, validate_required_fields

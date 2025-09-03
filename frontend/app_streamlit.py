@@ -285,7 +285,7 @@ with col1:
         is_valid, processed_img, processed_bytes, error_msg = validate_and_convert_image(front)
         if is_valid:
             st.success("ภาพด้านหน้า: พร้อมใช้งาน")
-            st.image(processed_img, use_column_width=True, caption=f"ภาพด้านหน้า ({front_source})")
+            st.image(processed_img, width=300, caption=f"ภาพด้านหน้า ({front_source})")
             st.session_state.front_processed = processed_bytes
             st.session_state.front_filename = (
                 front.name if hasattr(front, "name") else f"camera_front_{datetime.now():%Y%m%d_%H%M%S}.jpg"
@@ -364,7 +364,7 @@ with col2:
         is_valid, processed_img, processed_bytes, error_msg = validate_and_convert_image(back)
         if is_valid:
             st.success("ภาพด้านหลัง: พร้อมใช้งาน")
-            st.image(processed_img, use_column_width=True, caption=f"ภาพด้านหลัง ({back_source})")
+            st.image(processed_img, width=300, caption=f"ภาพด้านหลัง ({back_source})")
             st.session_state.back_processed = processed_bytes
             st.session_state.back_filename = (
                 back.name if hasattr(back, "name") else f"camera_back_{datetime.now():%Y%m%d_%H%M%S}.jpg"
@@ -383,9 +383,9 @@ if (
 ):
     st.markdown(
         """
-        <div class="panel" style="text-align:center;">
-          <h4 style="margin:.25rem 0 0;">พร้อมวิเคราะห์แล้ว</h4>
-          <p class="muted" style="margin:.25rem 0 .5rem;">กดปุ่มด้านล่างเพื่อเริ่มการวิเคราะห์ด้วย AI</p>
+        <div class="panel" style="text-align:center; border-left: 4px solid #28a745; background-color: #f8f9fa;">
+          <h4 style="margin:.25rem 0 0; color: #212529;">พร้อมวิเคราะห์แล้ว</h4>
+          <p style="margin:.25rem 0 .5rem; color: #495057;">กดปุ่มด้านล่างเพื่อเริ่มการวิเคราะห์ด้วย AI</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -403,15 +403,15 @@ if (
                 "image/jpeg",
             ),
         }
-        with st.spinner("🔍 กำลังประมวลผลด้วย AI Enhanced Mock Data... โปรดรอสักครู่"):
+        with st.spinner("กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
                 if r.ok:
                     data = r.json()
 
-                    # ---- Enhanced Primary Result Display ----
+                    # ---- Professional Result Display ----
                     st.markdown("---")
-                    st.success("✅ วิเคราะห์เสร็จสิ้น!")
+                    st.success("วิเคราะห์เสร็จสิ้น")
                     
                     # AI Mode indicator
                     ai_mode = data.get("ai_mode", "mock_data")
@@ -419,33 +419,34 @@ if (
                     
                     col_header1, col_header2 = st.columns([3, 1])
                     with col_header1:
-                        st.markdown("## 🎯 ผลการวิเคราะห์หลัก")
+                        st.markdown("## ผลการวิเคราะห์หลัก")
                     with col_header2:
-                        st.info(f"🤖 โหมด: {ai_mode}")
-                        st.info(f"⏱️ เวลา: {processing_time:.2f}s")
+                        st.info(f"โหมด: {ai_mode}")
+                        st.info(f"เวลา: {processing_time:.2f}s")
                     
                     top1 = data.get("top1", {})
                     conf_pct = float(top1.get("confidence", 0.0)) * 100.0
                     class_name = top1.get("class_name", "Unknown")
                     
-                    # Enhanced confidence display
-                    confidence_color = "🟢" if conf_pct > 80 else "🟡" if conf_pct > 60 else "🔴"
-                    st.markdown(
-                        f"### {confidence_color} **{class_name}**"
-                    )
-                    st.markdown(f"**ความน่าจะเป็น:** {conf_pct:.1f}%")
+                    # Professional confidence display
+                    confidence_label = "สูง" if conf_pct > 80 else "ปานกลาง" if conf_pct > 60 else "ต่ำ"
+                    confidence_color = "#28a745" if conf_pct > 80 else "#ffc107" if conf_pct > 60 else "#dc3545"
                     
-                    # Progress bar for confidence
-                    st.progress(conf_pct/100, text=f"ความมั่นใจ: {conf_pct:.1f}%")
-
-                    # ---- Enhanced Top-K Table ----
-                    st.markdown("### 📊 รายงานความน่าจะเป็นทั้งหมด")
+                    st.markdown(f"""
+                    <div style="border-left: 5px solid {confidence_color}; padding-left: 15px;">
+                        <h3 style="margin-top: 0;"><strong>{class_name}</strong></h3>
+                        <p>ความเชื่อมั่น: <strong>{confidence_label}</strong> ({conf_pct:.1f}%)</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # ---- Professional Top-K Table ----
+                    st.markdown("### รายงานความน่าจะเป็นทั้งหมด")
                     topk_data = []
                     for i, item in enumerate(data.get("topk", [])[:3], 1):
                         p = float(item.get("confidence", 0.0)) * 100.0
-                        emoji = "🥇" if i == 1 else "🥈" if i == 2 else "🥉"
+                        rank = f"อันดับ {i}"
                         topk_data.append({
-                            "อันดับ": f"{emoji} #{i}",
+                            "อันดับ": rank,
                             "พระเครื่อง": item.get('class_name','—'),
                             "ความน่าจะเป็น": f"{p:.1f}%",
                             "คะแนน": f"{item.get('confidence', 0):.3f}"
@@ -454,28 +455,83 @@ if (
                     if topk_data:
                         st.table(topk_data)
 
-                    # ---- Enhanced Valuation Display ----
-                    st.markdown("### 💰 ประเมินราคาตลาด")
+                    # Add reference images section
+                    st.markdown("### ภาพตัวอย่างพระเครื่อง")
+                    
+                    # Check if reference images are available in the API response
+                    if "reference_images" in data and data["reference_images"]:
+                        ref_images = data.get("reference_images", {})
+                        
+                        # Display reference image for top prediction
+                        top_class = top1.get("class_name", "")
+                        if top_class in ref_images and ref_images[top_class]:
+                            st.markdown(f"**ตัวอย่างพระเครื่อง {top_class}**")
+                            st.image(
+                                ref_images[top_class], 
+                                caption=f"ตัวอย่างพระเครื่อง: {top_class}",
+                                width=300
+                            )
+                            
+                            # Add comparison columns for user image and reference image
+                            st.markdown("### เปรียบเทียบกับพระเครื่องของคุณ")
+                            col_user, col_ref = st.columns(2)
+                            
+                            with col_user:
+                                st.markdown("#### พระเครื่องของคุณ")
+                                # Using the processed front image stored in session state
+                                if "front_processed" in st.session_state:
+                                    front_img = Image.open(st.session_state.front_processed)
+                                    st.image(front_img, width=300)
+                                
+                            with col_ref:
+                                st.markdown(f"#### ตัวอย่าง {top_class}")
+                                st.image(ref_images[top_class], width=300)
+                        else:
+                            st.info(f"ไม่มีภาพตัวอย่างสำหรับ {top_class} ในฐานข้อมูล")
+                    else:
+                        st.info("ระบบยังไม่มีภาพตัวอย่างสำหรับการเปรียบเทียบ")
+
+                    # ---- Professional Valuation Display ----
+                    st.markdown("### ประเมินราคาตลาด")
                     v = data.get("valuation", {})
                     if v:
+                        # Use a styled container for price information
+                        st.markdown("""
+                        <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.5rem; padding: 1rem;">
+                            <h4 style="margin-top: 0; color: #495057;">ช่วงราคาประเมิน</h4>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
                         col1, col2, col3 = st.columns(3)
                         with col1:
                             low_price = v.get('p05', 0)
-                            st.metric("💵 ราคาต่ำสุด", f"฿{low_price:,}" if low_price else "–")
+                            st.metric("ราคาต่ำสุด", f"฿{low_price:,}" if low_price else "–")
                         with col2:
                             mid_price = v.get('p50', 0)
-                            st.metric("💸 ราคาเฉลี่ย", f"฿{mid_price:,}" if mid_price else "–")
+                            st.metric("ราคาเฉลี่ย", f"฿{mid_price:,}" if mid_price else "–")
                         with col3:
                             high_price = v.get('p95', 0)
-                            st.metric("💎 ราคาสูงสุด", f"฿{high_price:,}" if high_price else "–")
+                            st.metric("ราคาสูงสุด", f"฿{high_price:,}" if high_price else "–")
                         
                         # Confidence indicator
                         val_confidence = v.get('confidence', 'medium')
-                        confidence_emoji = "🎯" if val_confidence == "high" else "⚡" if val_confidence == "medium" else "⚠️"
-                        st.info(f"{confidence_emoji} ความเชื่อมั่นในการประเมิน: **{val_confidence.upper()}**")
+                        confidence_text = {
+                            'high': 'สูง', 
+                            'medium': 'ปานกลาง', 
+                            'low': 'ต่ำ'
+                        }.get(val_confidence, 'ไม่ระบุ')
+                        
+                        st.info(f"ความเชื่อมั่นในการประเมิน: **{confidence_text}**")
+                        
+                        # Add pricing notes
+                        if v.get('notes'):
+                            st.markdown("**หมายเหตุเกี่ยวกับราคา:**")
+                            st.markdown(v.get('notes'))
+                    else:
+                        st.warning("ไม่มีข้อมูลการประเมินราคาสำหรับพระเครื่องนี้")
 
-                    # ---- Enhanced Recommendations ----
-                    st.markdown("### 🏪 แนะนำตลาดและช่องทางการขาย")
+                    # ---- Professional Recommendations ----
+                    st.markdown("### แนะนำตลาดและช่องทางการขาย")
                     recs = data.get("recommendations", [])
                     if recs:
                         for i, rec in enumerate(recs):
@@ -483,37 +539,47 @@ if (
                             rating = rec.get("rating", 0)
                             distance = rec.get("distance", 0)
                             
-                            # Market type emoji
-                            market_emoji = "🌐" if distance == 0 else "🏪"
-                            rating_stars = "⭐" * int(rating) + "☆" * (5-int(rating))
+                            # Market type description
+                            market_type = "ออนไลน์" if distance == 0 else "ออฟไลน์"
+                            rating_text = f"{rating}/5.0"
                             
-                            with st.expander(f"{market_emoji} {market_name} {rating_stars} ({rating}/5.0)", expanded=(i==0)):
-                                st.write(f"**📝 เหตุผล:** {rec.get('reason','')}")
-                                if distance > 0:
-                                    st.write(f"**📍 ระยะทาง:** {distance} กิโลเมตร")
-                                else:
-                                    st.write(f"**💻 ประเภท:** ออนไลน์")
-                                    
-                                # Add recommendation score
-                                st.progress(rating/5.0, text=f"คะแนนแนะนำ: {rating}/5.0")
+                            with st.expander(f"{market_name} - {rating_text} ({market_type})", expanded=(i==0)):
+                                st.markdown(f"""
+                                <div style="padding: 10px 0;">
+                                    <p><strong>เหตุผล:</strong> {rec.get('reason','')}</p>
+                                    {'<p><strong>ระยะทาง:</strong> ' + str(distance) + ' กิโลเมตร</p>' if distance > 0 else '<p><strong>ประเภท:</strong> ออนไลน์</p>'}
+                                    <p><strong>คะแนนแนะนำ:</strong> {rating}/5.0</p>
+                                </div>
+                                """, unsafe_allow_html=True)
                     else:
-                        st.warning("⚠️ ยังไม่มีคำแนะนำตลาดในขณะนี้")
+                        st.info("ยังไม่มีคำแนะนำตลาดในขณะนี้")
                         
                     # Timestamp info
                     timestamp = data.get("timestamp", "")
                     if timestamp:
-                        st.caption(f"🕒 วิเคราะห์เมื่อ: {timestamp}")
+                        st.caption(f"วิเคราะห์เมื่อ: {timestamp}")
                         
                 else:
-                    st.error(f"❌ เกิดข้อผิดพลาดจาก API: {r.status_code}")
-                    st.write(f"📄 รายละเอียด: {r.text}")
+                    st.error(f"เกิดข้อผิดพลาดจาก API: {r.status_code}")
+                    st.markdown(f"""
+                    <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.5rem; padding: 1rem;">
+                        <h4 style="margin-top: 0; color: #721c24;">รายละเอียดข้อผิดพลาด</h4>
+                        <pre style="background: #f5c6cb; padding: 10px; border-radius: 0.25rem;">{r.text}</pre>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
             except requests.exceptions.Timeout:
-                st.warning("การประมวลผลใช้เวลานานเกินไป ลองใหม่อีกครั้งหรือลดขนาดไฟล์")
+                st.warning("การประมวลผลใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้งหรือลดขนาดไฟล์")
             except requests.exceptions.ConnectionError:
-                st.error("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบว่า Backend ทำงานอยู่ที่พอร์ต 8000")
+                st.error("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบว่า Backend ทำงานอยู่ที่พอร์ต 8000 หรือ 8001")
             except Exception as e:
-                st.error(f"เกิดข้อผิดพลาดไม่คาดคิด: {e}")
+                st.error("เกิดข้อผิดพลาดที่ไม่คาดคิด")
+                st.markdown(f"""
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.5rem; padding: 1rem;">
+                    <h4 style="margin-top: 0; color: #721c24;">รายละเอียดข้อผิดพลาด</h4>
+                    <pre style="background: #f5c6cb; padding: 10px; border-radius: 0.25rem;">{str(e)}</pre>
+                </div>
+                """, unsafe_allow_html=True)
 else:
     # Missing inputs guidance (kept concise)
     missing = []
@@ -529,10 +595,12 @@ else:
 with st.expander("ข้อมูลสำหรับนักพัฒนา"):
     st.markdown(
         f"""
-**API Endpoint:** `{API_URL}`  
-**Framework:** Streamlit + FastAPI  
-**Last updated:** {datetime.now():%Y-%m-%d %H:%M}  
-"""
+<div style="font-family: monospace; background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dee2e6;">
+<p><strong>API Endpoint:</strong> <code>{API_URL}</code></p>  
+<p><strong>Framework:</strong> Streamlit + FastAPI</p>  
+<p><strong>Last updated:</strong> {datetime.now():%Y-%m-%d %H:%M}</p>
+</div>
+""", unsafe_allow_html=True
     )
     
     # API connection diagnostic
@@ -541,12 +609,12 @@ with st.expander("ข้อมูลสำหรับนักพัฒนา")
             with st.spinner("กำลังทดสอบการเชื่อมต่อ..."):
                 health_response = requests.get(f"{API_URL}/health", timeout=5)
                 if health_response.status_code == 200:
-                    st.success(f"✅ เชื่อมต่อสำเร็จ! API พร้อมใช้งาน - Status: {health_response.status_code}")
+                    st.success(f"เชื่อมต่อสำเร็จ! API พร้อมใช้งาน - Status: {health_response.status_code}")
                     st.json(health_response.json())
                 else:
-                    st.error(f"❌ เชื่อมต่อสำเร็จแต่ API ส่งค่า error: {health_response.status_code}")
-                    st.text(health_response.text)
+                    st.error(f"เชื่อมต่อสำเร็จแต่ API ส่งค่า error: {health_response.status_code}")
+                    st.code(health_response.text)
         except requests.exceptions.ConnectionError:
-            st.error("❌ ไม่สามารถเชื่อมต่อกับ API ได้ - กรุณาตรวจสอบว่า backend API เปิดใช้งานอยู่ที่ " + API_URL)
+            st.error("ไม่สามารถเชื่อมต่อกับ API ได้ - กรุณาตรวจสอบว่า backend API เปิดใช้งานอยู่ที่ " + API_URL)
         except Exception as e:
-            st.error(f"❌ เกิดข้อผิดพลาด: {str(e)}")
+            st.error(f"เกิดข้อผิดพลาด: {str(e)}")
