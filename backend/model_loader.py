@@ -354,8 +354,8 @@ class AmuletModelLoader:
         scores = {}
         
         for class_id, class_name in self.labels.items():
-            if class_name in self.color_patterns:
-                pattern = self.color_patterns[class_name]
+            if class_name in self.amulet_patterns:
+                pattern = self.amulet_patterns[class_name]
                 score = self._calculate_similarity_score(features, pattern)
             else:
                 # Fallback scoring
@@ -370,27 +370,31 @@ class AmuletModelLoader:
         score = 0.0
         
         # Color similarity
-        if "avg_color" in features and "preferred_colors" in pattern:
+        if "avg_color" in features and "color_profile" in pattern:
+            color_profile = pattern["color_profile"]
             color_score = self._calculate_color_similarity(
-                features["avg_color"], pattern["preferred_colors"]
+                features["avg_color"], color_profile.get("primary_colors", [])
             )
-            score += color_score * self.feature_weights["color_similarity"]
+            score += color_score * self.analysis_weights["color_similarity"]
         
         # Brightness matching
-        if "brightness" in features and "brightness_range" in pattern:
+        if "brightness" in features and "color_profile" in pattern:
+            color_profile = pattern["color_profile"]
             brightness_score = self._calculate_range_score(
-                features["brightness"], pattern["brightness_range"]
+                features["brightness"], color_profile.get("brightness_range", (0.2, 0.8))
             )
-            score += brightness_score * self.feature_weights["brightness_match"]
+            score += brightness_score * self.analysis_weights["brightness_match"]
         
         # Contrast matching
-        if "contrast" in features and "contrast_preference" in pattern:
-            contrast_score = 1.0 - abs(features["contrast"] - pattern["contrast_preference"])
-            score += max(0, contrast_score) * self.feature_weights["contrast_level"]
+        if "contrast" in features and "color_profile" in pattern:
+            color_profile = pattern["color_profile"]
+            contrast_preference = color_profile.get("contrast_preference", 0.5)
+            contrast_score = 1.0 - abs(features["contrast"] - contrast_preference)
+            score += max(0, contrast_score) * self.analysis_weights["contrast_level"]
         
         # Additional features
-        score += features.get("texture_complexity", 0.3) * self.feature_weights["texture_complexity"]
-        score += features.get("edge_density", 0.3) * self.feature_weights["edge_density"]
+        score += features.get("texture_complexity", 0.3) * self.analysis_weights["texture_complexity"]
+        score += features.get("edge_density", 0.3) * self.analysis_weights["edge_density"]
         
         # Add controlled randomness
         score += random.uniform(-0.05, 0.05)

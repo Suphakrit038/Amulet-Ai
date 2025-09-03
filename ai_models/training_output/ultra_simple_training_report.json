@@ -1,0 +1,22 @@
+{
+  "training_type": "ultra_simple_emergency",
+  "model_parameters": 10314,
+  "categories": {
+    "somdej-fatherguay": 0,
+    "พระพุทธเจ้าในวิหาร": 1,
+    "พระสมเด็จฐานสิงห์": 2,
+    "พระสมเด็จประทานพร พุทธกวัก": 3,
+    "พระสมเด็จหลังรูปเหมือน": 4,
+    "พระสรรค์": 5,
+    "พระสิวลี": 6,
+    "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ": 7,
+    "สมเด็จแหวกม่าน": 8,
+    "ออกวัดหนองอีดุก": 9
+  },
+  "dataset_size": 162,
+  "samples_trained": 50,
+  "successful_samples": 50,
+  "failed_samples": 0,
+  "average_loss": 2.9668647826841332,
+  "final_memory_usage": 51.2
+}

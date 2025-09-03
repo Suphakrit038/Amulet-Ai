@@ -3,9 +3,9 @@
 ระบบ Self-Supervised Learning ขั้นสูงสำหรับพระเครื่องไทย
 """
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -47,9 +47,27 @@ class ContrastiveLearningModel(nn.Module):
         # Backbone: EfficientNet-B4 (ความละเอียดสูง)
         self.backbone = self._create_backbone()
         
+        # Get the number of features before classifier
+        if hasattr(self.backbone.classifier, 'in_features'):
+            # If classifier is a single Linear layer
+            num_features = self.backbone.classifier.in_features
+        else:
+            # If classifier is Sequential, get from last layer
+            if isinstance(self.backbone.classifier, nn.Sequential):
+                for layer in reversed(self.backbone.classifier):
+                    if hasattr(layer, 'in_features'):
+                        num_features = layer.in_features
+                        break
+                else:
+                    # Fallback: standard EfficientNet-B4 features
+                    num_features = 1792
+            else:
+                # Fallback: standard EfficientNet-B4 features  
+                num_features = 1792
+        
         # Projection head สำหรับ contrastive learning
         self.projection_head = nn.Sequential(
-            nn.Linear(self.backbone.classifier.in_features, config.embedding_dim),
+            nn.Linear(num_features, config.embedding_dim),
             nn.ReLU(),
             nn.Linear(config.embedding_dim, config.projection_dim)
         )
@@ -154,6 +172,43 @@ class SelfSupervisedTrainer:
         loss = F.cross_entropy(similarity_matrix, labels)
         
         return loss
+    
+    def training_step(self, images, labels=None):
+        """Single training step for compatibility with master training system"""
+        self.model.train()
+        images = images.to(self.device)
+        
+        # Create positive pairs
+        positive_pairs = self.create_positive_pairs(images)
+        
+        # Forward pass for both views
+        view1_embeddings = []
+        view2_embeddings = []
+        
+        for view1, view2 in positive_pairs:
+            emb1 = self.model(view1.unsqueeze(0))
+            emb2 = self.model(view2.unsqueeze(0))
+            view1_embeddings.append(emb1)
+            view2_embeddings.append(emb2)
+        
+        embeddings1 = torch.cat(view1_embeddings, dim=0)
+        embeddings2 = torch.cat(view2_embeddings, dim=0)
+        
+        # Calculate loss
+        loss = self.contrastive_loss(embeddings1, embeddings2, self.config.temperature)
+        
+        # Backward pass
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        
+        # Return loss and metrics for compatibility
+        metrics = {
+            'contrastive_loss': loss.item(),
+            'temperature': self.config.temperature
+        }
+        
+        return loss, metrics
     
     def train_epoch(self, dataloader):
         """Train one epoch"""

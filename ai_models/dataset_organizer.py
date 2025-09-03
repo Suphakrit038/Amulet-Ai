@@ -21,8 +21,8 @@ import concurrent.futures
 from tqdm import tqdm
 
 # Import our advanced systems
-from .advanced_image_processor import advanced_processor, process_image_max_quality
-from .self_supervised_learning import ContrastiveLearningModel, AdvancedEmbeddingSystem
+from advanced_image_processor import advanced_processor, process_image_max_quality
+from self_supervised_learning import ContrastiveLearningModel, AdvancedEmbeddingSystem
 
 logger = logging.getLogger(__name__)
 

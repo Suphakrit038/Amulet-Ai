@@ -3,8 +3,8 @@
 สคริปต์หลักสำหรับระบบเทรน AI พระเครื่องขั้นสูง
 
 Usage:
-    python train_advanced_amulet_ai.py --config config.json
     python train_advanced_amulet_ai.py --quick-start
+    python train_advanced_amulet_ai.py --config config_advanced.json
     python train_advanced_amulet_ai.py --evaluate-only
 """
 import sys
@@ -18,8 +18,9 @@ from typing import Dict, Optional
 import torch
 import numpy as np
 
-# Add ai_models to path
-sys.path.append(str(Path(__file__).parent))
+# Add current directory to path for imports
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
 
 # Import our advanced systems
 from master_training_system import MasterTrainingSystem, MasterTrainingConfig, create_master_training_system
@@ -47,7 +48,7 @@ def setup_environment():
         logger.info(f"🔥 CUDA available: {torch.cuda.get_device_name()}")
         logger.info(f"💾 CUDA memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     else:
-        logger.info("🖥️ Using CPU")
+        logger.info("� Using CPU for training")
     
     # Set random seeds for reproducibility
     torch.manual_seed(42)
@@ -55,7 +56,7 @@ def setup_environment():
     if torch.cuda.is_available():
         torch.cuda.manual_seed(42)
     
-    logger.info("🔧 Environment setup completed")
+    logger.info("🔧 Environment setup complete")
 
 def load_config(config_path: Optional[str] = None) -> MasterTrainingConfig:
     """Load configuration from file or use defaults"""
@@ -107,8 +108,10 @@ def validate_dataset(dataset_path: str) -> bool:
     """Validate dataset structure and content"""
     dataset_path = Path(dataset_path)
     
+    logger.info(f"🔍 Validating dataset at: {dataset_path.absolute()}")
+    
     if not dataset_path.exists():
-        logger.error(f"❌ Dataset path does not exist: {dataset_path}")
+        logger.error(f"❌ Dataset path does not exist: {dataset_path.absolute()}")
         return False
     
     # Check for category directories
@@ -143,7 +146,18 @@ def validate_dataset(dataset_path: str) -> bool:
 
 def quick_start_config() -> MasterTrainingConfig:
     """Create quick start configuration for testing"""
-    config = MasterTrainingConfig()
+    
+    # Set explicit dataset path
+    dataset_path = r"C:\Users\Admin\Documents\GitHub\Amulet-Ai\dataset"
+    
+    logger.info(f"🔧 Creating quick start config with dataset path: {dataset_path}")
+    logger.info(f"📁 Path exists: {Path(dataset_path).exists()}")
+    logger.info(f"📂 Is directory: {Path(dataset_path).is_dir()}")
+    
+    # Create config with explicit dataset path
+    config = MasterTrainingConfig(
+        dataset_path=dataset_path
+    )
     
     # Reduce parameters for quick testing
     config.num_epochs = 10
@@ -151,34 +165,54 @@ def quick_start_config() -> MasterTrainingConfig:
     config.patience = 5
     config.log_interval = 2
     config.warmup_epochs = 2
+    config.num_workers = 0  # Use 0 for Windows compatibility
     
-    logger.info("🚀 Quick start configuration created")
+    # Verify config was created correctly
+    logger.info(f"✅ Config created with dataset_path: {config.dataset_path}")
+    
     return config
 
 def run_training(config: MasterTrainingConfig) -> Dict:
     """Run complete training pipeline"""
     logger.info("🎯 Starting Advanced Amulet AI Training System")
     logger.info(f"📊 Configuration: {config.model_name}, {config.num_epochs} epochs, batch size {config.batch_size}")
+    logger.info(f"📁 Dataset path from config: {config.dataset_path}")
     
     try:
-        # Validate dataset
-        if not validate_dataset(config.dataset_path):
+        # Validate dataset - ensure absolute path
+        if Path(config.dataset_path).is_absolute():
+            dataset_path = Path(config.dataset_path)
+        else:
+            # Convert relative path to absolute path from project root
+            project_root = Path(__file__).parent.parent
+            dataset_path = (project_root / config.dataset_path).resolve()
+        
+        logger.info(f"🔍 Validating dataset at: {dataset_path}")
+        
+        if not validate_dataset(str(dataset_path)):
             raise ValueError("Dataset validation failed")
         
+        # Update config with correct dataset path
+        config.dataset_path = str(dataset_path)
+        
         # Create training system
+        logger.info("🏗️ Creating master training system...")
         training_system = create_master_training_system(config)
         
         # Save configuration
         save_config(config, config.output_dir)
         
         # Run complete pipeline
-        results = training_system.run_complete_training_pipeline()
+        logger.info("🎯 Starting training...")
+        results = training_system.train()
         
         logger.info("🎉 Training completed successfully!")
         return results
         
     except Exception as e:
-        logger.error(f"❌ Training failed: {e}")
+        logger.error(f"💥 Training failed: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise
 
 def run_evaluation_only(config: MasterTrainingConfig) -> Dict:

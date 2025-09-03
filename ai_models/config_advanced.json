@@ -3,14 +3,14 @@
   "description": "Configuration for high-quality amulet recognition system with self-supervised learning",
   
   "_comment_data_paths": "=== DATA CONFIGURATION ===",
-  "dataset_path": "dataset",
+  "dataset_path": "C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\dataset",
   "organized_path": "dataset_organized", 
   "split_path": "dataset_split",
   
   "_comment_model": "=== MODEL CONFIGURATION ===",
   "model_name": "efficientnet-b4",
   "embedding_dim": 512,
-  "num_classes": 6,
+  "num_classes": 10,
   
   "_comment_training": "=== TRAINING CONFIGURATION ===",
   "batch_size": 16,

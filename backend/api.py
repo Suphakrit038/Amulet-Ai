@@ -1,7 +1,7 @@
 """
-🏺 Amulet-AI FastAPI Application
-Advanced Thai Buddhist Amulet Recognition API with Mock Data
-ระบบ API สำหรับจดจำพระเครื่องไทยขั้นสูงด้วยข้อมูลจำลอง
+🏺 Amulet-AI FastAPI Application  
+Advanced Thai Buddhist Amulet Recognition API with Integrated AI Model
+ระบบ API สำหรับจดจำพระเครื่องไทยขั้นสูงด้วย AI Model ที่เทรนแล้ว
 """
 import asyncio
 import time
@@ -12,6 +12,15 @@ from typing import List, Optional, Dict, Any
 from pathlib import Path
 from contextlib import asynccontextmanager
 from datetime import datetime
+
+# Import AI Model Service
+try:
+    from .ai_model_service import predict_amulet, get_ai_model_info, ai_health_check
+    AI_SERVICE_AVAILABLE = True
+    logging.info("✅ AI Model Service imported successfully")
+except ImportError as e:
+    logging.warning(f"⚠️ AI Model Service not available: {e}, using mock predictions")
+    AI_SERVICE_AVAILABLE = False
 
 # Enhanced FastAPI imports with fallbacks
 try:
@@ -97,16 +106,8 @@ except ImportError as e:
         
         print("🔧 Using mock functions for development")
     
-    try:
-        from backend.model_loader import ModelLoader
-        from backend.valuation import estimate_price
-        from backend.recommend import get_recommendations
-        from backend.config import get_config
-    except ImportError:
-        from model_loader import ModelLoader
-        from valuation import estimate_price
-        from recommend import get_recommendations
-        from config import get_config
+    # Note: Using get_model_loader() function instead of direct ModelLoader class
+    print("✅ Using model loader function approach")
 
 # Load system configuration
 def load_system_config() -> Dict[str, Any]:
@@ -153,14 +154,13 @@ async def lifespan(app: FastAPI):
 # Configuration setup
 try:
     config = get_config()
-    api_config = config.get("api", {})
     
-    # Default API configuration
+    # Access configuration attributes directly
     class APIConfig:
-        cors_origins = api_config.get("cors_origins", ["*"])
-        host = api_config.get("host", "127.0.0.1") 
-        port = api_config.get("port", 8000)
-        log_level = api_config.get("log_level", "INFO")
+        cors_origins = config.api.cors_origins
+        host = config.api.host
+        port = config.api.port
+        log_level = config.api.log_level
     
     api_config = APIConfig()
     
@@ -320,17 +320,59 @@ async def root():
 
 @app.get("/health", response_model=dict)
 async def health_check():
-    """Health check endpoint"""
-    model_loader = get_model_loader()
-    stats = model_loader.get_stats()
-    
-    return {
-        "status": "healthy",
-        "timestamp": time.time(),
-        "model_status": "ready",
-        "cache_size": stats["cache_size"],
-        "predictions_served": stats["predictions_count"]
-    }
+    """
+    🏥 Health check endpoint with AI status
+    ตรวจสอบสถานะระบบและ AI Model
+    """
+    try:
+        # Check AI service status
+        ai_status = {"status": "unavailable"}
+        if AI_SERVICE_AVAILABLE:
+            ai_status = ai_health_check()
+        
+        return {
+            "status": "healthy",
+            "timestamp": time.time(),
+            "api_version": "1.0.0",
+            "ai_service_available": AI_SERVICE_AVAILABLE,
+            "ai_status": ai_status,
+            "endpoints": ["/predict", "/ai-info", "/health", "/docs"]
+        }
+    except Exception as e:
+        logger.error(f"❌ Health check error: {e}")
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": time.time()
+        }
+
+# Add AI model info endpoint  
+@app.get("/ai-info")
+async def get_ai_model_info_endpoint():
+    """
+    🧠 Get AI model information
+    ข้อมูลเกี่ยวกับ AI Model ที่ใช้งาน
+    """
+    try:
+        if AI_SERVICE_AVAILABLE:
+            model_info = get_ai_model_info()
+            return JSONResponse(content=model_info)
+        else:
+            return JSONResponse(content={
+                "model_name": "Mock AI v1.0",
+                "categories": ["พระเครื่องทั่วไป"],
+                "categories_count": 1, 
+                "model_parameters": 0,
+                "input_size": "224x224 RGB",
+                "is_loaded": False,
+                "note": "AI service not available"
+            })
+    except Exception as e:
+        logger.error(f"❌ Error getting AI info: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to get AI info: {str(e)}"}
+        )
 
 @app.post("/predict")
 async def predict(
@@ -339,12 +381,13 @@ async def predict(
     back: Optional[UploadFile] = File(None, description="Back image of the amulet (optional)")
 ):
     """
-    Predict amulet class and estimate value using enhanced mock data
+    🔮 Predict amulet class using trained AI model with enhanced analysis
+    ระบบวิเคราะห์พระเครื่องด้วย AI ที่เทรนแล้ว
     
     - **front**: Front image of the amulet (required)
     - **back**: Back image of the amulet (optional, for future use)
     
-    Returns detailed prediction with price estimation and market recommendations.
+    Returns detailed prediction with AI model confidence and market analysis.
     """
     start_time = time.time()
     
@@ -354,39 +397,115 @@ async def predict(
         if back:
             validate_image_file(back)
         
-        logger.info(f"📤 Processing prediction request - Front: {front.filename}")
+        logger.info(f"📤 Processing AI prediction - Front: {front.filename}")
         
-        # Enhanced Mock Data - Realistic Thai Amulet Classes
-        import random
+        # Read image data
+        image_data = await front.read()
+        await front.seek(0)  # Reset for potential reuse
         
-        amulet_classes = [
-            "พระสมเด็จวัดระฆัง",
-            "หลวงพ่อโสธรเสาร์ ๕", 
-            "พระพิมพ์ใหญ่วัดใหญ่สุวรรณาราม",
-            "พระบางขุนพรหม",
-            "พระพิมพ์เซียน",
-            "หลวงปู่ทวด วัดช่างให้",
-            "พระขุนแผนปรกใต้",
-            "พระนาคปรกราชบพิตร",
-            "พระสีวลี วัดไร่ขิง",
-            "พระชินราชจอมไผ่"
-        ]
+        # Use AI model service if available
+        if AI_SERVICE_AVAILABLE:
+            try:
+                # Make prediction using trained AI model
+                prediction_result = predict_amulet(image_data)
+                
+                if prediction_result['success']:
+                    results = prediction_result['results']
+                    processing_time = time.time() - start_time
+                    
+                    # Convert AI results to API format
+                    top_predictions = []
+                    for i, pred in enumerate(results['top_predictions']):
+                        top_predictions.append({
+                            "class_id": pred.get('class_id', i),
+                            "class_name": pred['class_name'],
+                            "confidence": pred['confidence']
+                        })
+                    
+                    # Enhanced valuation based on AI prediction
+                    confidence = results['confidence']
+                    predicted_class = results['predicted_class']
+                    
+                    # Get enhanced valuation
+                    valuation = await get_optimized_valuation(predicted_class, confidence, "good")
+                    
+                    # Get market recommendations
+                    recommendations = await get_optimized_recommendations(predicted_class, valuation)
+                    
+                    # Prepare comprehensive response
+                    response_data = {
+                        "top1": top_predictions[0] if top_predictions else {
+                            "class_id": 0, "class_name": predicted_class, "confidence": confidence
+                        },
+                        "topk": top_predictions,
+                        "valuation": valuation,
+                        "recommendations": recommendations[:3] if recommendations else [],
+                        "ai_mode": "real_ai_model",
+                        "processing_time": processing_time,
+                        "image_quality": results.get('model_confidence', 'medium'),
+                        "timestamp": datetime.now().isoformat(),
+                        "model_info": {
+                            "model_name": prediction_result['model_info'].get('model_name', 'Advanced Amulet AI'),
+                            "categories_count": prediction_result['model_info'].get('categories_count', 0),
+                            "inference_time": prediction_result['inference_time'],
+                            "embedding_dimension": results.get('embedding_dimension', 64)
+                        }
+                    }
+                    
+                    # Update statistics
+                    background_tasks.add_task(update_stats, True, processing_time)
+                    
+                    logger.info(f"✅ AI Prediction: {predicted_class} ({confidence:.3f}) in {processing_time:.3f}s")
+                    return response_data
+                    
+                else:
+                    logger.error(f"❌ AI prediction failed: {prediction_result.get('error', 'Unknown error')}")
+                    # Fall through to enhanced mock prediction with fallback data
+                    if 'fallback_results' in prediction_result:
+                        fallback = prediction_result['fallback_results']
+                        main_class = fallback['predicted_class']
+                        main_confidence = fallback['confidence']
+                    else:
+                        main_class = None  # Will use mock data below
+            
+            except Exception as e:
+                logger.error(f"❌ AI service error: {e}")
+                main_class = None  # Will use mock data below
         
-        # Simulate realistic confidence based on image quality
-        image_size = len(await front.read())
-        await front.seek(0)  # Reset file pointer
-        
-        # Higher confidence for larger, clearer images
-        if image_size > 500000:  # > 500KB
-            base_confidence = random.uniform(0.85, 0.95)
-        elif image_size > 100000:  # > 100KB
-            base_confidence = random.uniform(0.70, 0.88)
+        # Enhanced Mock Data fallback - Use main_class if available from AI fallback
+        if main_class is None:
+            # Realistic Thai Amulet Classes
+            amulet_classes = [
+                "somdej-fatherguay",
+                "พระพุทธเจ้าในวิหาร",
+                "พระสมเด็จฐานสิงห์", 
+                "พระสมเด็จประทานพร พุทธกวัก",
+                "พระสมเด็จหลังรูปเหมือน",
+                "พระสรรค์",
+                "พระสิวลี",
+                "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
+                "สมเด็จแหวกม่าน",
+                "ออกวัดหนองอีดุก"
+            ]
+            
+            # Simulate realistic confidence based on image quality
+            image_size = len(image_data)
+            
+            # Higher confidence for larger, clearer images
+            if image_size > 500000:  # > 500KB
+                base_confidence = random.uniform(0.75, 0.85)  # Lower than real AI
+            elif image_size > 100000:  # > 100KB
+                base_confidence = random.uniform(0.60, 0.78)
+            else:
+                base_confidence = random.uniform(0.50, 0.65)
+            
+            # Select main class with weighted probability
+            main_class = random.choice(amulet_classes)
+            main_confidence = base_confidence
+            ai_mode = "enhanced_mock_data"
         else:
-            base_confidence = random.uniform(0.60, 0.75)
-        
-        # Select main class with weighted probability
-        main_class = random.choice(amulet_classes)
-        main_confidence = base_confidence
+            # Use AI fallback data
+            ai_mode = "ai_fallback_with_mock_enhancement"
         
         # Generate top-k predictions with realistic distribution
         topk_predictions = []
@@ -398,6 +517,15 @@ async def predict(
             "class_name": main_class,
             "confidence": main_confidence
         })
+        
+        # Get other classes for top-k
+        if ai_mode == "ai_fallback_with_mock_enhancement":
+            # Use the same amulet classes as fallback for consistency
+            amulet_classes = [
+                "somdej-fatherguay", "พระพุทธเจ้าในวิหาร", "พระสมเด็จฐานสิงห์", 
+                "พระสมเด็จประทานพร พุทธกวัก", "พระสมเด็จหลังรูปเหมือน", "พระสรรค์",
+                "พระสิวลี", "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ", "สมเด็จแหวกม่าน", "ออกวัดหนองอีดุก"
+            ]
         
         # Top 2-3 with decreasing confidence
         other_classes = [c for c in amulet_classes if c != main_class]
@@ -418,69 +546,11 @@ async def predict(
             "confidence": third_conf
         })
         
-        # Enhanced valuation based on amulet type
-        price_ranges = {
-            "พระสมเด็จวัดระฆัง": {"low": 15000, "mid": 45000, "high": 120000},
-            "หลวงพ่อโสธรเสาร์ ๕": {"low": 25000, "mid": 80000, "high": 250000},
-            "พระพิมพ์ใหญ่วัดใหญ่สุวรรณาราม": {"low": 8000, "mid": 25000, "high": 75000},
-            "พระบางขุนพรหม": {"low": 12000, "mid": 35000, "high": 95000},
-            "พระพิมพ์เซียน": {"low": 18000, "mid": 55000, "high": 150000},
-            "หลวงปู่ทวด วัดช่างให้": {"low": 20000, "mid": 65000, "high": 180000},
-            "พระขุนแผนปรกใต้": {"low": 10000, "mid": 30000, "high": 85000},
-            "พระนาคปรกราชบพิตร": {"low": 22000, "mid": 70000, "high": 200000},
-            "พระสีวลี วัดไร่ขิง": {"low": 5000, "mid": 18000, "high": 50000},
-            "พระชินราชจอมไผ่": {"low": 30000, "mid": 95000, "high": 280000}
-        }
+        # Enhanced valuation based on amulet type with real market knowledge
+        valuation = await get_optimized_valuation(main_class, main_confidence, "good")
         
-        base_prices = price_ranges.get(main_class, {"low": 10000, "mid": 30000, "high": 80000})
-        
-        # Apply confidence factor to pricing
-        confidence_factor = 0.7 + (main_confidence * 0.6)  # 0.7 to 1.3 range
-        market_factor = random.uniform(0.9, 1.2)  # Market variation
-        
-        valuation = {
-            "p05": int(base_prices["low"] * confidence_factor * market_factor),
-            "p50": int(base_prices["mid"] * confidence_factor * market_factor),
-            "p95": int(base_prices["high"] * confidence_factor * market_factor),
-            "confidence": "high" if main_confidence > 0.8 else ("medium" if main_confidence > 0.6 else "low")
-        }
-        
-        # Realistic market recommendations
-        all_markets = [
-            {
-                "market": "ตลาดพระจตุจักร",
-                "reason": "ตลาดพระเครื่องใหญ่ที่สุดในประเทศ เหมาะสำหรับพระเครื่องทุกประเภท",
-                "distance": round(random.uniform(5, 15), 1),
-                "rating": 4.5
-            },
-            {
-                "market": "ตลาดพระสมเด็จเจ้าพระยา",
-                "reason": "เชี่ยวชาญด้านพระเครื่องโบราณและพระหายาก",
-                "distance": round(random.uniform(8, 20), 1),
-                "rating": 4.7
-            },
-            {
-                "market": "ตลาดพระวัดระฆัง",
-                "reason": "ตลาดพระเครื่องประจำวัด เหมาะสำหรับพระเครื่องทั่วไป",
-                "distance": round(random.uniform(6, 18), 1),
-                "rating": 4.2
-            },
-            {
-                "market": "Facebook Marketplace",
-                "reason": "เหมาะสำหรับการขายออนไลน์ เข้าถึงกลุ่มคนรุ่นใหม่",
-                "distance": 0,
-                "rating": 4.0
-            },
-            {
-                "market": "Shopee/Lazada",
-                "reason": "แพลตฟอร์มอีคอมเมิร์ซ เหมาะสำหรับการขายให้คนทั่วไป",
-                "distance": 0,
-                "rating": 3.8
-            }
-        ]
-        
-        # Select top 3 recommendations
-        recommendations = random.sample(all_markets, 3)
+        # Get market recommendations
+        recommendations = await get_optimized_recommendations(main_class, valuation)
         
         # Calculate processing time
         processing_time = time.time() - start_time
@@ -490,8 +560,8 @@ async def predict(
             "top1": topk_predictions[0],
             "topk": topk_predictions,
             "valuation": valuation,
-            "recommendations": recommendations,
-            "ai_mode": "enhanced_mock_data",
+            "recommendations": recommendations[:3] if recommendations else [],
+            "ai_mode": ai_mode,
             "processing_time": processing_time,
             "image_quality": "good",
             "timestamp": datetime.now().isoformat()
@@ -658,7 +728,7 @@ if __name__ == "__main__":
                 "backend.api:app",
                 host=api_config.host,
                 port=api_config.port,
-                reload=config.get("debug", False),
+                reload=config.debug,
                 log_level=api_config.log_level.lower()
             )
         except ImportError:
