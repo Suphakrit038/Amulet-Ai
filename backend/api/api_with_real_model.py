@@ -7,6 +7,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import time
+import base64
 from datetime import datetime
 import logging
 import os
@@ -22,6 +23,23 @@ try:
     from models.real_model_loader import AmuletModelLoader
     # สร้าง global instance
     model_loader = AmuletModelLoader()
+    
+    # กำหนด path สำหรับรูปอ้างอิง
+    REFERENCE_IMAGES_DIR = Path(__file__).parent.parent.parent / "unified_dataset" / "reference_images"
+    if not REFERENCE_IMAGES_DIR.exists():
+        print(f"⚠️ Reference images directory not found: {REFERENCE_IMAGES_DIR}")
+        # Fallback paths
+        fallback_paths = [
+            Path(__file__).parent.parent.parent / "dataset_organized",
+            Path(__file__).parent.parent / "reference_images",
+            Path(__file__).parent.parent.parent / "ai_models" / "reference_images"
+        ]
+        
+        for path in fallback_paths:
+            if path.exists():
+                REFERENCE_IMAGES_DIR = path
+                print(f"✅ Using fallback reference images path: {REFERENCE_IMAGES_DIR}")
+                break
 except ImportError as e:
     print(f"⚠️ Import error: {e}")
     # Fallback แบบง่าย
@@ -148,6 +166,125 @@ def generate_recommendations(class_name: str, price_range: dict):
     
     return recommendations
 
+def get_reference_images(class_name: str, view_type: str = None, limit: int = 3):
+    """ดึงรูปภาพอ้างอิงสำหรับคลาสที่ระบุ"""
+    reference_images = {}
+    
+    # ปรับชื่อคลาสถ้าจำเป็น (เช่น somdej-fatherguay -> somdej_fatherguay)
+    normalized_class_name = class_name.replace('-', '_')
+    
+    # ลองหลายไดเร็กทอรี
+    class_ref_dirs = [
+        REFERENCE_IMAGES_DIR / normalized_class_name,
+        REFERENCE_IMAGES_DIR / class_name
+    ]
+    
+    # ถ้าเป็นชื่อภาษาอังกฤษ ลองหาชื่อภาษาไทยด้วย
+    thai_names = {
+        "somdej_fatherguay": "พระสมเด็จหลวงพ่อกวย",
+        "buddha_in_vihara": "พระพุทธเจ้าในวิหาร",
+        "somdej_lion_base": "พระสมเด็จฐานสิงห์",
+        "somdej_buddha_blessing": "พระสมเด็จประทานพร พุทธกวัก",
+        "somdej_portrait_back": "พระสมเด็จหลังรูปเหมือน",
+        "phra_san": "พระสรรค์",
+        "phra_sivali": "พระสิวลี",
+        "somdej_prok_bodhi": "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
+        "somdej_waek_man": "สมเด็จแหวกม่าน",
+        "wat_nong_e_duk": "ออกวัดหนองอีดุก"
+    }
+    
+    if normalized_class_name in thai_names:
+        class_ref_dirs.append(REFERENCE_IMAGES_DIR / thai_names[normalized_class_name])
+    
+    # ดูในทุกไดเร็กทอรีที่เป็นไปได้
+    class_ref_dir = None
+    for dir_path in class_ref_dirs:
+        if dir_path.exists():
+            class_ref_dir = dir_path
+            break
+            
+    if not class_ref_dir:
+        print(f"⚠️ Reference directory not found for class: {class_name}")
+        # ลองค้นหาในทุกไดเร็กทอรี
+        subdirs = [d for d in REFERENCE_IMAGES_DIR.iterdir() if d.is_dir()]
+        for subdir in subdirs:
+            if (any(name in subdir.name.lower() for name in normalized_class_name.lower().split('_')) or
+                any(name in normalized_class_name.lower() for name in subdir.name.lower().split('_'))):
+                class_ref_dir = subdir
+                print(f"✅ Found similar reference directory: {class_ref_dir}")
+                break
+                
+        if not class_ref_dir:
+            return reference_images
+    
+    try:
+        # ดึงรูปภาพทั้งหมดหรือตาม view_type
+        if view_type:
+            img_files = list(class_ref_dir.glob(f"{view_type}_*.*"))[:limit]
+            
+            # ถ้าไม่พบไฟล์ที่ขึ้นต้นด้วย view_type ให้ลองหาไฟล์ที่มี view_type ในชื่อ
+            if not img_files:
+                img_files = [f for f in class_ref_dir.glob("*.*") 
+                           if view_type in f.name.lower() and 
+                           f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']][:limit]
+        else:
+            # ดึงรูป front ก่อน หากมี
+            front_files = list(class_ref_dir.glob("front_*.*"))[:limit]
+            
+            # ถ้าไม่พบไฟล์ที่ขึ้นต้นด้วย front_ ให้ลองหาไฟล์ที่มี front ในชื่อ
+            if not front_files:
+                front_files = [f for f in class_ref_dir.glob("*.*") 
+                             if "front" in f.name.lower() and 
+                             f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']][:limit]
+            
+            back_files = []
+            
+            # ถ้ารูป front ไม่พอตามจำนวน limit ให้เอารูป back มาเพิ่ม
+            if len(front_files) < limit:
+                back_files = list(class_ref_dir.glob("back_*.*"))[:limit - len(front_files)]
+                
+                # ถ้าไม่พบไฟล์ที่ขึ้นต้นด้วย back_ ให้ลองหาไฟล์ที่มี back ในชื่อ
+                if not back_files:
+                    back_files = [f for f in class_ref_dir.glob("*.*") 
+                                if "back" in f.name.lower() and 
+                                f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']][:limit - len(front_files)]
+                
+            img_files = front_files + back_files
+        
+        # ถ้าไม่มีรูปอ้างอิงเลย ให้ลองหาไฟล์ภาพทั้งหมด
+        if not img_files:
+            img_files = list(class_ref_dir.glob("*.*"))[:limit]
+            img_files = [f for f in img_files if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']]
+        
+        # แปลงรูปเป็น base64
+        for i, img_file in enumerate(img_files):
+            try:
+                with open(img_file, "rb") as f:
+                    img_bytes = f.read()
+                    img_b64 = base64.b64encode(img_bytes).decode('utf-8')
+                    
+                    # ตรวจสอบ view_type จากชื่อไฟล์
+                    file_view_type = "unknown"
+                    if "front" in img_file.name.lower():
+                        file_view_type = "front"
+                    elif "back" in img_file.name.lower():
+                        file_view_type = "back"
+                    
+                    reference_images[f"ref_{i+1}"] = {
+                        "image_b64": img_b64,
+                        "filename": img_file.name,
+                        "view_type": file_view_type,
+                        "path": str(img_file.relative_to(REFERENCE_IMAGES_DIR.parent))
+                    }
+                    print(f"✅ Added reference image: {img_file.name} ({file_view_type})")
+            except Exception as e:
+                print(f"⚠️ Error processing reference image {img_file}: {e}")
+                
+        return reference_images
+    except Exception as e:
+        print(f"⚠️ Error getting reference images for {class_name}: {e}")
+        return reference_images
+
 @app.on_event("startup")
 async def startup_event():
     """โหลด model เมื่อเซิร์ฟเวอร์เริ่มทำงาน"""
@@ -218,7 +355,13 @@ async def predict(
         # อ่านรูปภาพหน้า (หลัก)
         front_bytes = await front.read()
         
-        print(f"📤 Processing: {front.filename} ({len(front_bytes)} bytes)")
+        # อ่านรูปภาพหลัง (ถ้ามี)
+        back_bytes = None
+        if back:
+            back_bytes = await back.read()
+            print(f"📤 Processing front: {front.filename} ({len(front_bytes)} bytes) and back: {back.filename} ({len(back_bytes)} bytes)")
+        else:
+            print(f"📤 Processing front only: {front.filename} ({len(front_bytes)} bytes)")
         
         # ทำนายด้วย Real AI Model
         prediction_result = model_loader.predict_image(front_bytes)
@@ -240,7 +383,26 @@ async def predict(
         # สร้างคำแนะนำตลาด
         recommendations = generate_recommendations(top1["class_name"], valuation)
         
+        # ดึงรูปภาพอ้างอิง - ด้านหน้า
+        front_reference_images = get_reference_images(top1["class_name"], "front", 2)
+        
+        # ดึงรูปภาพอ้างอิง - ด้านหลัง
+        back_reference_images = get_reference_images(top1["class_name"], "back", 2)
+        
+        # รวมรูปอ้างอิงทั้งหมด
+        reference_images = {**front_reference_images, **back_reference_images}
+        
+        # ถ้าไม่มีรูปอ้างอิงเลย ลองดึงโดยไม่ระบุ view_type
+        if not reference_images:
+            reference_images = get_reference_images(top1["class_name"], limit=4)
+        
         processing_time = time.time() - start_time
+        
+        # แปลงรูปภาพที่อัพโหลดเป็น base64 เพื่อส่งกลับไป
+        front_b64 = base64.b64encode(front_bytes).decode('utf-8')
+        back_b64 = None
+        if back_bytes:
+            back_b64 = base64.b64encode(back_bytes).decode('utf-8')
         
         # สร้าง response ที่สมบูรณ์
         response = {
@@ -255,14 +417,24 @@ async def predict(
             "processing_time": processing_time,
             "timestamp": datetime.now().isoformat(),
             "image_info": {
-                "filename": front.filename,
-                "size": len(front_bytes),
-                "format": "image"
+                "front": {
+                    "filename": front.filename,
+                    "size": len(front_bytes),
+                    "format": "image",
+                    "image_b64": front_b64
+                },
+                "back": {
+                    "filename": back.filename if back else None,
+                    "size": len(back_bytes) if back_bytes else 0,
+                    "format": "image" if back_bytes else None,
+                    "image_b64": back_b64
+                } if back_bytes else None
             },
             "top1": top1,
             "topk": predictions,
             "valuation": valuation,
             "recommendations": recommendations,
+            "reference_images": reference_images,
             "metadata": prediction_result.get("metadata", {})
         }
         
