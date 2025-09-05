@@ -1,1 +1,1 @@
-# Package initialization file
+# frontend package initializer

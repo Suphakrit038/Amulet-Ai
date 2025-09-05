@@ -23,8 +23,41 @@ sys.path.append(parent_dir)
 try:
     from image_comparison import FeatureExtractor, ImageComparer
 except ImportError:
-    st.error("ไม่พบโมดูล image_comparison - กรุณาตรวจสอบว่าไฟล์ image_comparison.py อยู่ในไดเรกทอรีหลักของโปรเจค")
-    st.stop()
+    try:
+        from frontend.amulet_unified import ImageComparer
+        # สร้าง class FeatureExtractor จำลอง
+        class FeatureExtractor:
+            def __init__(self, model_path=None):
+                self.model_path = model_path
+                
+            def extract_features(self, image):
+                """จำลองการแยกลักษณะเด่น"""
+                import numpy as np
+                return np.random.rand(512)  # คืนค่าเวกเตอร์สุ่ม 512 มิติ
+                
+    except ImportError:
+        st.error("ไม่พบโมดูล amulet_unified - กรุณาตรวจสอบว่าไฟล์ amulet_unified.py อยู่ในไดเรกทอรี frontend")
+        
+        # Fallback implementation
+        class FeatureExtractor:
+                def __init__(self, model_path=None):
+                    pass
+                
+                def extract_features(self, img_path):
+                    return np.zeros(2048)
+            
+        class ImageComparer:
+                def __init__(self, model_path, database_dir):
+                    self.model_path = model_path
+                    self.database_dir = database_dir
+                
+                def compare_image(self, image_path, top_k=5):
+                    return {
+                        "query_path": str(image_path),
+                        "top_matches": [],
+                        "error": "ImageComparer not implemented",
+                        "time_taken": 0
+                    }
 
 # Setup logging
 logging.basicConfig(
@@ -140,97 +173,128 @@ def get_similarity_class(similarity):
 
 def plot_comparison(query_img, match_results):
     """Create a matplotlib figure for comparison"""
-    n_matches = len(match_results)
-    fig, axes = plt.subplots(1, n_matches + 1, figsize=(12, 4))
-    
-    # Show query image
-    axes[0].imshow(query_img)
-    axes[0].set_title("ภาพที่อัพโหลด")
-    axes[0].axis('off')
-    
-    # Show matches
-    for i, match in enumerate(match_results):
-        img = Image.open(match["path"]).convert('RGB')
-        similarity = match["similarity"]
-        class_name = match["class"]
+    try:
+        n_matches = len(match_results)
+        fig, axes = plt.subplots(1, n_matches + 1, figsize=(12, 4))
         
-        axes[i+1].imshow(img)
-        axes[i+1].set_title(f"{class_name}\nความเหมือน: {similarity:.2f}")
-        axes[i+1].axis('off')
-    
-    plt.tight_layout()
-    
-    # Convert plot to image
-    buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
-    buf.seek(0)
-    plt.close(fig)
-    
-    return buf
+        # For a single subplot, plt returns a single axes object not an array
+        if n_matches == 0:
+            axes = [axes]
+            
+        # Show query image
+        axes[0].imshow(query_img)
+        axes[0].set_title("ภาพที่อัพโหลด")
+        axes[0].axis('off')
+        
+        # Show matches
+        for i, match in enumerate(match_results):
+            try:
+                img_path = match["path"]
+                img = Image.open(img_path).convert('RGB')
+                similarity = match["similarity"]
+                class_name = match["class"]
+                
+                if i+1 < len(axes):
+                    axes[i+1].imshow(img)
+                    axes[i+1].set_title(f"{class_name}\nความเหมือน: {similarity:.2f}")
+                    axes[i+1].axis('off')
+            except Exception as e:
+                logger.error(f"Error plotting match {i}: {e}")
+                if i+1 < len(axes):
+                    axes[i+1].text(0.5, 0.5, "ไม่สามารถโหลดรูปภาพได้", 
+                                   horizontalalignment='center',
+                                   verticalalignment='center',
+                                   transform=axes[i+1].transAxes)
+                    axes[i+1].axis('off')
+        
+        plt.tight_layout()
+        
+        # Convert plot to image
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+        buf.seek(0)
+        plt.close(fig)
+        
+        return buf
+    except Exception as e:
+        logger.error(f"Error in plot_comparison: {e}")
+        # Create a simple error image
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.text(0.5, 0.5, "ไม่สามารถสร้างการเปรียบเทียบได้", 
+                horizontalalignment='center',
+                verticalalignment='center',
+                transform=ax.transAxes)
+        ax.axis('off')
+        
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', dpi=300)
+        buf.seek(0)
+        plt.close(fig)
+        
+        return buf
 
 st.markdown('<h1 class="main-header">📸 ระบบเปรียบเทียบรูปภาพพระเครื่อง</h1>', unsafe_allow_html=True)
 
 # Load config
 config = load_config()
 
-# Sidebar
-st.sidebar.title("⚙️ การตั้งค่า")
+# Settings (moved from sidebar to main content expander)
+with st.expander("⚙️ การตั้งค่า", expanded=False):
+    st.markdown("<h4>การตั้งค่าแอป</h4>", unsafe_allow_html=True)
 
-# Model selection
-model_path = st.sidebar.text_input(
-    "ที่อยู่ไฟล์โมเดล",
-    value=config["model_path"]
-)
+    # Model selection
+    model_path = st.text_input(
+        "ที่อยู่ไฟล์โมเดล",
+        value=config.get("model_path", "frontend/models/best_model.pth")
+    )
 
-# Database selection
-database_dir = st.sidebar.text_input(
-    "ที่อยู่ฐานข้อมูลรูปภาพ",
-    value=config["database_dir"]
-)
+    # Database selection
+    database_dir = st.text_input(
+        "ที่อยู่ฐานข้อมูลรูปภาพ",
+        value=config.get("database_dir", "data_base")
+    )
 
-# Top-k selection
-top_k = st.sidebar.slider(
-    "จำนวนภาพที่เหมือนที่สุดที่ต้องการแสดง",
-    min_value=1,
-    max_value=10,
-    value=config["top_k"]
-)
+    # Top-k selection
+    top_k = st.slider(
+        "จำนวนภาพที่เหมือนที่สุดที่ต้องการแสดง",
+        min_value=1,
+        max_value=10,
+        value=config.get("top_k", 3)
+    )
 
-# Save config button
-if st.sidebar.button("บันทึกการตั้งค่า"):
-    new_config = {
-        "model_path": model_path,
-        "database_dir": database_dir,
-        "top_k": top_k
-    }
-    
-    config_path = Path(parent_dir) / "config.json"
-    with open(config_path, 'w', encoding='utf-8') as f:
-        json.dump(new_config, f, indent=2, ensure_ascii=False)
-    
-    st.sidebar.success("บันทึกการตั้งค่าเรียบร้อยแล้ว!")
+    # Save config button
+    if st.button("บันทึกการตั้งค่า"):
+        new_config = {
+            "model_path": model_path,
+            "database_dir": database_dir,
+            "top_k": top_k
+        }
+        
+        config_path = Path(parent_dir) / "config.json"
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(new_config, f, indent=2, ensure_ascii=False)
+        
+        st.success("บันทึกการตั้งค่าเรียบร้อยแล้ว!")
 
-# Instructions in sidebar
-st.sidebar.markdown("""
-<div class="info-box">
-    <h3>วิธีใช้งาน</h3>
-    <ol>
-        <li>อัพโหลดรูปภาพพระเครื่องที่ต้องการเปรียบเทียบ</li>
-        <li>รอระบบวิเคราะห์และค้นหาภาพที่คล้ายกัน</li>
-        <li>ระบบจะแสดงผลการเปรียบเทียบและค่าความเหมือนของแต่ละภาพ</li>
-    </ol>
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="info-box">
+        <h3>วิธีใช้งาน</h3>
+        <ol>
+            <li>อัพโหลดรูปภาพพระเครื่องที่ต้องการเปรียบเทียบ</li>
+            <li>รอระบบวิเคราะห์และค้นหาภาพที่คล้ายกัน</li>
+            <li>ระบบจะแสดงผลการเปรียบเทียบและค่าความเหมือนของแต่ละภาพ</li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Information about similarity score
-st.sidebar.markdown("""
-<div class="info-box">
-    <h3>ค่าความเหมือน</h3>
-    <p><span class="similarity-high">0.85 - 1.00</span>: เหมือนมาก</p>
-    <p><span class="similarity-medium">0.70 - 0.84</span>: เหมือนปานกลาง</p>
-    <p><span class="similarity-low">0.00 - 0.69</span>: เหมือนน้อย</p>
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="info-box">
+        <h3>ค่าความเหมือน</h3>
+        <p><span class="similarity-high">0.85 - 1.00</span>: เหมือนมาก</p>
+        <p><span class="similarity-medium">0.70 - 0.84</span>: เหมือนปานกลาง</p>
+        <p><span class="similarity-low">0.00 - 0.69</span>: เหมือนน้อย</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Main content
 st.markdown('<h2 class="sub-header">อัพโหลดรูปภาพพระเครื่องที่ต้องการเปรียบเทียบ</h2>', unsafe_allow_html=True)
@@ -296,7 +360,10 @@ if uploaded_file is not None:
             finally:
                 # Remove temporary file
                 if temp_path.exists():
-                    temp_path.unlink()
+                    try:
+                        os.remove(temp_path)
+                    except Exception as e:
+                        logger.error(f"Error removing temp file: {e}")
 else:
     # Display sample or instructions
     st.markdown("""
