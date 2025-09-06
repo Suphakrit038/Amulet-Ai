@@ -356,95 +356,7 @@ class ResponsiveLayout:
         
         st.markdown(grid_html, unsafe_allow_html=True)
     
-    def create_adaptive_sidebar(self, content_func):
-        """Create adaptive sidebar that becomes drawer on mobile"""
-        
-        # Mobile drawer toggle
-        st.markdown("""
-        <div class="mobile-drawer-toggle show-mobile" onclick="toggleDrawer()">
-            <span>☰</span> เมนู
-        </div>
-        
-        <div class="mobile-drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
-        
-        <style>
-        .mobile-drawer-toggle {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            background: var(--primary);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            z-index: 1001;
-            font-size: 0.9rem;
-        }
-        
-        .mobile-drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        }
-        
-        .mobile-drawer-overlay.active {
-            display: block;
-        }
-        
-        @media (max-width: 480px) {
-            .css-1d391kg { /* Streamlit sidebar */
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 1000;
-                position: fixed;
-                height: 100vh;
-            }
-            
-            .css-1d391kg.active {
-                transform: translateX(0);
-            }
-        }
-        </style>
-        
-        <script>
-        function toggleDrawer() {
-            const sidebar = document.querySelector('.css-1d391kg');
-            const overlay = document.getElementById('drawer-overlay');
-            
-            if (sidebar) {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            }
-        }
-        </script>
-        """, unsafe_allow_html=True)
-        
-        # Replace Streamlit sidebar with an expander in the main content
-        # This keeps the same content but avoids using st.sidebar
-        try:
-            # Create a floating expander at the top of the page
-            st.markdown("""
-            <style>
-            .floating-expander {
-                position: relative;
-                margin-bottom: 1rem;
-            }
-            @media (min-width: 769px) {
-                .floating-expander { max-width: 360px; }
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
-            with st.expander("⚙️ การตั้งค่า (เมนู)", expanded=False):
-                content_func()
-        except Exception:
-            # Fallback: call content directly into main container
-            content_func()
+    # Removed create_adaptive_sidebar: all sidebar logic deleted
     
     def optimize_for_mobile(self):
         """Apply mobile-specific optimizations"""
@@ -542,46 +454,30 @@ class LayoutManager:
     def setup_page_config(self, 
                          page_title: str = "Amulet-AI",
                          page_icon: str = "🔮",
-                         layout: str = "wide",
-                         initial_sidebar_state: str = "expanded"):
-        """Setup Streamlit page configuration"""
-        
+                         layout: str = "wide"):
+        """Setup Streamlit page configuration (sidebar removed)"""
         st.set_page_config(
             page_title=page_title,
             page_icon=page_icon,
             layout=layout,
-            initial_sidebar_state=initial_sidebar_state,
             menu_items={
                 'Get Help': None,
                 'Report a bug': None,
                 'About': f"# {page_title}\nระบบวิเคราะห์พระเครื่องด้วย AI"
             }
         )
-        
         # Apply mobile optimizations
         self.responsive.optimize_for_mobile()
     
-    def create_main_layout(self, 
-                          show_sidebar: bool = True,
-                          sidebar_content: Optional[callable] = None) -> Dict:
-        """Create main application layout"""
-        
+    def create_main_layout(self) -> Dict:
+        """Create main application layout (sidebar removed)"""
         layout_elements = {}
-        
-        # Sidebar
-        if show_sidebar and sidebar_content:
-            self.responsive.create_adaptive_sidebar(sidebar_content)
-            layout_elements['sidebar'] = True
-        
-        # Main content area
+        # Main content area only
         layout_elements['main_container'] = st.container()
-        
-        # Header
         with layout_elements['main_container']:
             layout_elements['header'] = st.container()
             layout_elements['content'] = st.container()
             layout_elements['footer'] = st.container()
-        
         return layout_elements
     
     def create_comparison_layout(self) -> Tuple:

@@ -227,129 +227,172 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-# JavaScript เพื่อบังคับซ่อน sidebar อย่างสมบูรณ์
-st.markdown("""
-<script>
-// บังคับซ่อน sidebar ด้วย JavaScript
-function forceSidebarHidden() {
-    // ซ่อน sidebar elements ทั้งหมด
-    const sidebarSelectors = [
-        '[data-testid="stSidebar"]',
-        '.css-1d391kg',
-        '.css-1lcbmhc',
-        '.css-17lntkn',
-        'section[data-testid="stSidebar"]',
-        '.css-1aumxhk',
-        '.css-6qob1r',
-        '.css-1v3fvcr',
-        '.css-1rs6os',
-        '.sidebar',
-        '.stSidebar'
-    ];
-    
-    sidebarSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            if (el) {
-                el.style.display = 'none';
-                el.style.width = '0';
-                el.style.minWidth = '0';
-                el.style.maxWidth = '0';
-                el.style.visibility = 'hidden';
-                el.style.opacity = '0';
-                el.style.position = 'absolute';
-                el.style.left = '-9999px';
-                el.remove(); // บังคับลบออกจาก DOM
-            }
-        });
-    });
-    
-    // ซ่อนปุ่ม toggle
-    const toggleSelectors = [
-        '[data-testid="collapsedControl"]',
-        'button[kind="header"]',
-        '.css-1rs6os',
-        '.css-1aumxhk'
-    ];
-    
-    toggleSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            if (el) {
-                el.style.display = 'none';
-                el.style.visibility = 'hidden';
-                el.remove(); // บังคับลบออกจาก DOM
-            }
-        });
-    });
-    
-    // ปรับ main content ให้ใช้พื้นที่เต็ม
-    const mainSelectors = [
-        '[data-testid="stMain"]',
-        '.main',
-        '.block-container',
-        '.css-18e3th9'
-    ];
-    
-    mainSelectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
-            if (el) {
-                el.style.marginLeft = '0';
-                el.style.paddingLeft = '1rem';
-                el.style.maxWidth = '100%';
-                el.style.width = '100%';
-            }
-        });
-    });
-
-// รัน function ทันทีและรันซ้ำเป็นระยะ
-document.addEventListener('DOMContentLoaded', forceSidebarHidden);
-window.addEventListener('load', forceSidebarHidden);
-setInterval(forceSidebarHidden, 50); // รันทุก 50ms
-setTimeout(forceSidebarHidden, 100); // รันหลัง 100ms
-setTimeout(forceSidebarHidden, 500); // รันหลัง 500ms
-setTimeout(forceSidebarHidden, 1000); // รันหลัง 1 วินาที
-
-// Observer เพื่อดักจับการเปลี่ยนแปลง DOM
-const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.type === 'childList') {
-            forceSidebarHidden();
-        }
-    });
-});
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
-</script>
-""", unsafe_allow_html=True)
-
 # ==========================================================
-# Global CSS/JS - simplified modern theme
+# Global CSS/JS - simplified modern theme with Thai style
 # ==========================================================
 st.markdown(
         """
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* Clean modern theme - simpler and robust */
-:root{--bg-1:#5b0f12;--bg-2:#3f0a0b;--gold:#ffd166;--card:#ffffff;--muted:#f1f5f9;--accent:#ffd166;--border:rgba(0,0,0,0.06)}
-html{background:var(--bg-1);}body{background:transparent;color:var(--muted);font-family:Inter, system-ui, sans-serif}
-.stApp{min-height:100vh;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));}
-.main .block-container{background:rgba(255,255,255,0.96);color:#111;border-radius:12px;padding:1.75rem;margin:1rem;box-shadow:0 12px 30px rgba(0,0,0,0.12);border:1px solid var(--border)}
-.app-header{display:flex;align-items:center;gap:1rem;padding:1rem;border-radius:10px;background:linear-gradient(135deg, rgba(128,0,0,0.9), rgba(84,19,28,0.85));color:var(--gold);box-shadow:0 6px 18px rgba(0,0,0,0.15)}
-.header-text h1{font-family:'Playfair Display',serif;margin:0;font-size:2rem;color:var(--gold)}
-.header-text p{margin:0;color:rgba(255,235,180,0.9)}
-.panel,.card{background:var(--card);border-radius:10px;padding:1rem;margin-bottom:1rem;color:#111;border:1px solid var(--border)}
-.upload-zone{border:2px dashed rgba(0,0,0,0.06);padding:1.25rem;border-radius:10px;background:linear-gradient(180deg,#fff,#f7fafc)}
-.stButton > button{background:linear-gradient(135deg,#7a0000,#500000);color:var(--gold);border-radius:10px;padding:.6rem 1rem;border:1px solid rgba(255,215,0,0.15);font-weight:600}
-.stButton > button:hover{transform:translateY(-2px)}
-@media (max-width:768px){.app-header{flex-direction:column;text-align:center}.header-text h1{font-size:1.6rem}}
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+/* Thai modern theme - elegant and robust */
+    /* White-Grey Modern Minimal Theme */
+    :root {
+        --bg-1: #f7f7f9;
+        --bg-2: #e5e7eb;
+        --primary: #222;
+        --secondary: #555;
+        --card: #fff;
+        --muted: #888;
+        --accent: #e5e7eb;
+        --border: #e5e7eb;
+        --shadow: 0 8px 24px rgba(0,0,0,0.07);
+        --radius: 12px;
+        --heading-font: 'Playfair Display', 'Inter', sans-serif;
+        --body-font: 'Inter', 'Noto Sans Thai', sans-serif;
+        --transition: all 0.3s ease;
+    }
+    html { background: var(--bg-1); }
+    body { background: var(--bg-1); color: var(--primary); font-family: var(--body-font); }
+    .stApp { min-height: 100vh; background: linear-gradient(180deg, var(--bg-1), var(--bg-2)); }
+    .main .block-container {
+        background: var(--card);
+        color: var(--primary);
+        border-radius: var(--radius);
+        padding: 1.75rem;
+        margin: 1rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+    .app-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+        border-radius: var(--radius);
+        background: linear-gradient(135deg, #f7f7f9 60%, #e5e7eb 100%);
+        color: var(--primary);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        backdrop-filter: blur(8px);
+        transition: var(--transition);
+    }
+    .header-text h1 {
+        font-family: var(--heading-font);
+        margin: 0;
+        font-size: 2.25rem;
+        color: var(--primary);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .header-text p {
+        margin: 0.5rem 0 0;
+        color: var(--secondary);
+        font-family: var(--body-font);
+        line-height: 1.5;
+        font-size: 1.1rem;
+    }
+    .panel, .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        color: var(--primary);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        transition: var(--transition);
+    }
+    .panel:hover, .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .upload-zone {
+        border: 2px dashed var(--border);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, #fff, #f7f7f9);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+    .upload-zone::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #e5e7eb 40%, transparent);
+        animation: shimmer 2s infinite;
+    }
+    .upload-zone:hover {
+        border-color: #bbb;
+        background: linear-gradient(180deg, #f7f7f9, #fff);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, #e5e7eb 0%, #fff 100%);
+        color: var(--primary);
+        border-radius: var(--radius);
+        padding: .75rem 1.5rem;
+        border: 1px solid #d1d5db;
+        font-weight: 600;
+        font-family: var(--body-font);
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #e5e7eb 60%, transparent);
+        transition: 0.5s;
+        pointer-events: none;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #f3f4f6 0%, #fff 100%);
+        border-color: #bbb;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+    }
+    .stButton > button:hover::before {
+        left: 100%;
+    }
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    @media (max-width:768px) {
+        .app-header {
+            padding: 1rem;
+        }
+        .header-text h1 {
+            font-size: 1.8rem;
+        }
+        .header-text p {
+            font-size: 1rem;
+        }
+        .panel, .card {
+            padding: 1rem;
+        }
+    }
+    @media (prefers-reduced-motion:reduce) {
+        * {
+            animation: none !important;
+            transition: none !important;
+        }
+        .upload-zone::before,
+        .stButton > button::before {
+            display: none;
+        }
+    }
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -372,910 +415,8 @@ document.addEventListener('DOMContentLoaded', function(){
 """,
         unsafe_allow_html=True,
 )
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
 
-.project-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-align: center;
-    margin-bottom: 1rem;
-    animation: titleGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes titleGlow {
-    from { text-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
-    to { text-shadow: 0 0 30px rgba(118, 75, 162, 0.7); }
-}
-
-.project-subtitle {
-    font-size: 1.2rem;
-    color: #475569;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    animation: fadeInUp 1s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-.feature-card {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    transition: all 0.3s ease;
-    animation: cardFloat 6s ease-in-out infinite;
-}
-
-.feature-card:nth-child(1) { animation-delay: 0s; }
-.feature-card:nth-child(2) { animation-delay: 2s; }
-.feature-card:nth-child(3) { animation-delay: 4s; }
-
-@keyframes cardFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.feature-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.5);
-}
-
-.feature-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    animation: iconPulse 2s ease-in-out infinite;
-}
-
-@keyframes iconPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Enhanced panel styles */
-.panel {
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 15px;
-    padding: 2rem;
-    margin: 1rem 0;
-    box-shadow: 
-        0 5px 15px rgba(0,0,0,0.08),
-        0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Upload zone and other enhanced animations */
-.upload-zone {
-    border: 3px dashed #cbd5e1;
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    background: rgba(248, 250, 252, 0.8);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.upload-zone::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-    animation: shimmer 2s infinite;
-}
-
-.upload-zone:hover {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-    transform: translateY(-2px);
-}
-
-.confidence-high {
-    color: #16a34a;
-    font-weight: 600;
-    animation: confidencePulse 1.5s ease-in-out infinite;
-}
-
-.confidence-medium {
-    color: #d97706;
-    font-weight: 600;
-    animation: confidencePulse 1.5s ease-in-out infinite;
-}
-
-.confidence-low {
-    color: #dc2626;
-    font-weight: 600;
-    animation: confidencePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes confidencePulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.processing-btn {
-    background: linear-gradient(45deg, #3b82f6, #1d4ed8) !important;
-    animation: processingPulse 1s ease-in-out infinite !important;
-}
-
-@keyframes processingPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.result-container {
-    animation: slideInUp 0.8s ease-out;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin: 1rem 0;
-}
-
-.comparison-item {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 1rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    animation: itemFadeIn 0.6s ease-out;
-}
-
-@keyframes itemFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.comparison-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-@keyframes progressBar {
-    0% { background-position: -200px 0; }
-    100% { background-position: calc(200px + 100%) 0; }
-}
-
-.accent{ color:var(--color-accent); }
-
-.card { 
-    background:var(--color-card); 
-    border:1px solid var(--color-border); 
-    border-radius:.75rem; 
-    padding:1rem; 
-    box-shadow:var(--shadow-lg);
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-}
-
-.panel{ 
-    background:#fff; 
-    border:1px solid var(--color-border); 
-    border-radius:.75rem; 
-    padding:1rem; 
-    margin-bottom: 1.5rem;
-}
-
-/* ---- Enhanced header classes แบบไทยโมเดิร์น ---- */
-.app-header { 
-    display:flex; 
-    align-items:center; 
-    gap:1rem; 
-    padding:1rem 1.25rem; 
-    background: linear-gradient(135deg, rgba(128, 0, 0, 0.9), rgba(84, 19, 28, 0.9)); 
-    border: 1px solid rgba(255, 215, 0, 0.3); 
-    border-radius:.75rem;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.app-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
-    animation: thaiShimmer 4s infinite;
-}
-
-@keyframes thaiShimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-.header-text h1 { 
-    margin:.1rem 0; 
-    font-size:2.5rem;
-    background: linear-gradient(135deg, #ffd700, #cd7f32);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 15px rgba(255, 215, 0, 0.3);
-}
-
-.header-text p { 
-    margin:0; 
-    font-size:1rem; 
-    color: #ffd700;
-    opacity: 0.9;
-}
-
-.header-subblock { 
-    display:flex; 
-    gap:1rem; 
-    margin-top:.5rem; 
-    flex-wrap:wrap; 
-}
-
-.badge { 
-    display:inline-flex; 
-    align-items:center; 
-    gap:.4rem; 
-    padding:.4rem .8rem; 
-    border-radius:.5rem; 
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(205, 127, 50, 0.9) 100%); 
-    border:1px solid #ffd700; 
-    color:#800000; 
-    font-size:.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    cursor: default;
-}
-
-.badge:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-}
-
-.crumbs { 
-    margin-left:auto; 
-    color:var(--color-muted-foreground); 
-    font-size:.95rem; 
-    display:flex; 
-    gap:.5rem; 
-    align-items:center; 
-}
-
-/* ---- สไตล์การแสดงผลแบบขั้นสูง ---- */
-.block-container { 
-    max-width:95% !important; 
-    padding-left:2rem !important; 
-    padding-right:2rem !important; 
-}
-
-.upload-section, .result-card, .tips-container, .tip-card { 
-    width:100% !important; 
-    max-width:none !important; 
-}
-
-.upload-zone{ 
-    background:linear-gradient(135deg, #fff 0%, #f8f9ff 100%); 
-    border:2px dashed rgba(212,175,55,.4); 
-    border-radius:.75rem; 
-    padding:1.5rem; 
-    text-align:center; 
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.upload-zone:hover{ 
-    border-color: rgba(212,175,55,.7); 
-    background: linear-gradient(135deg, #fdf9f2 0%, #f0f4ff 100%); 
-    transform: translateY(-3px); 
-    box-shadow: 0 8px 24px rgba(212,175,55,0.15);
-}
-
-.upload-zone::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.upload-zone:hover::before {
-    left: 100%;
-}
-
-/* ---- Enhanced button styles แบบไทยโมเดิร์น ---- */
-.stButton > button {
-    background: linear-gradient(135deg, #800000 0%, #5a0000 100%);
-    color: #ffd700;
-    border: 1px solid rgba(255, 215, 0, 0.5);
-    border-radius: 12px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(128, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #9a0000 0%, #700000 100%);
-    border-color: #ffd700;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-}
-
-.stButton > button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(128, 0, 0, 0.3);
-}
-
-/* ---- Processing animation ---- */
-@keyframes processing {
-    0% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.05) rotate(180deg); }
-    100% { transform: scale(1) rotate(360deg); }
-}
-
-.processing-btn {
-    animation: processing 2s infinite ease-in-out;
-}
-
-/* ---- Result animations ---- */
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.result-container {
-    animation: slideInUp 0.6s ease-out;
-}
-
-.confidence-card {
-    animation: fadeInScale 0.8s ease-out;
-    transition: all 0.3s ease;
-}
-
-.confidence-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-/* ---- Top 3 Results Styling ---- */
-.top-result {
-    background: linear-gradient(135deg, #f0fff4 0%, #dcfce7 100%);
-    border: 2px solid #16a34a;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    animation: slideInUp 0.6s ease-out;
-    position: relative;
-    overflow: hidden;
-}
-
-.top-result::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #16a34a, #22c55e, #16a34a);
-    animation: progressBar 2s ease-in-out infinite;
-}
-
-@keyframes progressBar {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-}
-
-.comparison-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-.comparison-item {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-    border: 1px solid var(--color-border);
-}
-
-.comparison-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
-.confidence-high { 
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-    border: 1px solid #16a34a;
-    color: #15803d;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.confidence-medium { 
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border: 1px solid #d97706;
-    color: #92400e;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.confidence-low { 
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    border: 1px solid #dc2626;
-    color: #991b1b;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-/* ---- การออกแบบแบบตอบสนอง ---- */
-@media (max-width: 768px) {
-    .app-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .header-text h1 {
-        font-size: 2rem;
-    }
-    
-    .comparison-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.hr { 
-    border-top:1px solid var(--color-border); 
-    margin:1.25rem 0; 
-}
-
-/* ---- การรองรับการลากและวางแบบขั้นสูงสำหรับแท็บ ---- */
-/* ทำให้คอนเทนเนอร์แท็บทั้งหมดเป็นพื้นที่วาง */
-.stTabs {
-    position: relative;
-    border: 2px dashed rgba(59, 130, 246, 0.2);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(5px);
-}
-
-.stTabs:hover {
-    border-color: rgba(59, 130, 246, 0.4);
-    background: rgba(59, 130, 246, 0.02);
-    transform: scale(1.002);
-}
-
-/* แผงแท็บเป็นพื้นที่วาง */
-div[data-baseweb="tab-panel"] {
-    position: relative;
-    min-height: 200px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    padding: 1rem;
-}
-
-/* เอฟเฟกต์การลากที่ปรับปรุงแล้ว */
-.stTabs.drag-over {
-    border-color: rgba(59, 130, 246, 0.8) !important;
-    background: rgba(59, 130, 246, 0.05) !important;
-    transform: scale(1.005) !important;
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15) !important;
-}
-
-.stTabs.drag-over::before {
-    content: '📸 ลากไฟล์รูปภาพมาวางที่นี่';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(59, 130, 246, 0.9);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    z-index: 1000;
-    pointer-events: none;
-    animation: dropIndicator 0.5s ease;
-}
-
-@keyframes dropIndicator {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-/* สไตล์รายการแท็บ */
-div[data-baseweb="tab-list"] {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px 8px 0 0;
-    padding: 0.5rem;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-}
-
-/* สไตล์แท็บแต่ละตัว */
-button[data-baseweb="tab"] {
-    border-radius: 6px !important;
-    transition: all 0.3s ease !important;
-    font-weight: 500 !important;
-}
-
-button[data-baseweb="tab"]:hover {
-    background: rgba(59, 130, 246, 0.05) !important;
-    transform: translateY(-1px) !important;
-}
-
-button[data-baseweb="tab"][aria-selected="true"] {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: rgb(59, 130, 246) !important;
-    font-weight: 600 !important;
-}
-
-/* การปรับปรุงโซนอัปโหลดภายในแท็บ */
-.upload-zone {
-    border: 2px dashed rgba(59, 130, 246, 0.2);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
-    margin: 1rem 0;
-}
-
-.upload-zone:hover {
-    border-color: rgba(59, 130, 246, 0.4);
-    background: rgba(59, 130, 246, 0.02);
-}
-
-/* สไตล์ตัวอัปโหลดไฟล์ */
-.stFileUploader {
-    background: transparent !important;
-    border: none !important;
-}
-
-.stFileUploader > div {
-    border: 2px dashed rgba(59, 130, 246, 0.3) !important;
-    border-radius: 8px !important;
-    background: rgba(255, 255, 255, 0.8) !important;
-    transition: all 0.3s ease !important;
-}
-
-.stFileUploader > div:hover {
-    border-color: rgba(59, 130, 246, 0.6) !important;
-    background: rgba(59, 130, 246, 0.03) !important;
-    transform: scale(1.01) !important;
-}
-
-/* ป้อนข้อมูลการลากและวางสำหรับตัวอัปโหลดไฟล์ แบบไทยโมเดิร์น */
-.stFileUploader.drag-active > div {
-    border-color: rgba(255, 215, 0, 0.8) !important;
-    background: rgba(255, 215, 0, 0.1) !important;
-    transform: scale(1.02) !important;
-    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3) !important;
-}
-
-/* ลายไทยตกแต่งเพิ่มเติม */
-.stTabs > div > div > div {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(255, 215, 0, 0.2) !important;
-}
-
-/* ลายปักธงชาติไทยสำหรับขอบหน้าจอ */
-.stApp:before {
-    background-image: 
-        radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.07) 2px, transparent 4px),
-        radial-gradient(circle at 75% 75%, rgba(255, 215, 0, 0.07) 2px, transparent 4px),
-        radial-gradient(circle at 25% 75%, rgba(255, 215, 0, 0.07) 2px, transparent 4px),
-        radial-gradient(circle at 75% 25%, rgba(255, 215, 0, 0.07) 2px, transparent 4px),
-        radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 15px, transparent 30px),
-        linear-gradient(0deg, transparent 30%, rgba(255, 215, 0, 0.03) 40%, rgba(128, 0, 0, 0.03) 50%, rgba(255, 215, 0, 0.03) 60%, transparent 70%);
-}
-
-/* เพิ่มเอฟเฟกต์ทองคำไทย */
-.stMetric {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05)) !important;
-    border: 1px solid rgba(255, 215, 0, 0.2) !important;
-    border-radius: 8px !important;
-    padding: 1rem !important;
-}
-
-/* ลายไทยสำหรับ Sidebar (ถ้ามี) - ซ่อนสมบูรณ์ */
-.css-1d391kg, 
-[data-testid="stSidebar"], 
-.css-1lcbmhc,
-.css-17lntkn,
-section[data-testid="stSidebar"],
-.css-1aumxhk,
-.css-6qob1r,
-.css-1v3fvcr,
-.css-1rs6os,
-.sidebar .sidebar-content,
-div[data-testid="stSidebar"] > div,
-.stSidebar {
-    display: none !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    max-width: 0 !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-}
-
-/* บังคับให้ main content ใช้พื้นที่เต็ม */
-.main .block-container,
-[data-testid="stMain"],
-.css-18e3th9,
-.css-1d391kg ~ div,
-.main,
-.block-container {
-    margin-left: 0 !important;
-    padding-left: 1rem !important;
-    max-width: 100% !important;
-    width: 100% !important;
-}
-
-/* ซ่อนปุ่ม toggle sidebar */
-[data-testid="collapsedControl"],
-.css-1rs6os,
-.css-1aumxhk,
-button[kind="header"],
-.css-1v3fvcr button {
-    display: none !important;
-    visibility: hidden !important;
-}
-</style>
-
-<script>
-// ฟังก์ชันการลากและวางแบบขั้นสูงสำหรับคอนเทนเนอร์แท็บทั้งหมด
-document.addEventListener('DOMContentLoaded', function() {
-    function setupTabDragAndDrop() {
-        const tabContainers = document.querySelectorAll('.stTabs');
-        
-        tabContainers.forEach(function(tabContainer) {
-            // ป้องกันพฤติกรรมการลากเริ่มต้น
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                tabContainer.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
-
-            // เน้นพื้นที่วาง
-            ['dragenter', 'dragover'].forEach(eventName => {
-                tabContainer.addEventListener(eventName, highlight, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                tabContainer.addEventListener(eventName, unhighlight, false);
-            });
-
-            // จัดการไฟล์ที่วาง
-            tabContainer.addEventListener('drop', handleDrop, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        function highlight(e) {
-            const tabContainer = e.currentTarget;
-            tabContainer.classList.add('drag-over');
-        }
-
-        function unhighlight(e) {
-            const tabContainer = e.currentTarget;
-            tabContainer.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files.length > 0) {
-                const file = files[0];
-                
-                // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
-                if (file.type.startsWith('image/')) {
-                    // ค้นหาตัวอัปโหลดไฟล์ที่ใช้งานอยู่ในแท็บปัจจุบัน
-                    const activeTabPanel = e.currentTarget.querySelector('div[data-baseweb="tab-panel"]:not([hidden])');
-                    const fileUploader = activeTabPanel ? activeTabPanel.querySelector('input[type="file"]') : null;
-                    
-                    if (fileUploader) {
-                        // สร้าง FileList ใหม่ด้วยไฟล์ที่วาง
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        fileUploader.files = dataTransfer.files;
-                        
-                        // เรียกใช้เหตุการณ์เปลี่ยนแปลง
-                        const event = new Event('change', { bubbles: true });
-                        fileUploader.dispatchEvent(event);
-                        
-                        // แสดงป้อนข้อมูลความสำเร็จ
-                        showDropSuccess(e.currentTarget, file.name);
-                    }
-                } else {
-                    // แสดงข้อผิดพลาดสำหรับไฟล์ที่ไม่ใช่รูปภาพ
-                    showDropError(e.currentTarget, 'กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
-                }
-            }
-        }
-
-        function showDropSuccess(container, fileName) {
-            const feedback = document.createElement('div');
-            feedback.style.cssText = `
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(16, 185, 129, 0.9);
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 600;
-                z-index: 1001;
-                pointer-events: none;
-                animation: fadeInOut 2s ease;
-            `;
-            feedback.textContent = `✅ อัปโหลดสำเร็จ: ${fileName}`;
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeInOut {
-                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-                    20%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            container.appendChild(feedback);
-            setTimeout(() => {
-                if (feedback.parentNode) {
-                    feedback.parentNode.removeChild(feedback);
-                }
-                if (style.parentNode) {
-                    style.parentNode.removeChild(style);
-                }
-            }, 2000);
-        }
-
-        function showDropError(container, message) {
-            const feedback = document.createElement('div');
-            feedback.style.cssText = `
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(239, 68, 68, 0.9);
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 600;
-                z-index: 1001;
-                pointer-events: none;
-                animation: fadeInOut 3s ease;
-            `;
-            feedback.textContent = `❌ ${message}`;
-            
-            container.appendChild(feedback);
-            setTimeout(() => {
-                if (feedback.parentNode) {
-                    feedback.parentNode.removeChild(feedback);
-                }
-            }, 3000);
-        }
-    }
-
-    // การตั้งค่าเริ่มต้น
-    setupTabDragAndDrop();
-    
-    // ตั้งค่าใหม่เมื่อ Streamlit รันซ้ำ
-    const observer = new MutationObserver(function(mutations) {
-        let shouldResetup = false;
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === 1 && (node.classList.contains('stTabs') || node.querySelector('.stTabs'))) {
-                        shouldResetup = true;
-                    }
-                });
-            }
-        });
-        
-        if (shouldResetup) {
-            setTimeout(setupTabDragAndDrop, 100);
-        }
-    });
-    
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-});
-</script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-""",
-    unsafe_allow_html=True,
-)
+# (CSS code removed from Python file; it should be placed inside a string and passed to st.markdown(..., unsafe_allow_html=True) if needed)
 
 # ==========================================================
 # ส่วนหัว - การออกแบบแบบขั้นสูง
@@ -1691,7 +832,7 @@ if (
         files = {
             "front": (
                 st.session_state.front_filename,
-                st.session_state.front_processed,
+                st.session_state.front_processed,   
                 "image/jpeg",
             ),
             "back": (
@@ -1986,10 +1127,9 @@ if (
                         </div>
                         """, unsafe_allow_html=True)
                     
-                    # ---- เพิ่มส่วนเปรียบเทียบรูปภาพ ----
+                    # ---- เปรียบเทียบรูปภาพ ----
                     st.markdown("### การเปรียบเทียบกับภาพในฐานข้อมูล")
                     
-                    # เรียกใช้ฟีเจอร์เปรียบเทียบรูปภาพ
                     if "front_processed" in st.session_state:
                         comparison_image = st.session_state.front_processed
                         
@@ -2038,26 +1178,7 @@ if (
                                                 """, unsafe_allow_html=True)
                                             else:
                                                 st.info(f"ไม่พบไฟล์ภาพอ้างอิง")
-                                    
-                                    # Detailed comparison table
-                                    st.markdown("#### รายละเอียดการเปรียบเทียบ")
-                                    comparison_data = []
-                                    for i, match in enumerate(result["top_matches"][:5]):
-                                        similarity = match.get("similarity", 0)
-                                        similarity_pct = similarity * 100
-                                        comparison_data.append({
-                                            "อันดับ": f"#{i+1}",
-                                            "ประเภท": match.get('class', 'Unknown'),
-                                            "ความเหมือน": f"{similarity_pct:.2f}%",
-                                            "คะแนน": f"{similarity:.4f}"
-                                        })
-                                    
-                                    if comparison_data:
-                                        st.table(comparison_data)
-                                        
-                                else:
-                                    st.info("ไม่พบภาพที่คล้ายกันในฐานข้อมูล")
-                                    
+                        
                         except Exception as e:
                             st.warning(f"ระบบเปรียบเทียบภาพยังไม่พร้อมใช้งาน")
                             st.info("จะใช้ภาพอ้างอิงจาก API แทน")
@@ -2363,6 +1484,7 @@ def show_comparison_tab():
                     if temp_path.exists():
                         try:
                             os.remove(temp_path)
+                       
                         except:
                             pass
     else:
