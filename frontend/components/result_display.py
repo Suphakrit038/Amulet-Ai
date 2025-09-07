@@ -14,16 +14,20 @@ from PIL import Image
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
-    from config import UI_SETTINGS
+    from ..config import UI_SETTINGS
 except ImportError:
-    # Fallback configuration
-    UI_SETTINGS = {
-        "PRIMARY_COLOR": "#2563EB",
-        "SECONDARY_COLOR": "#1E3A8A",
-        "SUCCESS_COLOR": "#10B981",
-        "WARNING_COLOR": "#F59E0B",
-        "ERROR_COLOR": "#EF4444"
-    }
+    try:
+        import config
+        UI_SETTINGS = config.UI_SETTINGS
+    except ImportError:
+        # Fallback configuration
+        UI_SETTINGS = {
+            "PRIMARY_COLOR": "#2563EB",
+            "SECONDARY_COLOR": "#1E3A8A",
+            "SUCCESS_COLOR": "#10B981",
+            "WARNING_COLOR": "#F59E0B",
+            "ERROR_COLOR": "#EF4444"
+        }
 
 class ResultDisplayer:
     """คลาสสำหรับแสดงผลลัพธ์การวิเคราะห์"""

@@ -9,7 +9,13 @@ from datetime import datetime
 from typing import Dict, List, Any
 from pathlib import Path
 
-from .config import LOGGING_SETTINGS, get_absolute_path
+try:
+    from .config import LOGGING_SETTINGS, get_absolute_path
+except ImportError:
+    # Fallback for direct import
+    import config
+    LOGGING_SETTINGS = config.LOGGING_SETTINGS
+    get_absolute_path = config.get_absolute_path
 
 class PerformanceMetrics:
     """คลาสสำหรับเก็บและวิเคราะห์ metrics ของระบบ"""

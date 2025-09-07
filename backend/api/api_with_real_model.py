@@ -30,6 +30,7 @@ try:
         print(f"⚠️ Reference images directory not found: {REFERENCE_IMAGES_DIR}")
         # Fallback paths
         fallback_paths = [
+            Path(__file__).parent.parent.parent / "data_base",
             Path(__file__).parent.parent.parent / "dataset_organized",
             Path(__file__).parent.parent / "reference_images",
             Path(__file__).parent.parent.parent / "ai_models" / "reference_images"

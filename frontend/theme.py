@@ -1,11 +1,11 @@
 """
-Amulet-AI Theme Module.
+โมดูลธีมสำหรับ Amulet-AI
 
-Contains CSS and JS for Thai-themed UI styling.
-All content is designed to be loaded via st.markdown(..., unsafe_allow_html=True).
+ประกอบด้วย CSS และ JS สำหรับการออกแบบ UI ในธีมไทย
+เนื้อหาทั้งหมดได้รับการออกแบบให้โหลดผ่าน st.markdown(..., unsafe_allow_html=True)
 """
 
-# Thai Modern Theme CSS
+# CSS ธีมไทยสมัยใหม่
 THAI_THEME_CSS = """
 <style>
 :root {
@@ -194,7 +194,7 @@ html, body {
 </style>
 """
 
-# Minimal JS for drag-and-drop (lightweight, no setInterval)
+# JS ขั้นต่ำสำหรับ drag-and-drop (น้ำหนักเบา ไม่มี setInterval)
 DRAG_DROP_JS = """
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -256,13 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
 """
 
 def get_theme_css():
-    """Return the Thai theme CSS as a string."""
+    """ส่งกลับ CSS ของธีมไทยเป็นสตริง"""
     return THAI_THEME_CSS
 
 def get_drag_drop_js():
-    """Return the drag-and-drop JS as a string."""
+    """ส่งกลับ JS สำหรับ drag-and-drop เป็นสตริง"""
     return DRAG_DROP_JS
 
 def load_theme():
-    """Load the complete theme (CSS + JS) for use in st.markdown."""
+    """โหลดธีมทั้งหมด (CSS + JS) สำหรับใช้ใน st.markdown"""
     return THAI_THEME_CSS + DRAG_DROP_JS

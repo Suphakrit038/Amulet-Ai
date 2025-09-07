@@ -31,11 +31,15 @@ except ImportError:
     logging.warning("Modern AI model not available, using mock responses")
 
 # Setup logging
+# Create logs directory first
+log_dir = project_root / "backend" / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('backend/logs/api.log'),
+        logging.FileHandler(log_dir / 'api.log'),
         logging.StreamHandler()
     ]
 )

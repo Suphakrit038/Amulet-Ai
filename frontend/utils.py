@@ -1,7 +1,7 @@
 """
-Utils module (Legacy compatibility + New utilities)
-This file re-exports functionality from amulet_utils.py for backwards compatibility
-and adds new modular functions for better code organization.
+โมดูล Utils (ความเข้ากันได้แบบเดิม + ฟังก์ชันใหม่)
+ไฟล์นี้ส่งออกฟังก์ชันจาก amulet_utils.py เพื่อความเข้ากันได้แบบเดิม
+และเพิ่มฟังก์ชันใหม่แบบโมดูลาร์เพื่อการจัดระเบียบโค้ดที่ดีขึ้น
 """
 
 import logging
@@ -9,22 +9,40 @@ from PIL import Image
 import io
 import requests
 from datetime import datetime
-from .amulet_unified import (
-    validate_and_convert_image,
-    send_predict_request as legacy_send_predict_request,
-    SUPPORTED_FORMATS,
-    FORMAT_DISPLAY,
-    MAX_FILE_SIZE_MB,
-    find_reference_images,
-    load_reference_images_for_comparison,
-    compare_with_database,
-    get_unified_result,
-    format_comparison_results,
-    get_dataset_info,
-    process_image_with_api,
-    check_api_connection,
-    get_default_result
-)
+try:
+    from .amulet_unified import (
+        validate_and_convert_image,
+        send_predict_request as legacy_send_predict_request,
+        SUPPORTED_FORMATS,
+        FORMAT_DISPLAY,
+        MAX_FILE_SIZE_MB,
+        find_reference_images,
+        load_reference_images_for_comparison,
+        compare_with_database,
+        get_unified_result,
+        format_comparison_results,
+        get_dataset_info,
+        process_image_with_api,
+        check_api_connection,
+        get_default_result
+    )
+except ImportError:
+    # Fallback for direct import
+    import amulet_unified
+    validate_and_convert_image = amulet_unified.validate_and_convert_image
+    legacy_send_predict_request = amulet_unified.send_predict_request
+    SUPPORTED_FORMATS = amulet_unified.SUPPORTED_FORMATS
+    FORMAT_DISPLAY = amulet_unified.FORMAT_DISPLAY
+    MAX_FILE_SIZE_MB = amulet_unified.MAX_FILE_SIZE_MB
+    find_reference_images = amulet_unified.find_reference_images
+    load_reference_images_for_comparison = amulet_unified.load_reference_images_for_comparison
+    compare_with_database = amulet_unified.compare_with_database
+    get_unified_result = amulet_unified.get_unified_result
+    format_comparison_results = amulet_unified.format_comparison_results
+    get_dataset_info = amulet_unified.get_dataset_info
+    process_image_with_api = amulet_unified.process_image_with_api
+    check_api_connection = amulet_unified.check_api_connection
+    get_default_result = amulet_unified.get_default_result
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

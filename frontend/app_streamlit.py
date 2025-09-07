@@ -40,33 +40,34 @@ except ImportError:
 # ==========================================================
 # Imports / Utils (prefer the first file's implementations)
 # ==========================================================
+
+# กำหนดค่าพื้นฐานสำหรับรูปแบบไฟล์ที่รองรับ
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+    SUPPORTED_FORMATS = [
+        "jpg",
+        "jpeg",
+        "png",
+        "heic",
+        "heif",
+        "webp",
+        "bmp",
+        "tiff",
+    ]
+    FORMAT_DISPLAY = "JPG, JPEG, PNG, HEIC, HEIF, WebP, BMP, TIFF"
+except Exception:
+    SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "webp", "bmp", "tiff"]
+    FORMAT_DISPLAY = "JPG, JPEG, PNG, WebP, BMP, TIFF"
+
 try:
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from frontend.utils import (
-        validate_and_convert_image,
-        send_predict_request,
-        SUPPORTED_FORMATS,
-        FORMAT_DISPLAY,
-    )
+    from frontend.utils import validate_and_convert_image
+except ImportError:
+    st.error("ไม่สามารถโหลดโมดูล utils ได้")
 except Exception:
     # ---- ส่วนสำรองจากไฟล์แรก ----
-    try:
-        from pillow_heif import register_heif_opener
-        register_heif_opener()
-        SUPPORTED_FORMATS = [
-            "jpg",
-            "jpeg",
-            "png",
-            "heic",
-            "heif",
-            "webp",
-            "bmp",
-            "tiff",
-        ]
-        FORMAT_DISPLAY = "JPG, JPEG, PNG, HEIC, HEIF, WebP, BMP, TIFF"
-    except Exception:
-        SUPPORTED_FORMATS = ["jpg", "jpeg", "png", "webp", "bmp", "tiff"]
-        FORMAT_DISPLAY = "JPG, JPEG, PNG, WebP, BMP, TIFF"
+    pass
 
     MAX_FILE_SIZE_MB = 10
 
@@ -198,17 +199,30 @@ except Exception:
         except Exception as e:
             return False, None, None, f"❌ เกิดข้อผิดพลาดในการประมวลผลภาพ: {str(e)}"
 
-    def send_predict_request(files: dict, api_url: str, timeout: int = 60):
-        url = api_url.rstrip("/") + "/predict"
-        prepared = {}
-        for k, v in files.items():
-            fname, fileobj, mime = v
-            try:
-                fileobj.seek(0)
-            except Exception:
-                pass
-            prepared[k] = (fname, fileobj, mime)
-        return requests.post(url, files=prepared, timeout=timeout)
+# ==========================================================
+# Utility Functions
+# ==========================================================
+def send_predict_request(files: dict, api_url: str, timeout: int = 60):
+    """ส่งคำขอการทำนายไปยัง API
+    
+    Args:
+        files (dict): Dictionary ของไฟล์ที่จะส่ง
+        api_url (str): URL ของ API
+        timeout (int): Timeout ในหน่วยวินาที
+    
+    Returns:
+        requests.Response: Response จาก API
+    """
+    url = api_url.rstrip("/") + "/predict"
+    prepared = {}
+    for k, v in files.items():
+        fname, fileobj, mime = v
+        try:
+            fileobj.seek(0)
+        except Exception:
+            pass
+        prepared[k] = (fname, fileobj, mime)
+    return requests.post(url, files=prepared, timeout=timeout)
 
 # ==========================================================
 # กำหนดค่า - ตอนนี้ใช้ AI Model จริงแล้ว! 🚀
@@ -326,7 +340,7 @@ st.markdown(
     }
     .upload-zone:hover {
         border-color: #bbb;
-        background: linear-gradient(180deg, #f7f7f9, #fff);
+        background: linear-gradient(180deg, #f7f9f9, #fff);
         transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(0,0,0,0.10);
     }
@@ -421,20 +435,32 @@ document.addEventListener('DOMContentLoaded', function(){
 # ==========================================================
 # ส่วนหัว - การออกแบบแบบขั้นสูง
 # ==========================================================
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode("utf-8")
+
+logo_depa_path = os.path.join("frontend", "logo_depa.png")
+logo_thai_austrian_path = os.path.join("frontend", "logo_thai_austrian.gif")
+
+logo_depa_b64 = get_base64_image(logo_depa_path)
+logo_thai_austrian_b64 = get_base64_image(logo_thai_austrian_path)
+
 st.markdown(
-    """
+    f"""
 <div class="app-header">
   <div class="header-text">
     <h1>Amulet-AI</h1>
     <p>ปัญญาโบราณสำหรับพระเครื่องพุทธไทย — ข้อมูลเชิงลึกเกี่ยวกับความแท้ ความเข้าใจในรูปแบบ</p>
     <div class="header-subblock">
-      <span class="badge">Accurate Classification</span>
-      <span class="badge">Price Estimation</span>
-      <span class="badge">Cultural Heritage</span>
+      <span class="badge">จำแนกประเภทแม่นยำ</span>
+      <span class="badge">ประเมินราคา</span>
+      <span class="badge">มรดกวัฒนธรรม</span>
     </div>
   </div>
-  <div class="crumbs">
+  <div class="crumbs" style="flex:1; text-align:right;">
     <span>หน้าหลัก</span>
+    <img src="data:image/png;base64,{logo_depa_b64}" alt="depa" style="height:150px; margin-left:18px; vertical-align:middle; border-radius:8px;">
+    <img src="data:image/gif;base64,{logo_thai_austrian_b64}" alt="thai-austrian" style="height:150px; margin-left:12px; vertical-align:middle; border-radius:8px;">
   </div>
 </div>
 """,
@@ -650,7 +676,10 @@ with col1:
                 """, 
                 unsafe_allow_html=True
             )
-            st.image(processed_img, width=300, caption=f"ภาพด้านหน้า ({front_source})")
+            if processed_img is not None:
+                st.image(processed_img, width=300, caption="ภาพที่อัปโหลด")
+            else:
+                st.warning("ไม่สามารถแสดงภาพได้")
             st.session_state.front_processed = processed_bytes
             st.session_state.front_filename = (
                 front.name if hasattr(front, "name") else f"camera_front_{datetime.now():%Y%m%d_%H%M%S}.jpg"
@@ -772,7 +801,10 @@ with col2:
                 """, 
                 unsafe_allow_html=True
             )
-            st.image(processed_img, width=300, caption=f"ภาพด้านหลัง ({back_source})")
+            if processed_img is not None:
+                st.image(processed_img, width=300, caption="ภาพที่อัปโหลด")
+            else:
+                st.warning("ไม่สามารถแสดงภาพได้")
             st.session_state.back_processed = processed_bytes
             st.session_state.back_filename = (
                 back.name if hasattr(back, "name") else f"camera_back_{datetime.now():%Y%m%d_%H%M%S}.jpg"
@@ -844,7 +876,9 @@ if (
         with st.spinner("กำลังประมวลผลด้วย AI... โปรดรอสักครู่"):
             try:
                 r = send_predict_request(files, API_URL, timeout=60)
-                if r.ok:
+                if r is None:
+                    st.error("ไม่สามารถเชื่อมต่อกับ API ได้")
+                elif r.ok:
                     data = r.json()
 
                     # ---- Enhanced Result Display with animations ----
@@ -1187,8 +1221,8 @@ if (
                             if "temp_path" in locals() and temp_path.exists():
                                 try:
                                     temp_path.unlink()
-                                except:
-                                    pass
+                                except Exception as e:
+                                    logging.warning(f"ไม่สามารถลบไฟล์ชั่วคราวได้: {e}")
 
                     # ---- Professional Valuation Display ----
                     st.markdown("### ประเมินราคาตลาด")
@@ -1446,16 +1480,10 @@ def show_comparison_tab():
                         
                         return buf
                     
-                    # Plot comparison
-                    comparison_img = plot_comparison(image, result["top_matches"])
-                    st.image(comparison_img, use_column_width=True)
-                    
-                    # Display table of results
-                    st.markdown('<h3 style="color: #2563EB; margin-top: 1rem; margin-bottom: 1rem;">รายละเอียดความเหมือน</h3>', unsafe_allow_html=True)
-                    
-                    # Get similarity class function
+                   
+                    # Display comparison results
                     def get_similarity_class(similarity):
-                        """Get CSS class for similarity score"""
+                        """Classify similarity score into categories"""
                         if similarity >= 0.85:
                             return "high"
                         elif similarity >= 0.7:
@@ -1474,7 +1502,7 @@ def show_comparison_tab():
                             <h4>{i+1}. {match['class']}</h4>
                             <p>ค่าความเหมือน: <span style="color: {similarity_color}; font-weight: bold;">{similarity:.4f}</span></p>
                         </div>
-                        """, unsafe_allow_html=True)
+ """, unsafe_allow_html=True)
                     
                 except Exception as e:
                     st.error(f"เกิดข้อผิดพลาดในการเปรียบเทียบรูปภาพ: {e}")
@@ -1484,17 +1512,8 @@ def show_comparison_tab():
                     if temp_path.exists():
                         try:
                             os.remove(temp_path)
-                       
                         except:
                             pass
-    else:
-        # Display sample or instructions
-        st.markdown("""
-        <div style="background-color: #EFF6FF; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; border: 1px solid #BFDBFE;">
-            <h3>กรุณาอัพโหลดรูปภาพพระเครื่องที่ต้องการเปรียบเทียบ</h3>
-            <p>ระบบจะวิเคราะห์และค้นหาภาพที่คล้ายกันจากฐานข้อมูล</p>
-        </div>
-        """, unsafe_allow_html=True)
 
 # ==========================================================
 # Developer Info (single block)
@@ -1513,15 +1532,12 @@ with st.expander("ข้อมูลสำหรับนักพัฒนา")
     # API connection diagnostic
     if st.button("ทดสอบการเชื่อมต่อกับ API"):
         try:
-            with st.spinner("กำลังทดสอบการเชื่อมต่อ..."):
-                health_response = requests.get(f"{API_URL}/health", timeout=5)
-                if health_response.status_code == 200:
-                    st.success(f"เชื่อมต่อสำเร็จ! API พร้อมใช้งาน - Status: {health_response.status_code}")
-                    st.json(health_response.json())
-                else:
-                    st.error(f"เชื่อมต่อสำเร็จแต่ API ส่งค่า error: {health_response.status_code}")
-                    st.code(health_response.text)
+            health_response = requests.get(f"{API_URL}/health", timeout=5)
+            if health_response.status_code == 200:
+                st.success("API พร้อมใช้งาน")
+            else:
+                st.error(f"API ส่งค่า error: {health_response.status_code}")
         except requests.exceptions.ConnectionError:
-            st.error("ไม่สามารถเชื่อมต่อกับ API ได้ - กรุณาตรวจสอบว่า backend API เปิดใช้งานอยู่ที่ " + API_URL)
+            st.error("ไม่สามารถเชื่อมต่อกับ API ได้")
         except Exception as e:
             st.error(f"เกิดข้อผิดพลาด: {str(e)}")

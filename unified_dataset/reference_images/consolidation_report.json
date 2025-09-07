@@ -1,0 +1,16 @@
+{
+  "total_images": 173,
+  "total_classes": 10,
+  "classes": {
+    "somdej_fatherguay": 36,
+    "buddha_in_vihara": 8,
+    "somdej_lion_base": 4,
+    "somdej_buddha_blessing": 23,
+    "somdej_portrait_back": 26,
+    "phra_san": 2,
+    "phra_sivali": 16,
+    "somdej_prok_bodhi": 20,
+    "somdej_waek_man": 21,
+    "wat_nong_e_duk": 17
+  }
+}

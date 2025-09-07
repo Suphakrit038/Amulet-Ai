@@ -1,34 +1,34 @@
 {
-  "🎯": "Advanced Amulet AI Configuration",
-  "description": "Configuration for high-quality amulet recognition system with self-supervised learning",
-  "_comment_data_paths": "=== DATA CONFIGURATION ===",
+  "🎯": "การกำหนดค่าอัลกอริทึม AI พระเครื่องขั้นสูง",
+  "description": "การกำหนดค่าสำหรับระบบจดจำพระเครื่องคุณภาพสูงด้วยการเรียนรู้แบบไม่ต้องมีผู้สอน",
+  "_comment_data_paths": "=== การกำหนดค่าเส้นทางข้อมูล ===",
   "dataset_path": "dataset",
   "organized_path": "dataset_organized",
   "split_path": "dataset_split",
-  "_comment_model": "=== MODEL CONFIGURATION ===",
+  "_comment_model": "=== การกำหนดค่าโมเดล ===",
   "model_name": "efficientnet-b4",
   "embedding_dim": 512,
   "num_classes": 6,
-  "_comment_training": "=== TRAINING CONFIGURATION ===",
+  "_comment_training": "=== การกำหนดค่าการฝึกฝน ===",
   "batch_size": 16,
   "learning_rate": 0.0001,
   "num_epochs": 100,
   "warmup_epochs": 10,
   "patience": 15,
-  "_comment_self_supervised": "=== SELF-SUPERVISED LEARNING ===",
+  "_comment_self_supervised": "=== การเรียนรู้แบบไม่ต้องมีผู้สอน ===",
   "temperature": 0.1,
   "contrastive_weight": 1.0,
-  "_comment_quality": "=== QUALITY THRESHOLDS ===",
+  "_comment_quality": "=== เกณฑ์คุณภาพ ===",
   "min_quality_score": 0.8,
-  "_comment_output": "=== OUTPUT CONFIGURATION ===",
+  "_comment_output": "=== การกำหนดค่าผลลัพธ์ ===",
   "output_dir": "training_output",
   "save_best_only": true,
   "log_interval": 10,
-  "_comment_hardware": "=== HARDWARE CONFIGURATION ===",
+  "_comment_hardware": "=== การกำหนดค่าฮาร์ดแวร์ ===",
   "use_cuda": true,
   "mixed_precision": true,
   "num_workers": 4,
-  "_comment_image_processing": "=== IMAGE PROCESSING SETTINGS ===",
+  "_comment_image_processing": "=== การกำหนดค่าการประมวลผลภาพ ===",
   "image_processing": {
     "target_size": [
       512,
@@ -68,7 +68,7 @@
       ]
     }
   },
-  "_comment_embedding": "=== EMBEDDING CONFIGURATION ===",
+  "_comment_embedding": "=== การกำหนดค่า Embedding ===",
   "embedding_config": {
     "dimension": 512,
     "similarity_metric": "cosine",
@@ -84,16 +84,16 @@
       "target_dim": 256
     }
   },
-  "_comment_data_augmentation": "=== DATA AUGMENTATION (DISABLED) ===",
+  "_comment_data_augmentation": "=== การเพิ่มข้อมูล (ปิดใช้งาน) ===",
   "data_augmentation": {
     "enabled": false,
     "rotation": false,
     "flip": false,
     "shift": false,
     "zoom": false,
-    "note": "Disabled to preserve maximum image quality"
+    "note": "ปิดใช้งานเพื่อรักษาคุณภาพภาพสูงสุด"
   },
-  "_comment_validation": "=== VALIDATION SETTINGS ===",
+  "_comment_validation": "=== การกำหนดค่าการตรวจสอบ ===",
   "validation": {
     "split_ratio": 0.1,
     "cross_validation": false,
@@ -103,7 +103,7 @@
       "similarity_accuracy"
     ]
   },
-  "_comment_logging": "=== LOGGING CONFIGURATION ===",
+  "_comment_logging": "=== การกำหนดค่าการบันทึกข้อมูล ===",
   "logging": {
     "level": "INFO",
     "save_logs": true,
@@ -111,7 +111,7 @@
     "log_embeddings": true,
     "log_images": true
   },
-  "_comment_advanced": "=== ADVANCED FEATURES ===",
+  "_comment_advanced": "=== ฟีเจอร์ขั้นสูง ===",
   "advanced_features": {
     "gradient_clipping": {
       "enabled": true,
@@ -122,7 +122,7 @@
     "dropout": 0.1,
     "batch_norm_momentum": 0.1
   },
-  "_comment_categories": "=== AMULET CATEGORIES ===",
+  "_comment_categories": "=== หมวดหมู่พระเครื่อง ===",
   "categories": [
     "somdej_fatherguay",
     "somdej_portrait_back",
@@ -131,7 +131,7 @@
     "wat_nong_e_duk",
     "wat_nong_e_duk_misc"
   ],
-  "_comment_quick_start": "=== QUICK START CONFIG ===",
+  "_comment_quick_start": "=== การกำหนดค่าเริ่มต้นด่วน ===",
   "quick_start": {
     "enabled": false,
     "num_epochs": 10,

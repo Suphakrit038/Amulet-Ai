@@ -13,15 +13,19 @@ from typing import Tuple, Optional
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
-    from config import IMAGE_SETTINGS
+    from ..config import IMAGE_SETTINGS
 except ImportError:
-    # Fallback configuration
-    IMAGE_SETTINGS = {
-        "SUPPORTED_FORMATS": ["jpg", "jpeg", "png", "webp", "bmp", "tiff"],
-        "MAX_FILE_SIZE_MB": 10,
-        "IMAGE_QUALITY": 95,
-        "THUMBNAIL_SIZE": (300, 300)
-    }
+    try:
+        import config
+        IMAGE_SETTINGS = config.IMAGE_SETTINGS
+    except ImportError:
+        # Fallback configuration
+        IMAGE_SETTINGS = {
+            "SUPPORTED_FORMATS": ["jpg", "jpeg", "png", "webp", "bmp", "tiff"],
+            "MAX_FILE_SIZE_MB": 10,
+            "IMAGE_QUALITY": 95,
+            "THUMBNAIL_SIZE": (300, 300)
+        }
 
 logger = logging.getLogger(__name__)
 
