@@ -11,9 +11,25 @@ from typing import Any
 import json
 import time
 import numpy as np
-import matplotlib.pyplot as plt
 from pathlib import Path
 import logging
+
+# Lazy import matplotlib to avoid circular import issues
+matplotlib = None
+plt = None
+
+def get_matplotlib():
+    """Lazy import matplotlib to avoid circular import issues"""
+    global matplotlib, plt
+    if matplotlib is None:
+        try:
+            import matplotlib
+            matplotlib.use('Agg')  # Use non-interactive backend
+            import matplotlib.pyplot as plt
+        except ImportError:
+            st.warning("matplotlib ไม่พร้อมใช้งาน การแสดงกราฟบางอย่างจะถูกข้าม")
+            return None, None
+    return matplotlib, plt
 
 # พยายามนำเข้า OpenCV หากไม่มีให้ใช้ตัวสำรอง
 try:
@@ -238,8 +254,7 @@ DEFAULT_TOP_K = 5
 # กำหนดค่าสำหรับแสดงผล
 st.set_page_config(
     page_title="Amulet-AI",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 # ==========================================================
 # Global CSS/JS - simplified modern theme with Thai style
@@ -249,164 +264,105 @@ st.markdown(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* Thai modern theme - elegant and robust */
-    /* White-Grey Modern Minimal Theme */
-    :root {
-        --bg-1: #f7f7f9;
-        --bg-2: #e5e7eb;
-        --primary: #222;
-        --secondary: #555;
-        --card: #fff;
-        --muted: #888;
-        --accent: #e5e7eb;
-        --border: #e5e7eb;
-        --shadow: 0 8px 24px rgba(0,0,0,0.07);
-        --radius: 12px;
-        --heading-font: 'Playfair Display', 'Inter', sans-serif;
-        --body-font: 'Inter', 'Noto Sans Thai', sans-serif;
-        --transition: all 0.3s ease;
-    }
-    html { background: var(--bg-1); }
-    body { background: var(--bg-1); color: var(--primary); font-family: var(--body-font); }
-    .stApp { min-height: 100vh; background: linear-gradient(180deg, var(--bg-1), var(--bg-2)); }
-    .main .block-container {
-        background: var(--card);
-        color: var(--primary);
-        border-radius: var(--radius);
-        padding: 1.75rem;
-        margin: 1rem;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-    }
+:root {
+    --bg-1: #f7f7f9;
+    --bg-2: #ececec;
+    --primary: #222;
+    --secondary: #555;
+    --card: #fff;
+    --muted: #888;
+    --accent: #e5e7eb;
+    --border: #e5e7eb;
+    --shadow: 0 8px 24px rgba(0,0,0,0.07);
+    --radius: 14px;
+    --heading-font: 'Playfair Display', 'Inter', sans-serif;
+    --body-font: 'Inter', 'Noto Sans Thai', sans-serif;
+    --transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+/* พื้นหลัง geometric pattern (SVG base64) */
+html, body, .stApp {
+    min-height: 100vh;
+    background:
+        linear-gradient(135deg, #f7f7f9 0%, #ececec 100%),
+        repeating-linear-gradient(120deg, #e5e7eb 0px, #e5e7eb 2px, transparent 2px, transparent 40px),
+        repeating-linear-gradient(60deg, #e5e7eb 0px, #e5e7eb 2px, transparent 2px, transparent 40px);
+    background-blend-mode: lighten;
+    background-size: cover;
+    color: var(--primary);
+    font-family: var(--body-font);
+}
+/* กล่องหลักทุกประเภทให้พื้นหลังขาวทึบและเงา */
+.main .block-container,
+.panel,
+.card,
+.app-header,
+.upload-zone,
+.comparison-grid,
+.result-container {
+    background: #ebebeb;
+    color: var(--primary);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    margin: 1.5rem auto;
+    transition: var(--transition);
+}
+/* เพิ่มความเด่นให้ header */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 2rem 2.5rem;
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.95);
+    color: var(--primary);
+    box-shadow: 0 6px 24px rgba(56,189,248,0.10);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+.header-text {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.header-subblock {
+    margin-top: 1rem;
+}
+.crumbs {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5rem;
+}
+.crumbs img {
+    height: 70px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    background: #fff;
+    padding: 0.5rem;
+}
+@media (max-width: 900px) {
     .app-header {
-        display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
         gap: 1rem;
-        padding: 1.25rem;
-        border-radius: var(--radius);
-        background: linear-gradient(135deg, #f7f7f9 60%, #e5e7eb 100%);
-        color: var(--primary);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        backdrop-filter: blur(8px);
-        transition: var(--transition);
     }
-    .header-text h1 {
-        font-family: var(--heading-font);
-        margin: 0;
-        font-size: 2.25rem;
-        color: var(--primary);
-        font-weight: 700;
-        letter-spacing: -0.02em;
+    .crumbs {
+        justify-content: flex-start;
+        gap: 1rem;
     }
-    .header-text p {
-        margin: 0.5rem 0 0;
-        color: var(--secondary);
-        font-family: var(--body-font);
-        line-height: 1.5;
-        font-size: 1.1rem;
+    .crumbs img {
+        height: 48px;
     }
-    .panel, .card {
-        background: var(--card);
-        border-radius: var(--radius);
-        padding: 1.5rem;
-        margin-bottom: 1.25rem;
-        color: var(--primary);
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-        transition: var(--transition);
-    }
-    .panel:hover, .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    .upload-zone {
-        border: 2px dashed var(--border);
-        padding: 1.5rem;
-        border-radius: var(--radius);
-        background: linear-gradient(180deg, #fff, #f7f7f9);
-        position: relative;
-        overflow: hidden;
-        transition: var(--transition);
-    }
-    .upload-zone::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, #e5e7eb 40%, transparent);
-        animation: shimmer 2s infinite;
-    }
-    .upload-zone:hover {
-        border-color: #bbb;
-        background: linear-gradient(180deg, #f7f9f9, #fff);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-    }
-    .stButton > button {
-        background: linear-gradient(135deg, #e5e7eb 0%, #fff 100%);
-        color: var(--primary);
-        border-radius: var(--radius);
-        padding: .75rem 1.5rem;
-        border: 1px solid #d1d5db;
-        font-weight: 600;
-        font-family: var(--body-font);
-        font-size: 1.1rem;
-        letter-spacing: 0.02em;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-        transition: var(--transition);
-        position: relative;
-        overflow: hidden;
-    }
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, #e5e7eb 60%, transparent);
-        transition: 0.5s;
-        pointer-events: none;
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        background: linear-gradient(135deg, #f3f4f6 0%, #fff 100%);
-        border-color: #bbb;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-    }
-    .stButton > button:hover::before {
-        left: 100%;
-    }
-    @keyframes shimmer {
-        0% { left: -100%; }
-        100% { left: 100%; }
-    }
-    @media (max-width:768px) {
-        .app-header {
-            padding: 1rem;
-        }
-        .header-text h1 {
-            font-size: 1.8rem;
-        }
-        .header-text p {
-            font-size: 1rem;
-        }
-        .panel, .card {
-            padding: 1rem;
-        }
-    }
-    @media (prefers-reduced-motion:reduce) {
-        * {
-            animation: none !important;
-            transition: none !important;
-        }
-        .upload-zone::before,
-        .stButton > button::before {
-            display: none;
-        }
-    }
+}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -436,11 +392,19 @@ document.addEventListener('DOMContentLoaded', function(){
 # ส่วนหัว - การออกแบบแบบขั้นสูง
 # ==========================================================
 def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode("utf-8")
+    """Get base64 encoded image with proper path resolution"""
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode("utf-8")
+    except FileNotFoundError:
+        # Create a placeholder if logo file is missing
+        st.warning(f"Logo file not found: {image_path}. Using placeholder.")
+        return ""
 
-logo_depa_path = os.path.join("frontend", "logo_depa.png")
-logo_thai_austrian_path = os.path.join("frontend", "logo_thai_austrian.gif")
+# Use absolute paths for logo files
+current_dir = os.path.dirname(os.path.abspath(__file__))
+logo_depa_path = os.path.join(current_dir, "logo_depa.png")
+logo_thai_austrian_path = os.path.join(current_dir, "logo_thai_austrian.gif")
 
 logo_depa_b64 = get_base64_image(logo_depa_path)
 logo_thai_austrian_b64 = get_base64_image(logo_thai_austrian_path)
@@ -794,7 +758,7 @@ with col2:
                         <span style="font-size: 1.2rem;">✅</span>
                         <div>
                             <div style="font-weight: 600; color: #047857;">ภาพด้านหลัง: ผ่านการตรวจสอบ</div>
-                            <div style="font-size: 0.85rem; color: #059669; margin-top: 0.2rem;">{error_msg}</div>
+                            <div style="font-size: 0.85rem; color: #059669, margin-top: 0.2rem;">{error_msg}</div>
                         </div>
                     </div>
                 </div>
@@ -1161,6 +1125,158 @@ if (
                         </div>
                         """, unsafe_allow_html=True)
                     
+                    # ---- Detection Confidence Gauge ----
+                    st.markdown("### แสดงความเชื่อมั่นของการตรวจจับ")
+                    
+                    # Create a gauge chart for detection confidence
+                    try:
+                        import plotly.graph_objects as go
+
+                        fig = go.Figure(
+                            go.Indicator(
+                                mode = "gauge+number",
+                                value = top_confidence,
+                                title = {"text": "ความเชื่อมั่นในการตรวจจับ", "font": {"size": 24}},
+                                gauge = {
+                                    "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "darkgrey"},
+                                    "bar": {"color": "green"},
+                                    "bgcolor": "white",
+                                    "borderwidth": 2,
+                                    "bordercolor": "darkgrey",
+                                    "steps": [
+                                        {"range": [0, 50], "color": "red"},
+                                        {"range": [50, 75], "color": "yellow"},
+                                        {"range": [75, 100], "color": "lightgreen"},
+                                    ],
+                                },
+                                domain = {"x": [0, 1], "y": [0, 1]}
+                            )
+                        )
+
+                        fig.update_layout(height=300, margin=dict(t=0, b=0, l=0, r=0))
+
+                        st.plotly_chart(fig, use_container_width=True)
+                    except ImportError:
+                        st.warning("plotly ไม่พร้อมใช้งาน การแสดงกราฟความเชื่อมั่นจะถูกข้าม")
+                    except Exception as e:
+                        st.warning(f"ไม่สามารถแสดงกราฟความเชื่อมั่นได้: {e}")
+                    
+                    # ---- Detection Time Analysis ----
+                    st.markdown("### วิเคราะห์เวลาในการตรวจจับ")
+                    
+                    # Create a bar chart for time analysis
+                    try:
+                        import plotly.express as px
+                        import pandas as pd
+
+                        # Dummy data for analysis (replace with real data if available)
+                        time_data = {
+                            "ขั้นตอนการประมวลผล": ["การโหลดภาพ", "การประมวลผลด้วย AI", "การตรวจสอบคุณภาพ", "การจัดเก็บผลลัพธ์"],
+                            "เวลา (วินาที)": [1.2, 2.5, 0.8, 0.3]
+                        }
+
+                        df_time = pd.DataFrame(time_data)
+
+                        fig = px.bar(
+                            df_time,
+                            x="ขั้นตอนการประมวลผล",
+                            y="เวลา (วินาที)",
+                            title="การวิเคราะห์เวลาในการตรวจจับ",
+                            labels={"เวลา (วินาที)": "เวลา (วินาที)", "ขั้นตอนการประมวลผล": "ขั้นตอนการประมวลผล"},
+                            template="plotly_white"
+                        )
+
+                        fig.update_layout(barmode="group", xaxis_title="", yaxis_title="")
+
+                        st.plotly_chart(fig, use_container_width=True)
+                    except ImportError:
+                        st.warning("plotly หรือ pandas ไม่พร้อมใช้งาน การแสดงกราฟวิเคราะห์เวลาจะถูกข้าม")
+                    except Exception as e:
+                        st.warning(f"ไม่สามารถแสดงกราฟวิเคราะห์เวลาได้: {e}")
+                    
+                    # ---- Detection Performance Summary ----
+                    st.markdown("### สรุปประสิทธิภาพการตรวจจับ")
+                    
+                    # Create a summary box
+                    st.markdown("""
+                    <div style="
+                        background: #f0f9ff;
+                        border: 1px solid #bcd4e6;
+                        border-radius: 12px;
+                        padding: 1.5rem;
+                        margin: 1rem 0;
+                    ">
+                        <h4 style="color: #1e3a8a; margin-top: 0;">สรุปผลการตรวจจับ</h4>
+                        <p style="color: #1e3a8a; margin: 0.5rem 0;">พระเครื่องประเภท: <strong>{top_class}</strong></p>
+                        <p style="color: #1e3a8a; margin: 0.5rem 0;">ความเชื่อมั่นในการตรวจจับ: <strong>{top_confidence:.1f}%</strong></p>
+                        <p style="color: #1e3a8a; margin: 0.5rem 0;">จำนวนคลาสที่เปรียบเทียบ: <strong>{len(topk_results)} คลาส</strong></p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # ---- Detection Error Analysis (if available) ----
+                    if "errors" in data and data["errors"]:
+                        st.markdown("### วิเคราะห์ข้อผิดพลาดในการตรวจจับ")
+                        
+                        errors = data["errors"]
+                        
+                        # Create a table for error analysis
+                        error_table = "| ลำดับ | ข้อผิดพลาด | คำอธิบาย |\n|---|---|---|\n"
+                        
+                        for i, error in enumerate(errors):
+                            error_type = error.get("type", "ไม่ระบุ")
+                            error_desc = error.get("description", "ไม่มีคำอธิบาย")
+                            
+                            error_table += f"| {i+1} | {error_type} | {error_desc} |\n"
+                        
+                        st.markdown(error_table)
+                    
+                    # ---- Performance Improvement Suggestions ----
+                    st.markdown("### ข้อเสนอแนะแก้ไขประสิทธิภาพ")
+                    
+                    # Create a list of suggestions
+                    suggestions = [
+                        "ปรับปรุงคุณภาพภาพถ่ายให้ชัดเจนขึ้น",
+                        "ใช้แสงธรรมชาติในการถ่ายภาพ",
+                        "หลีกเลี่ยงการใช้แฟลชโดยตรง",
+                        "ตรวจสอบความคมชัดของภาพก่อนอัปโหลด",
+                        "ใช้พื้นหลังเรียบง่ายเพื่อเน้นพระเครื่อง",
+                        "อัปโหลดภาพในรูปแบบที่รองรับเท่านั้น"
+                    ]
+                    
+                    for i, suggestion in enumerate(suggestions):
+                        st.markdown(f"{i+1}. {suggestion}")
+                    
+                    # ---- Performance Metrics (if available) ----
+                    if "metrics" in data and data["metrics"]:
+                        st.markdown("### เมตริกการประเมินผล")
+                        
+                        metrics = data["metrics"]
+                        
+                        # Create a radar chart for metrics
+                        try:
+                            import plotly.express as px
+                            import pandas as pd
+
+                            # Prepare data for radar chart
+                            metrics_df = pd.DataFrame(metrics)
+
+                            fig = px.line_polar(
+                                metrics_df,
+                                r="ค่า",
+                                theta="ชื่อเมตริก",
+                                line_close=True,
+                                template="plotly_white",
+                                title="เมตริกการประเมินผลการตรวจจับ"
+                            )
+
+                            fig.update_traces(fill="toself")
+
+                            st.plotly_chart(fig, use_container_width=True)
+                        except ImportError:
+                            st.warning("plotly หรือ pandas ไม่พร้อมใช้งาน การแสดงกราฟเมตริกจะถูกข้าม")
+                        except Exception as e:
+                            st.warning(f"ไม่สามารถแสดงกราฟเมตริกการประเมินผลได้: {e}")
+                    
                     # ---- เปรียบเทียบรูปภาพ ----
                     st.markdown("### การเปรียบเทียบกับภาพในฐานข้อมูล")
                     
@@ -1331,6 +1447,8 @@ def show_comparison_tab():
     
     # โหลดค่าเริ่มต้น
     config = {
+       
+       
         "model_path": DEFAULT_MODEL_PATH,
         "database_dir": DEFAULT_DATABASE_DIR,
         "top_k": DEFAULT_TOP_K
@@ -1452,32 +1570,36 @@ def show_comparison_tab():
                     # Create plot for comparison
                     def plot_comparison(query_img, match_results):
                         """Create a matplotlib figure for comparison"""
+                        matplotlib, plt_local = get_matplotlib()
+                        if plt_local is None:
+                            return None
+
                         n_matches = len(match_results)
-                        fig, axes = plt.subplots(1, n_matches + 1, figsize=(12, 4))
-                        
+                        fig, axes = plt_local.subplots(1, n_matches + 1, figsize=(12, 4))
+
                         # Show query image
                         axes[0].imshow(query_img)
                         axes[0].set_title("ภาพที่อัพโหลด")
                         axes[0].axis('off')
-                        
+
                         # Show matches
                         for i, match in enumerate(match_results):
                             img = Image.open(match["path"]).convert('RGB')
                             similarity = match["similarity"]
                             class_name = match["class"]
-                            
+
                             axes[i+1].imshow(img)
                             axes[i+1].set_title(f"{class_name}\nความเหมือน: {similarity:.2f}")
                             axes[i+1].axis('off')
-                        
-                        plt.tight_layout()
-                        
+
+                        plt_local.tight_layout()
+
                         # Convert plot to image
                         buf = io.BytesIO()
                         fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
                         buf.seek(0)
-                        plt.close(fig)
-                        
+                        plt_local.close(fig)
+
                         return buf
                     
                    

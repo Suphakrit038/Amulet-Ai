@@ -74,8 +74,7 @@ logger = logging.getLogger("comparison_page")
 st.set_page_config(
     page_title="พระเครื่อง Image Comparison",
     page_icon="🔍",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
 # Custom CSS for styling
