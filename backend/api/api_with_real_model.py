@@ -1,8 +1,3 @@
-"""
-🏺 Amulet-AI Backend with Real Trained Model
-API ที่ใช้ AI Model จริงแทน Mock Data
-"""
-
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import io
