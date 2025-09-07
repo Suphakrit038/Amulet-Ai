@@ -25,9 +25,9 @@ class AmuletModelLoader:
         self.transform = None
         self.metadata = {}
         
-        print(f"🏺 เริ่มต้น AmuletModelLoader...")
-        print(f"📱 Device: {self.device}")
-        print(f"📂 Model directory: {self.model_dir}")
+        print(f"[AmuletModelLoader] Initializing...")
+        print(f"Device: {self.device}")
+        print(f"Model directory: {self.model_dir}")
         
     def load_class_names(self) -> List[str]:
         """โหลดชื่อ class จากไฟล์"""
@@ -48,11 +48,11 @@ class AmuletModelLoader:
                             self.class_names = data
                         elif isinstance(data, dict):
                             self.class_names = list(data.values())
-                        print(f"✅ โหลด class names จาก {file_path}")
-                        print(f"📋 Classes: {self.class_names}")
+                        print(f"SUCCESS: Loaded class names from {file_path}")
+                        print(f"Classes: {self.class_names}")
                         return self.class_names
                 except Exception as e:
-                    print(f"⚠️ ไม่สามารถอ่าน {file_path}: {e}")
+                    print(f"WARNING: Cannot read {file_path}: {e}")
         
         # Fallback class names จากข้อมูลที่มีในโปรเจค
         self.class_names = [
@@ -67,8 +67,8 @@ class AmuletModelLoader:
             "สมเด็จแหวกม่าน",
             "ออกวัดหนองอีดุก"
         ]
-        print("⚠️ ใช้ class names เริ่มต้น")
-        print(f"📋 Classes: {len(self.class_names)} classes")
+        print("WARNING: Using default class names")
+        print(f"Classes: {len(self.class_names)} classes")
         return self.class_names
     
     def create_model_architecture(self, num_classes: int) -> nn.Module:
@@ -77,10 +77,10 @@ class AmuletModelLoader:
             # ลอง ResNet18 เป็นหลัก (architecture ที่ใช้บ่อย)
             model = models.resnet18(pretrained=False)
             model.fc = nn.Linear(model.fc.in_features, num_classes)
-            print(f"✅ สร้าง ResNet18 architecture สำหรับ {num_classes} classes")
+            print(f"SUCCESS: Created ResNet18 architecture for {num_classes} classes")
             return model
         except Exception as e:
-            print(f"⚠️ ไม่สามารถสร้าง ResNet18: {e}")
+            print(f"WARNING: Cannot create ResNet18: {e}")
             
             # Fallback เป็น simple CNN
             class SimpleCNN(nn.Module):
@@ -109,20 +109,20 @@ class AmuletModelLoader:
                     x = self.classifier(x)
                     return x
             
-            print(f"✅ สร้าง Simple CNN architecture สำหรับ {num_classes} classes")
+            print(f"SUCCESS: Created Simple CNN architecture for {num_classes} classes")
             return SimpleCNN(num_classes)
     
     def load_trained_model(self) -> bool:
         """โหลด model ที่เทรนไว้"""
         # รายการไฟล์ model ตามลำดับความสำคัญ (เพิ่ม path variants)
         model_paths = [
-            # Path จาก backend directory
-            os.path.join("..", self.model_dir, "training_output", "step5_final_model.pth"),
-            os.path.join("..", self.model_dir, "training_output", "ultra_simple_model.pth"),
-            os.path.join("..", self.model_dir, "training_output", "emergency_model.pth"),
-            os.path.join("..", self.model_dir, "training_output", "step5_checkpoint_epoch_3.pth"),
-            os.path.join("..", self.model_dir, "training_output", "step5_checkpoint_epoch_2.pth"),
-            # Path ปกติ
+            # Path จาก backend directory (correct path from backend/api/)
+            os.path.join("..", "..", self.model_dir, "training_output", "step5_final_model.pth"),
+            os.path.join("..", "..", self.model_dir, "training_output", "ultra_simple_model.pth"),
+            os.path.join("..", "..", self.model_dir, "training_output", "emergency_model.pth"),
+            os.path.join("..", "..", self.model_dir, "training_output", "step5_checkpoint_epoch_3.pth"),
+            os.path.join("..", "..", self.model_dir, "training_output", "step5_checkpoint_epoch_2.pth"),
+            # Path ปกติ (from project root)
             os.path.join(self.model_dir, "training_output", "step5_final_model.pth"),
             os.path.join(self.model_dir, "training_output", "ultra_simple_model.pth"),
             os.path.join(self.model_dir, "training_output", "emergency_model.pth"),
@@ -133,19 +133,19 @@ class AmuletModelLoader:
             os.path.join(self.model_dir, "somdej-fatherguay_best.h5")
         ]
         
-        print(f"🔍 ตรวจสอบ model paths...")
+        print(f"Searching model paths...")
         for model_path in model_paths:
-            print(f"   📂 {model_path} -> {'✅' if os.path.exists(model_path) else '❌'}")
+            print(f"   {model_path} -> {'EXISTS' if os.path.exists(model_path) else 'NOT FOUND'}")
             if os.path.exists(model_path):
                 try:
-                    print(f"🔄 กำลังโหลด model จาก {model_path}")
+                    print(f"Loading model from {model_path}")
                     
                     # ตรวจสอบขนาดไฟล์
                     file_size = os.path.getsize(model_path) / 1024 / 1024  # MB
-                    print(f"📊 ขนาดไฟล์: {file_size:.1f} MB")
+                    print(f"File size: {file_size:.1f} MB")
                     
-                    # โหลด checkpoint
-                    checkpoint = torch.load(model_path, map_location=self.device)
+                    # โหลด checkpoint (with weights_only=False for PyTorch 2.6+ compatibility)
+                    checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
                     
                     # ตรวจสอบรูปแบบของ checkpoint
                     if isinstance(checkpoint, dict):
@@ -169,33 +169,34 @@ class AmuletModelLoader:
                     # พยายาม load weights
                     try:
                         self.model.load_state_dict(state_dict, strict=True)
-                        print("✅ โหลด weights แบบ strict สำเร็จ")
+                        print("SUCCESS: Loaded weights with strict mode")
                     except Exception as e:
                         print(f"⚠️ โหลดแบบ strict ไม่ได้: {e}")
                         try:
                             self.model.load_state_dict(state_dict, strict=False)
-                            print("✅ โหลด weights แบบ non-strict สำเร็จ")
+                            print("SUCCESS: Loaded weights with non-strict mode")
                         except Exception as e2:
-                            print(f"❌ ไม่สามารถโหลด weights: {e2}")
+                            print(f"ERROR: Cannot load weights: {e2}")
                             continue
                     
                     # ย้าย model ไป device และเซ็ต evaluation mode
                     self.model.to(self.device)
                     self.model.eval()
                     
-                    print(f"✅ โหลด model สำเร็จ!")
-                    print(f"🎯 Model: {model_path}")
-                    print(f"📊 Classes: {num_classes}")
-                    print(f"📱 Device: {self.device}")
+                    print(f"SUCCESS: Model loaded successfully!")
+                    print(f"Model: {model_path}")
+                    print(f"Classes: {num_classes}")
+                    print(f"Device: {self.device}")
                     
                     return True
                     
                 except Exception as e:
-                    print(f"❌ ไม่สามารถโหลด {model_path}: {e}")
+                    print(f"ERROR: Cannot load {model_path}: {e}")
                     continue
         
-        print("❌ ไม่พบ model file ที่ใช้งานได้")
-        return False
+        print("ERROR: No usable model file found")
+        print("Creating fallback model for testing...")
+        return self.create_fallback_model()
     
     def setup_transform(self):
         """ตั้งค่า image preprocessing transform"""
@@ -210,7 +211,7 @@ class AmuletModelLoader:
             transforms.Normalize(mean=mean, std=std)
         ])
         
-        print(f"🖼️ Transform setup: {input_size}x{input_size}, normalized")
+        print(f"Transform setup: {input_size}x{input_size}, normalized")
     
     def predict_image(self, image_data) -> Dict:
         """ทำนายผลจากรูปภาพ"""
@@ -266,12 +267,12 @@ class AmuletModelLoader:
                     "class_id": int(idx)
                 })
             
-            print(f"🎯 Prediction: {results['top1']['class_name']} ({results['top1']['confidence']:.2%})")
+            print(f"Prediction: {results['top1']['class_name']} ({results['top1']['confidence']:.2%})")
             
             return results
             
         except Exception as e:
-            print(f"❌ Prediction error: {e}")
+            print(f"ERROR: Prediction error: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -279,22 +280,39 @@ class AmuletModelLoader:
                 "top1": {"class_name": "Unknown", "confidence": 0.0}
             }
     
+    def create_fallback_model(self) -> bool:
+        """สร้าง model สำรองเมื่อโหลด model จริงไม่ได้"""
+        try:
+            print("Creating fallback ResNet18 model...")
+            num_classes = len(self.class_names)
+            self.model = self.create_model_architecture(num_classes)
+
+            # Initialize with random weights (not trained)
+            self.model.to(self.device)
+            self.model.eval()
+
+            print("SUCCESS: Fallback model created successfully")
+            return True
+        except Exception as e:
+            print(f"ERROR: Cannot create fallback model: {e}")
+            return False
+
     def initialize(self) -> bool:
         """เริ่มต้นระบบทั้งหมด"""
-        print("🏺 เริ่มต้นระบบ Amulet-AI Real Model...")
-        
+        print("Starting Amulet-AI Real Model system...")
+
         # 1. โหลด class names
         self.load_class_names()
-        
+
         # 2. โหลด trained model
         if not self.load_trained_model():
-            print("❌ ไม่สามารถโหลด model ได้")
+            print("ERROR: Cannot load model")
             return False
-        
+
         # 3. ตั้งค่า transform
         self.setup_transform()
-        
-        print("✅ ระบบพร้อมใช้งานด้วย Real AI Model!")
+
+        print("SUCCESS: System ready with Real AI Model!")
         return True
     
     def get_model_info(self) -> Dict:

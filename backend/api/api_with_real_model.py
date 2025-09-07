@@ -27,7 +27,7 @@ try:
     # กำหนด path สำหรับรูปอ้างอิง
     REFERENCE_IMAGES_DIR = Path(__file__).parent.parent.parent / "unified_dataset" / "reference_images"
     if not REFERENCE_IMAGES_DIR.exists():
-        print(f"⚠️ Reference images directory not found: {REFERENCE_IMAGES_DIR}")
+        print(f"WARNING: Reference images directory not found: {REFERENCE_IMAGES_DIR}")
         # Fallback paths
         fallback_paths = [
             Path(__file__).parent.parent.parent / "data_base",
@@ -205,7 +205,7 @@ def get_reference_images(class_name: str, view_type: str = None, limit: int = 3)
             break
             
     if not class_ref_dir:
-        print(f"⚠️ Reference directory not found for class: {class_name}")
+        print(f"WARNING: Reference directory not found for class: {class_name}")
         # ลองค้นหาในทุกไดเร็กทอรี
         subdirs = [d for d in REFERENCE_IMAGES_DIR.iterdir() if d.is_dir()]
         for subdir in subdirs:
@@ -277,29 +277,29 @@ def get_reference_images(class_name: str, view_type: str = None, limit: int = 3)
                         "view_type": file_view_type,
                         "path": str(img_file.relative_to(REFERENCE_IMAGES_DIR.parent))
                     }
-                    print(f"✅ Added reference image: {img_file.name} ({file_view_type})")
+                    print(f"SUCCESS: Added reference image: {img_file.name} ({file_view_type})")
             except Exception as e:
-                print(f"⚠️ Error processing reference image {img_file}: {e}")
+                print(f"WARNING: Error processing reference image {img_file}: {e}")
                 
         return reference_images
     except Exception as e:
-        print(f"⚠️ Error getting reference images for {class_name}: {e}")
+        print(f"WARNING: Error getting reference images for {class_name}: {e}")
         return reference_images
 
 @app.on_event("startup")
 async def startup_event():
     """โหลด model เมื่อเซิร์ฟเวอร์เริ่มทำงาน"""
-    print("🚀 เริ่มต้น Amulet-AI Backend with Real Model...")
+    print("Starting Amulet-AI Backend with Real Model...")
     success = model_loader.initialize()
     if success:
-        print("✅ Backend พร้อมใช้งานกับ Real AI Model!")
+        print("SUCCESS: Backend ready with Real AI Model!")
     else:
-        print("⚠️ Backend เริ่มทำงานแต่ Model อาจมีปัญหา")
+        print("WARNING: Backend started but Model may have issues")
 
 @app.get("/")
 async def root():
     return {
-        "message": "🏺 Amulet-AI Backend with Real Trained Model",
+        "message": "Amulet-AI Backend with Real Trained Model",
         "status": "running",
         "model_loaded": model_loader.model is not None,
         "classes": len(model_loader.class_names),
@@ -360,9 +360,9 @@ async def predict(
         back_bytes = None
         if back:
             back_bytes = await back.read()
-            print(f"📤 Processing front: {front.filename} ({len(front_bytes)} bytes) and back: {back.filename} ({len(back_bytes)} bytes)")
+            print(f"Processing front: {front.filename} ({len(front_bytes)} bytes) and back: {back.filename} ({len(back_bytes)} bytes)")
         else:
-            print(f"📤 Processing front only: {front.filename} ({len(front_bytes)} bytes)")
+            print(f"Processing front only: {front.filename} ({len(front_bytes)} bytes)")
         
         # ทำนายด้วย Real AI Model
         prediction_result = model_loader.predict_image(front_bytes)
@@ -439,7 +439,7 @@ async def predict(
             "metadata": prediction_result.get("metadata", {})
         }
         
-        print(f"✅ Prediction successful: {top1['class_name']} ({top1['confidence']:.2%}) in {processing_time:.2f}s")
+        print(f"SUCCESS: Prediction successful: {top1['class_name']} ({top1['confidence']:.2%}) in {processing_time:.2f}s")
         
         return response
         
@@ -447,7 +447,7 @@ async def predict(
         raise
     except Exception as e:
         processing_time = time.time() - start_time
-        print(f"❌ Prediction error: {str(e)}")
+        print(f"ERROR: Prediction error: {str(e)}")
         raise HTTPException(
             status_code=500, 
             detail=f"เกิดข้อผิดพลาดในการประมวลผล: {str(e)}"
@@ -511,5 +511,5 @@ async def get_classes():
 
 if __name__ == "__main__":
     import uvicorn
-    print("🏺 เริ่มต้น Amulet-AI Backend with Real Model...")
+    print("Starting Amulet-AI Backend with Real Model...")
     uvicorn.run(app, host="127.0.0.1", port=8001)

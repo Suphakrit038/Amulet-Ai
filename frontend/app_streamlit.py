@@ -758,7 +758,7 @@ with col2:
                         <span style="font-size: 1.2rem;">✅</span>
                         <div>
                             <div style="font-weight: 600; color: #047857;">ภาพด้านหลัง: ผ่านการตรวจสอบ</div>
-                            <div style="font-size: 0.85rem; color: #059669, margin-top: 0.2rem;">{error_msg}</div>
+                            <div style="font-size: 0.85rem; color: #059669; margin-top: 0.2rem;">{error_msg}</div>
                         </div>
                     </div>
                 </div>
@@ -888,162 +888,23 @@ if (
                                 border_color = "#dc2626"
                                 bg_gradient = "linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)"
                             
-                            # Create enhanced result card
-                            rank_icon = ["🥇", "🥈", "🥉"][i] if i < 3 else f"#{i+1}"
-                            
-                            st.markdown(f"""
-                            <div style="
-                                background: {bg_gradient};
-                                border: 2px solid {border_color};
-                                border-radius: 12px;
-                                padding: 1.5rem;
-                                margin: 1rem 0;
-                                animation: slideInUp 0.6s ease-out;
-                                animation-delay: {i * 0.2}s;
-                                animation-fill-mode: both;
-                            ">
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <span style="font-size: 2rem;">{rank_icon}</span>
-                                    <div>
-                                        <h3 style="margin: 0; color: {border_color}; font-size: 1.5rem;">{class_name}</h3>
-                                        <div class="{confidence_class}" style="margin-top: 0.5rem;">
-                                            ความเชื่อมั่น: {confidence_label} ({conf_pct:.1f}%)
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div style="background: rgba(255,255,255,0.8); padding: 1rem; border-radius: 8px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600;">คะแนนความน่าจะเป็น:</span>
-                                        <span style="font-size: 1.2rem; font-weight: 700; color: {border_color};">{confidence:.4f}</span>
-                                    </div>
-                                    <div style="background: #f1f5f9; height: 8px; border-radius: 4px; margin-top: 0.5rem; overflow: hidden;">
-                                        <div style="
-                                            background: {border_color}; 
-                                            height: 100%; 
-                                            width: {conf_pct}%; 
-                                            border-radius: 4px;
-                                            transition: width 1s ease-out;
-                                            animation: progressBar 2s ease-in-out infinite;
-                                        "></div>
-                                    </div>
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
+                            # Create result card using Streamlit components
+                            rank_text = ["อันดับ 1", "อันดับ 2", "อันดับ 3"][i] if i < 3 else f"อันดับ {i+1}"
 
-                    # ---- Enhanced Reference Images Section ----
-                    if "reference_images" in data and data["reference_images"]:
-                        ref_images = data.get("reference_images", {})
-                        top1 = data.get("top1", {})
-                        top_class = top1.get("class_name", "")
-                        
-                        st.markdown("### เปรียบเทียบกับภาพในฐานข้อมูล")
-                        
-                        # Create comparison grid
-                        st.markdown('<div class="comparison-grid">', unsafe_allow_html=True)
-                        
-                        # User's images
-                        col1, col2 = st.columns(2)
-                        
-                        with col1:
-                            st.markdown("""
-                            <div class="comparison-item">
-                                <h4 style="text-align: center; color: #1e40af; margin-bottom: 1rem;">ภาพของคุณ - ด้านหน้า</h4>
-                            """, unsafe_allow_html=True)
-                            if "front_processed" in st.session_state:
-                                front_img = Image.open(st.session_state.front_processed)
-                                st.image(front_img, use_column_width=True)
-                            st.markdown("</div>", unsafe_allow_html=True)
-                        
-                        with col2:
-                            st.markdown("""
-                            <div class="comparison-item">
-                                <h4 style="text-align: center; color: #1e40af; margin-bottom: 1rem;">ภาพของคุณ - ด้านหลัง</h4>
-                            """, unsafe_allow_html=True)
-                            if "back_processed" in st.session_state:
-                                back_img = Image.open(st.session_state.back_processed)
-                                st.image(back_img, use_column_width=True)
-                            st.markdown("</div>", unsafe_allow_html=True)
-                        
-                        # Reference images
-                        st.markdown(f"### ภาพอ้างอิงจากฐานข้อมูล - {top_class}")
-                        
-                        # Display reference images in grid
-                        ref_cols = st.columns(min(len(ref_images), 4))
-                        for i, (key, ref_data) in enumerate(list(ref_images.items())[:4]):
-                            with ref_cols[i % len(ref_cols)]:
-                                st.markdown("""
-                                <div class="comparison-item">
-                                """, unsafe_allow_html=True)
-                                
-                                if "image_b64" in ref_data:
-                                    try:
-                                        img_bytes = base64.b64decode(ref_data["image_b64"])
-                                        img = Image.open(BytesIO(img_bytes))
-                                        st.image(img, use_column_width=True)
-                                        
-                                        view_type = ref_data.get("view_type", "unknown")
-                                        filename = ref_data.get("filename", "ไม่ทราบชื่อ")
-                                        
-                                        st.markdown(f"""
-                                        <div style="text-align: center; margin-top: 0.5rem;">
-                                            <p style="margin: 0; font-weight: 600; color: #374151;">มุมมอง: {view_type}</p>
-                                            <p style="margin: 0; font-size: 0.85rem; color: #6b7280;">{filename}</p>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                    except Exception as e:
-                                        st.error(f"ไม่สามารถแสดงภาพได้: {str(e)}")
-                                
-                                st.markdown("</div>", unsafe_allow_html=True)
-                        
-                        st.markdown("</div>", unsafe_allow_html=True)
+                            # Use expander for each result
+                            with st.expander(f"{rank_text}: {class_name}", expanded=(i==0)):
+                                col_a, col_b = st.columns([2, 1])
+
+                                with col_a:
+                                    st.markdown(f"**ความเชื่อมั่น:** {confidence_label} ({conf_pct:.1f}%)")
+                                    st.markdown(f"**คะแนนความน่าจะเป็น:** {confidence:.4f}")
+
+                                with col_b:
+                                    # Create a simple progress bar
+                                    st.progress(conf_pct / 100)
+                                    st.caption(f"{conf_pct:.1f}%")
+
                     
-                    # ---- Enhanced Additional Information ----
-                    st.markdown("### คำแนะนำจากผู้เชี่ยวชาญ")
-                    
-                    expert_cols = st.columns(3)
-                    
-                    with expert_cols[0]:
-                        st.markdown("""
-                        <div style="
-                            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
-                            border: 1px solid #03a9f4;
-                            border-radius: 8px;
-                            padding: 1rem;
-                            text-align: center;
-                        ">
-                            <h4 style="color: #01579b; margin-top: 0;">การตรวจสอบ</h4>
-                            <p style="color: #0277bd; margin: 0;">ตรวจสอบรายละเอียดลวดลาย และขนาดเพื่อยืนยันความแท้</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    
-                    with expert_cols[1]:
-                        st.markdown("""
-                        <div style="
-                            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-                            border: 1px solid #9c27b0;
-                            border-radius: 8px;
-                            padding: 1rem;
-                            text-align: center;
-                        ">
-                            <h4 style="color: #4a148c; margin-top: 0;">การรับรอง</h4>
-                            <p style="color: #6a1b9a; margin: 0;">หาผู้เชี่ยวชาญให้ตรวจสอบเพิ่มเติมเพื่อความแน่ใจ</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    
-                    with expert_cols[2]:
-                        st.markdown("""
-                        <div style="
-                            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-                            border: 1px solid #4caf50;
-                            border-radius: 8px;
-                            padding: 1rem;
-                            text-align: center;
-                        ">
-                            <h4 style="color: #1b5e20; margin-top: 0;">การเก็บรักษา</h4>
-                            <p style="color: #2e7d32; margin: 0;">เก็บในที่แห้งและปลอดภัยเพื่อรักษาคุณค่า</p>
-                        </div>
-                        """, unsafe_allow_html=True)
                     
                     # ---- Performance Summary ----
                     if topk_results:
@@ -1053,165 +914,39 @@ if (
                         
                         st.markdown("### สรุปการวิเคราะห์")
                         summary_col1, summary_col2 = st.columns(2)
-                        
+
                         with summary_col1:
-                            st.markdown(f"""
-                            <div style="
-                                background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-                                border: 2px solid #ea580c;
-                                border-radius: 12px;
-                                padding: 1.5rem;
-                                text-align: center;
-                            ">
-                                <h4 style="color: #9a3412; margin-top: 0;">ผลการวินิจฉัย</h4>
-                                <h2 style="color: #ea580c; margin: 0.5rem 0;">{top_class}</h2>
-                                <p style="color: #c2410c; margin: 0; font-size: 1.1rem;">ความเชื่อมั่น: {top_confidence:.1f}%</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
+                            st.success(f"**ผลการวินิจฉัย:** {top_class}")
+                            st.info(f"**ความเชื่อมั่น:** {top_confidence:.1f}%")
+
                         with summary_col2:
-                            st.markdown(f"""
-                            <div style="
-                                background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
-                                border: 2px solid #16a34a;
-                                border-radius: 12px;
-                                padding: 1.5rem;
-                                text-align: center;
-                            ">
-                                <h4 style="color: #15803d; margin-top: 0;">คุณภาพการวิเคราะห์</h4>
-                                <h2 style="color: #16a34a; margin: 0.5rem 0;">{"เยี่ยม" if top_confidence > 85 else "ดี" if top_confidence > 70 else "พอใช้"}</h2>
-                                <p style="color: #166534; margin: 0; font-size: 1.1rem;">เวลาประมวลผล: {processing_time:.2f}s</p>
-                            </div>
-                            """, unsafe_allow_html=True)
+                            quality = "เยี่ยม" if top_confidence > 85 else "ดี" if top_confidence > 70 else "พอใช้"
+                            st.info(f"**คุณภาพการวิเคราะห์:** {quality}")
+                            st.info(f"**เวลาประมวลผล:** {processing_time:.2f} วินาที")
                         
                         # ---- Detection Details ----
                         st.markdown("### รายละเอียดการตรวจจับ")
-                        st.markdown(f"""
-                        <div style="
-                            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                            border: 1px solid #cbd5e1;
-                            border-radius: 12px;
-                            padding: 1.5rem;
-                            margin: 1rem 0;
-                        ">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                <div>
-                                    <h5 style="color: #1e293b; margin: 0 0 0.5rem 0;">ประเภทพระเครื่อง</h5>
-                                    <p style="color: #475569; margin: 0; font-weight: 600;">{top_class}</p>
-                                </div>
-                                <div>
-                                    <h5 style="color: #1e293b; margin: 0 0 0.5rem 0;">รูปทรง</h5>
-                                    <p style="color: #475569; margin: 0; font-weight: 600;">{top_class.split('_')[0].title() if '_' in top_class else top_class}</p>
-                                </div>
-                                <div>
-                                    <h5 style="color: #1e293b; margin: 0 0 0.5rem 0;">ความเชื่อมั่น AI</h5>
-                                    <p style="color: #475569; margin: 0; font-weight: 600;">{top_confidence:.2f}%</p>
-                                </div>
-                                <div>
-                                    <h5 style="color: #1e293b; margin: 0 0 0.5rem 0;">จำนวนคลาสที่เปรียบเทียบ</h5>
-                                    <p style="color: #475569; margin: 0; font-weight: 600;">{len(topk_results)} คลาส</p>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
-                                <h5 style="color: #1e293b; margin: 0 0 0.5rem 0;">วิธีการตรวจสอบเพิ่มเติม</h5>
-                                <ul style="color: #475569; line-height: 1.6; margin: 0; padding-left: 1.5rem;">
-                                    <li>ตรวจสอบรายละเอียดลวดลายด้วยแว่นขยาย</li>
-                                    <li>เปรียบเทียบน้ำหนักและขนาดกับข้อมูลมาตรฐาน</li>
-                                    <li>ปรึกษาผู้เชี่ยวชาญพระเครื่องเพื่อยืนยันผล</li>
-                                    <li>ตรวจสอบประวัติและแหล่งที่มาของพระเครื่อง</li>
-                                </ul>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.info(f"**ประเภทพระเครื่อง:** {top_class}")
+                            st.info(f"**ความเชื่อมั่น AI:** {top_confidence:.2f}%")
+
+                        with col2:
+                            shape = top_class.split('_')[0].title() if '_' in top_class else top_class
+                            st.info(f"**รูปทรง:** {shape}")
+                            st.info(f"**จำนวนคลาสที่เปรียบเทียบ:** {len(topk_results)} คลาส")
+
+                        st.markdown("**วิธีการตรวจสอบเพิ่มเติม:**")
+                        st.markdown("""
+                        - ตรวจสอบรายละเอียดลวดลายด้วยแว่นขยาย
+                        - เปรียบเทียบน้ำหนักและขนาดกับข้อมูลมาตรฐาน
+                        - ปรึกษาผู้เชี่ยวชาญพระเครื่องเพื่อยืนยันผล
+                        - ตรวจสอบประวัติและแหล่งที่มาของพระเครื่อง
+                        """)
                     
-                    # ---- Detection Confidence Gauge ----
-                    st.markdown("### แสดงความเชื่อมั่นของการตรวจจับ")
                     
-                    # Create a gauge chart for detection confidence
-                    try:
-                        import plotly.graph_objects as go
-
-                        fig = go.Figure(
-                            go.Indicator(
-                                mode = "gauge+number",
-                                value = top_confidence,
-                                title = {"text": "ความเชื่อมั่นในการตรวจจับ", "font": {"size": 24}},
-                                gauge = {
-                                    "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "darkgrey"},
-                                    "bar": {"color": "green"},
-                                    "bgcolor": "white",
-                                    "borderwidth": 2,
-                                    "bordercolor": "darkgrey",
-                                    "steps": [
-                                        {"range": [0, 50], "color": "red"},
-                                        {"range": [50, 75], "color": "yellow"},
-                                        {"range": [75, 100], "color": "lightgreen"},
-                                    ],
-                                },
-                                domain = {"x": [0, 1], "y": [0, 1]}
-                            )
-                        )
-
-                        fig.update_layout(height=300, margin=dict(t=0, b=0, l=0, r=0))
-
-                        st.plotly_chart(fig, use_container_width=True)
-                    except ImportError:
-                        st.warning("plotly ไม่พร้อมใช้งาน การแสดงกราฟความเชื่อมั่นจะถูกข้าม")
-                    except Exception as e:
-                        st.warning(f"ไม่สามารถแสดงกราฟความเชื่อมั่นได้: {e}")
                     
-                    # ---- Detection Time Analysis ----
-                    st.markdown("### วิเคราะห์เวลาในการตรวจจับ")
-                    
-                    # Create a bar chart for time analysis
-                    try:
-                        import plotly.express as px
-                        import pandas as pd
-
-                        # Dummy data for analysis (replace with real data if available)
-                        time_data = {
-                            "ขั้นตอนการประมวลผล": ["การโหลดภาพ", "การประมวลผลด้วย AI", "การตรวจสอบคุณภาพ", "การจัดเก็บผลลัพธ์"],
-                            "เวลา (วินาที)": [1.2, 2.5, 0.8, 0.3]
-                        }
-
-                        df_time = pd.DataFrame(time_data)
-
-                        fig = px.bar(
-                            df_time,
-                            x="ขั้นตอนการประมวลผล",
-                            y="เวลา (วินาที)",
-                            title="การวิเคราะห์เวลาในการตรวจจับ",
-                            labels={"เวลา (วินาที)": "เวลา (วินาที)", "ขั้นตอนการประมวลผล": "ขั้นตอนการประมวลผล"},
-                            template="plotly_white"
-                        )
-
-                        fig.update_layout(barmode="group", xaxis_title="", yaxis_title="")
-
-                        st.plotly_chart(fig, use_container_width=True)
-                    except ImportError:
-                        st.warning("plotly หรือ pandas ไม่พร้อมใช้งาน การแสดงกราฟวิเคราะห์เวลาจะถูกข้าม")
-                    except Exception as e:
-                        st.warning(f"ไม่สามารถแสดงกราฟวิเคราะห์เวลาได้: {e}")
-                    
-                    # ---- Detection Performance Summary ----
-                    st.markdown("### สรุปประสิทธิภาพการตรวจจับ")
-                    
-                    # Create a summary box
-                    st.markdown("""
-                    <div style="
-                        background: #f0f9ff;
-                        border: 1px solid #bcd4e6;
-                        border-radius: 12px;
-                        padding: 1.5rem;
-                        margin: 1rem 0;
-                    ">
-                        <h4 style="color: #1e3a8a; margin-top: 0;">สรุปผลการตรวจจับ</h4>
-                        <p style="color: #1e3a8a; margin: 0.5rem 0;">พระเครื่องประเภท: <strong>{top_class}</strong></p>
-                        <p style="color: #1e3a8a; margin: 0.5rem 0;">ความเชื่อมั่นในการตรวจจับ: <strong>{top_confidence:.1f}%</strong></p>
-                        <p style="color: #1e3a8a; margin: 0.5rem 0;">จำนวนคลาสที่เปรียบเทียบ: <strong>{len(topk_results)} คลาส</strong></p>
-                    </div>
-                    """, unsafe_allow_html=True)
                     
                     # ---- Detection Error Analysis (if available) ----
                     if "errors" in data and data["errors"]:
@@ -1230,21 +965,6 @@ if (
                         
                         st.markdown(error_table)
                     
-                    # ---- Performance Improvement Suggestions ----
-                    st.markdown("### ข้อเสนอแนะแก้ไขประสิทธิภาพ")
-                    
-                    # Create a list of suggestions
-                    suggestions = [
-                        "ปรับปรุงคุณภาพภาพถ่ายให้ชัดเจนขึ้น",
-                        "ใช้แสงธรรมชาติในการถ่ายภาพ",
-                        "หลีกเลี่ยงการใช้แฟลชโดยตรง",
-                        "ตรวจสอบความคมชัดของภาพก่อนอัปโหลด",
-                        "ใช้พื้นหลังเรียบง่ายเพื่อเน้นพระเครื่อง",
-                        "อัปโหลดภาพในรูปแบบที่รองรับเท่านั้น"
-                    ]
-                    
-                    for i, suggestion in enumerate(suggestions):
-                        st.markdown(f"{i+1}. {suggestion}")
                     
                     # ---- Performance Metrics (if available) ----
                     if "metrics" in data and data["metrics"]:
@@ -1277,68 +997,6 @@ if (
                         except Exception as e:
                             st.warning(f"ไม่สามารถแสดงกราฟเมตริกการประเมินผลได้: {e}")
                     
-                    # ---- เปรียบเทียบรูปภาพ ----
-                    st.markdown("### การเปรียบเทียบกับภาพในฐานข้อมูล")
-                    
-                    if "front_processed" in st.session_state:
-                        comparison_image = st.session_state.front_processed
-                        
-                        try:
-                            # Initialize comparison system
-                            model_path = "frontend/models/feature_extractor.pkl"
-                            feature_extractor = FeatureExtractor(model_path)
-                            comparer = ImageComparer(feature_extractor)
-                            
-                            # Create temporary file for comparison
-                            temp_path = Path("temp_comparison_image.jpg")
-                            comparison_image.seek(0)
-                            with open(temp_path, "wb") as f:
-                                f.write(comparison_image.read())
-                            
-                            with st.spinner("กำลังเปรียบเทียบกับฐานข้อมูลภาพ..."):
-                                # Perform comparison
-                                result = comparer.compare_image(str(temp_path))
-                                
-                                # Display comparison results
-                                if result and "top_matches" in result and result["top_matches"]:
-                                    st.success("พบภาพที่คล้ายกันในฐานข้อมูล")
-                                    
-                                    # Display comparison images in grid
-                                    comparison_cols = st.columns(min(4, len(result["top_matches"])))
-                                    
-                                    for i, match in enumerate(result["top_matches"][:4]):
-                                        with comparison_cols[i]:
-                                            # Load reference image if available
-                                            ref_path = Path(match.get("image_path", ""))
-                                            if ref_path.exists():
-                                                ref_img = Image.open(ref_path)
-                                                st.image(ref_img, use_column_width=True)
-                                                
-                                                similarity = match.get("similarity", 0)
-                                                similarity_pct = similarity * 100
-                                                similarity_color = "#10B981" if similarity >= 0.85 else "#F59E0B" if similarity >= 0.7 else "#EF4444"
-                                                
-                                                st.markdown(f"""
-                                                <div style="text-align: center; margin-top: 0.5rem;">
-                                                    <h5 style="margin: 0; font-size: 0.9rem;">{match.get('class', 'Unknown')}</h5>
-                                                    <p style="margin: 0; color: {similarity_color}; font-weight: bold;">
-                                                        ความเหมือน: {similarity_pct:.1f}%
-                                                    </p>
-                                                </div>
-                                                """, unsafe_allow_html=True)
-                                            else:
-                                                st.info(f"ไม่พบไฟล์ภาพอ้างอิง")
-                        
-                        except Exception as e:
-                            st.warning(f"ระบบเปรียบเทียบภาพยังไม่พร้อมใช้งาน")
-                            st.info("จะใช้ภาพอ้างอิงจาก API แทน")
-                        finally:
-                            # Clean up temporary file
-                            if "temp_path" in locals() and temp_path.exists():
-                                try:
-                                    temp_path.unlink()
-                                except Exception as e:
-                                    logging.warning(f"ไม่สามารถลบไฟล์ชั่วคราวได้: {e}")
 
                     # ---- Professional Valuation Display ----
                     st.markdown("### ประเมินราคาตลาด")
@@ -1663,3 +1321,22 @@ with st.expander("ข้อมูลสำหรับนักพัฒนา")
             st.error("ไม่สามารถเชื่อมต่อกับ API ได้")
         except Exception as e:
             st.error(f"เกิดข้อผิดพลาด: {str(e)}")
+
+# ==========================================================
+# เครดิตท้ายเว็บ
+# ==========================================================
+st.markdown("""
+<div style="background: linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 100%);
+            border-radius: 12px; padding: 1.5rem; border: 1px solid #f1f5f9; margin-top: 2rem; text-align: center;">
+    <h4 style="color: #374151; margin-top: 0;">ขอขอบคุณ</h4>
+    <p style="font-size: 1.1rem; color: #374151; margin-bottom: 0.5rem;">
+        คณะกรรมการจากสำนักงานส่งเสริมเศรษฐกิจดิจิทัล (depa)<br>
+        ที่ได้มอบโอกาสอันมีค่าให้แก่ทีม <strong>Taxes1112</strong> จากวิทยาลัยเทคนิคสัตหีบ<br>
+        ในการเข้าร่วมโครงการและนำเสนอผลงานด้านนวัตกรรมดิจิทัลในครั้งนี้
+    </p>
+    <p style="color: #64748b; font-size: 1rem;">
+        ซึ่งนับเป็นประสบการณ์ที่สำคัญในการพัฒนาศักยภาพของนักศึกษา<br>
+        และเป็นแรงบันดาลใจในการต่อยอดความรู้ไปสู่การสร้างสรรค์ผลงานในอนาคต
+    </p>
+</div>
+""", unsafe_allow_html=True)
