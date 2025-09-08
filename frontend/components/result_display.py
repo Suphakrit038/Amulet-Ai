@@ -204,13 +204,16 @@ class ResultDisplayer:
         if topk:
             for i, result in enumerate(topk[:3]):  # แสดงแค่ 3 อันดับแรก
                 class_name = result.get("class_name", "ไม่ทราบ")
+                class_name_thai = result.get("class_name_thai", class_name)
                 confidence = result.get("confidence", 0.0)
 
                 # Use Streamlit's native components for better reliability
                 col1, col2 = st.columns([3, 1])
 
                 with col1:
-                    st.markdown(f"**{i+1}. {class_name}**")
+                    st.markdown(f"**{i+1}. {class_name_thai}**")
+                    if class_name_thai != class_name:
+                        st.markdown(f"<small style='color: #6B7280;'>({class_name})</small>", unsafe_allow_html=True)
 
                 with col2:
                     st.markdown(f"**{confidence*100:.1f}%**")
@@ -248,14 +251,16 @@ class ResultDisplayer:
             # สร้างสรุปอัตโนมัติจากข้อมูลที่มี
             top1 = results.get("top1", {})
             class_name = top1.get("class_name", "ไม่ทราบ")
+            class_name_thai = top1.get("class_name_thai", class_name)
             confidence = top1.get("confidence", 0.0)
             overall_similarity = results.get("overall_similarity", 0.0)
 
-            summary_text = f"จากการวิเคราะห์ พระเครื่องนี้ถูกจำแนกเป็น '{class_name}' ด้วยความเชื่อมั่น {confidence*100:.1f}% และมีความเหมือนกับภาพในฐานข้อมูล {overall_similarity*100:.1f}%"
+            summary_text = f"จากการวิเคราะห์ พระเครื่องนี้ถูกจำแนกเป็น '{class_name_thai}' ด้วยความเชื่อมั่น {confidence*100:.1f}% และมีความเหมือนกับภาพในฐานข้อมูล {overall_similarity*100:.1f}%"
 
             st.markdown(f"""
             <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #3B82F6;">
                 <div style="font-size: 16px; line-height: 1.6; color: #1F2937;">{summary_text}</div>
+                {f"<div style='font-size: 14px; color: #6B7280; margin-top: 8px;'>({class_name})</div>" if class_name_thai != class_name else ""}
             </div>
             """, unsafe_allow_html=True)
     

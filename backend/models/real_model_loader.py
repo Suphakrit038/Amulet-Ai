@@ -35,11 +35,15 @@ class AmuletModelLoader:
             os.path.join(self.model_dir, "labels.json"),
             os.path.join(self.model_dir, "classes.json"),
             os.path.join(self.model_dir, "class_names.json"),
+            os.path.join("..", "..", self.model_dir, "labels.json"),  # From backend/api/
+            os.path.join("..", "..", self.model_dir, "classes.json"),  # From backend/api/
             "labels.json",
             "classes.json"
         ]
         
+        print(f"Looking for class names files...")
         for file_path in possible_files:
+            print(f"  Checking: {file_path} -> {'EXISTS' if os.path.exists(file_path) else 'NOT FOUND'}")
             if os.path.exists(file_path):
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
@@ -49,23 +53,23 @@ class AmuletModelLoader:
                         elif isinstance(data, dict):
                             self.class_names = list(data.values())
                         print(f"SUCCESS: Loaded class names from {file_path}")
-                        print(f"Classes: {self.class_names}")
+                        print(f"Classes ({len(self.class_names)}): {self.class_names}")
                         return self.class_names
                 except Exception as e:
                     print(f"WARNING: Cannot read {file_path}: {e}")
         
-        # Fallback class names จากข้อมูลที่มีในโปรเจค
+        # Fallback class names - ใช้ชื่อภาษาอังกฤษเพื่อให้ตรงกับ reference images
         self.class_names = [
-            "somdej-fatherguay",
-            "พระพุทธเจ้าในวิหาร", 
-            "พระสมเด็จฐานสิงห์",
-            "พระสมเด็จประทานพร พุทธกวัก",
-            "พระสมเด็จหลังรูปเหมือน",
-            "พระสรรค์",
-            "พระสิวลี", 
-            "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
-            "สมเด็จแหวกม่าน",
-            "ออกวัดหนองอีดุก"
+            "somdej_fatherguay",
+            "buddha_in_vihara",
+            "somdej_lion_base",
+            "somdej_buddha_blessing",
+            "somdej_portrait_back",
+            "phra_san",
+            "phra_sivali",
+            "somdej_prok_bodhi",
+            "somdej_waek_man",
+            "wat_nong_e_duk"
         ]
         print("WARNING: Using default class names")
         print(f"Classes: {len(self.class_names)} classes")

@@ -18,7 +18,18 @@ try:
     from models.real_model_loader import AmuletModelLoader
     # สร้าง global instance
     model_loader = AmuletModelLoader()
-    
+
+    # โหลด mapping ชื่อไทย
+    thai_labels_path = Path(__file__).parent.parent.parent / "ai_models" / "labels_thai.json"
+    thai_labels = {}
+    if thai_labels_path.exists():
+        try:
+            with open(thai_labels_path, 'r', encoding='utf-8') as f:
+                thai_labels = json.load(f)
+            print(f"SUCCESS: Loaded Thai labels from {thai_labels_path}")
+        except Exception as e:
+            print(f"WARNING: Cannot load Thai labels: {e}")
+
     # กำหนด path สำหรับรูปอ้างอิง
     REFERENCE_IMAGES_DIR = Path(__file__).parent.parent.parent / "unified_dataset" / "reference_images"
     if not REFERENCE_IMAGES_DIR.exists():
@@ -30,14 +41,14 @@ try:
             Path(__file__).parent.parent / "reference_images",
             Path(__file__).parent.parent.parent / "ai_models" / "reference_images"
         ]
-        
+
         for path in fallback_paths:
             if path.exists():
                 REFERENCE_IMAGES_DIR = path
-                print(f"✅ Using fallback reference images path: {REFERENCE_IMAGES_DIR}")
+                print(f"SUCCESS: Using fallback reference images path: {REFERENCE_IMAGES_DIR}")
                 break
 except ImportError as e:
-    print(f"⚠️ Import error: {e}")
+    print(f"WARNING: Import error: {e}")
     # Fallback แบบง่าย
     class DummyModelLoader:
         def __init__(self):
@@ -165,53 +176,82 @@ def generate_recommendations(class_name: str, price_range: dict):
 def get_reference_images(class_name: str, view_type: str = None, limit: int = 3):
     """ดึงรูปภาพอ้างอิงสำหรับคลาสที่ระบุ"""
     reference_images = {}
-    
-    # ปรับชื่อคลาสถ้าจำเป็น (เช่น somdej-fatherguay -> somdej_fatherguay)
-    normalized_class_name = class_name.replace('-', '_')
-    
-    # ลองหลายไดเร็กทอรี
+
+    # ปรับชื่อคลาสให้เป็นมาตรฐาน (ลบอักขระพิเศษและแปลงเป็น lowercase)
+    normalized_class_name = class_name.replace('-', '_').replace(' ', '_').lower()
+
+    # ลองหลายไดเร็กทอรีและชื่อคลาส
     class_ref_dirs = [
         REFERENCE_IMAGES_DIR / normalized_class_name,
-        REFERENCE_IMAGES_DIR / class_name
+        REFERENCE_IMAGES_DIR / class_name,
+        REFERENCE_IMAGES_DIR / class_name.replace('_', '-'),
+        REFERENCE_IMAGES_DIR / class_name.replace('-', '_')
     ]
-    
-    # ถ้าเป็นชื่อภาษาอังกฤษ ลองหาชื่อภาษาไทยด้วย
-    thai_names = {
-        "somdej_fatherguay": "พระสมเด็จหลวงพ่อกวย",
-        "buddha_in_vihara": "พระพุทธเจ้าในวิหาร",
-        "somdej_lion_base": "พระสมเด็จฐานสิงห์",
-        "somdej_buddha_blessing": "พระสมเด็จประทานพร พุทธกวัก",
-        "somdej_portrait_back": "พระสมเด็จหลังรูปเหมือน",
-        "phra_san": "พระสรรค์",
-        "phra_sivali": "พระสิวลี",
-        "somdej_prok_bodhi": "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
-        "somdej_waek_man": "สมเด็จแหวกม่าน",
-        "wat_nong_e_duk": "ออกวัดหนองอีดุก"
+
+    # Mapping ระหว่างชื่อภาษาไทยและภาษาอังกฤษ
+    thai_to_english = {
+        "พระสมเด็จหลวงพ่อกวย": "somdej_fatherguay",
+        "พระพุทธเจ้าในวิหาร": "buddha_in_vihara",
+        "พระสมเด็จฐานสิงห์": "somdej_lion_base",
+        "พระสมเด็จประทานพร": "somdej_buddha_blessing",
+        "พระสมเด็จหลังรูปเหมือน": "somdej_portrait_back",
+        "พระสรรค์": "phra_san",
+        "พระสิวลี": "phra_sivali",
+        "สมเด็จพิมพ์ปรกโพธิ์": "somdej_prok_bodhi",
+        "สมเด็จแหวกม่าน": "somdej_waek_man",
+        "ออกวัดหนองอีดุก": "wat_nong_e_duk"
     }
-    
-    if normalized_class_name in thai_names:
-        class_ref_dirs.append(REFERENCE_IMAGES_DIR / thai_names[normalized_class_name])
-    
+
+    english_to_thai = {v: k for k, v in thai_to_english.items()}
+
+    # เพิ่มชื่อภาษาไทยถ้ามี
+    if normalized_class_name in thai_to_english:
+        class_ref_dirs.append(REFERENCE_IMAGES_DIR / thai_to_english[normalized_class_name])
+    elif normalized_class_name in english_to_thai:
+        class_ref_dirs.append(REFERENCE_IMAGES_DIR / english_to_thai[normalized_class_name])
+
     # ดูในทุกไดเร็กทอรีที่เป็นไปได้
     class_ref_dir = None
     for dir_path in class_ref_dirs:
         if dir_path.exists():
             class_ref_dir = dir_path
+            print(f"SUCCESS: Found reference directory: {class_ref_dir}")
             break
             
     if not class_ref_dir:
         print(f"WARNING: Reference directory not found for class: {class_name}")
-        # ลองค้นหาในทุกไดเร็กทอรี
+        print(f"         Normalized name: {normalized_class_name}")
+        print(f"         Searched in: {[str(d) for d in class_ref_dirs]}")
+
+        # ลองค้นหาในทุกไดเร็กทอรีด้วย fuzzy matching
         subdirs = [d for d in REFERENCE_IMAGES_DIR.iterdir() if d.is_dir()]
+        # จัดการ encoding สำหรับชื่อไดเร็กทอรี
+        try:
+            available_dirs = [d.name for d in subdirs]
+            print(f"         Available directories: {available_dirs}")
+        except UnicodeDecodeError:
+            print(f"         Available directories: {len(subdirs)} directories found")
+
         for subdir in subdirs:
-            if (any(name in subdir.name.lower() for name in normalized_class_name.lower().split('_')) or
-                any(name in normalized_class_name.lower() for name in subdir.name.lower().split('_'))):
-                class_ref_dir = subdir
-                print(f"✅ Found similar reference directory: {class_ref_dir}")
-                break
-                
-        if not class_ref_dir:
-            return reference_images
+            try:
+                subdir_name = subdir.name.lower()
+                search_name = normalized_class_name.lower()
+
+                # ตรวจสอบ fuzzy matching
+                if (any(name in subdir_name for name in search_name.split('_')) or
+                    any(name in search_name for name in subdir_name.split('_')) or
+                    search_name in subdir_name or
+                    subdir_name in search_name):
+                    class_ref_dir = subdir
+                    print(f"SUCCESS: Found similar reference directory: {subdir}")
+                    break
+            except UnicodeDecodeError:
+                # ถ้ามีปัญหา encoding ให้ข้ามไดเร็กทอรีนี้ไป
+                continue
+
+    if not class_ref_dir:
+        print(f"ERROR: No reference directory found for {class_name}")
+        return reference_images
     
     try:
         # ดึงรูปภาพทั้งหมดหรือตาม view_type
@@ -249,8 +289,18 @@ def get_reference_images(class_name: str, view_type: str = None, limit: int = 3)
         
         # ถ้าไม่มีรูปอ้างอิงเลย ให้ลองหาไฟล์ภาพทั้งหมด
         if not img_files:
-            img_files = list(class_ref_dir.glob("*.*"))[:limit]
-            img_files = [f for f in img_files if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']]
+            try:
+                all_files = list(class_ref_dir.glob("*.*"))[:limit]
+                img_files = [f for f in all_files if f.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']]
+            except UnicodeDecodeError:
+                # ถ้ามีปัญหา encoding ให้หาไฟล์แบบ alternative
+                import os
+                all_files = []
+                for item in os.listdir(class_ref_dir):
+                    if os.path.isfile(os.path.join(class_ref_dir, item)):
+                        if item.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                            all_files.append(class_ref_dir / item)
+                img_files = all_files[:limit]
         
         # แปลงรูปเป็น base64
         for i, img_file in enumerate(img_files):
@@ -258,23 +308,37 @@ def get_reference_images(class_name: str, view_type: str = None, limit: int = 3)
                 with open(img_file, "rb") as f:
                     img_bytes = f.read()
                     img_b64 = base64.b64encode(img_bytes).decode('utf-8')
-                    
-                    # ตรวจสอบ view_type จากชื่อไฟล์
+
+                    # ตรวจสอบ view_type จากชื่อไฟล์ (จัดการ encoding)
                     file_view_type = "unknown"
-                    if "front" in img_file.name.lower():
-                        file_view_type = "front"
-                    elif "back" in img_file.name.lower():
-                        file_view_type = "back"
-                    
+                    try:
+                        filename_lower = img_file.name.lower()
+                        if "front" in filename_lower:
+                            file_view_type = "front"
+                        elif "back" in filename_lower:
+                            file_view_type = "back"
+                    except UnicodeDecodeError:
+                        # ถ้ามีปัญหา encoding ให้ใช้ค่า default
+                        file_view_type = "unknown"
+
+                    # จัดการ filename ที่มีปัญหา encoding
+                    try:
+                        safe_filename = img_file.name
+                    except UnicodeDecodeError:
+                        # ถ้ามีปัญหา encoding ให้สร้างชื่อไฟล์ใหม่
+                        safe_filename = f"reference_image_{i+1}.jpg"
+
                     reference_images[f"ref_{i+1}"] = {
                         "image_b64": img_b64,
-                        "filename": img_file.name,
+                        "filename": safe_filename,
                         "view_type": file_view_type,
                         "path": str(img_file.relative_to(REFERENCE_IMAGES_DIR.parent))
                     }
-                    print(f"SUCCESS: Added reference image: {img_file.name} ({file_view_type})")
+                    print(f"INFO: Added reference image: {safe_filename} ({file_view_type})")
             except Exception as e:
                 print(f"WARNING: Error processing reference image {img_file}: {e}")
+                # ถ้ามีปัญหา ให้ข้ามไฟล์นี้ไป
+                continue
                 
         return reference_images
     except Exception as e:
@@ -400,6 +464,16 @@ async def predict(
         if back_bytes:
             back_b64 = base64.b64encode(back_bytes).decode('utf-8')
         
+        # เพิ่มชื่อไทยให้กับ top1 และ predictions
+        top1_with_thai = top1.copy()
+        top1_with_thai["class_name_thai"] = thai_labels.get(top1["class_name"], top1["class_name"])
+
+        predictions_with_thai = []
+        for pred in predictions:
+            pred_with_thai = pred.copy()
+            pred_with_thai["class_name_thai"] = thai_labels.get(pred["class_name"], pred["class_name"])
+            predictions_with_thai.append(pred_with_thai)
+
         # สร้าง response ที่สมบูรณ์
         response = {
             "ai_mode": "real_trained_model",
@@ -426,12 +500,13 @@ async def predict(
                     "image_b64": back_b64
                 } if back_bytes else None
             },
-            "top1": top1,
-            "topk": predictions,
+            "top1": top1_with_thai,
+            "topk": predictions_with_thai,
             "valuation": valuation,
             "recommendations": recommendations,
             "reference_images": reference_images,
-            "metadata": prediction_result.get("metadata", {})
+            "metadata": prediction_result.get("metadata", {}),
+            "thai_labels": thai_labels  # รวม mapping ชื่อไทยทั้งหมด
         }
         
         print(f"SUCCESS: Prediction successful: {top1['class_name']} ({top1['confidence']:.2%}) in {processing_time:.2f}s")
