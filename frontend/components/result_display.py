@@ -452,7 +452,12 @@ class ResultDisplayer:
             if notes:
                 st.markdown(f"""
                 <div class="metric-card" style="background: linear-gradient(135deg, #F3F4F6, #E5E7EB); border-left-color: #6B7280;">
-                    <div style="font-weight: 600; color: #374151; margin-bottom: 8px;">📝 หมายเหตุ</div>
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        หมายเหตุ
+                    </div>
                     <div style="color: #4B5563; line-height: 1.5;">{notes}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -499,9 +504,17 @@ class ResultDisplayer:
                 reason = channel.get("reason", "")
 
                 # เลือกไอคอนตามประเภทช่องทาง
-                icon_html = "🛒" if channel_type.lower() == "ออฟไลน์" else "💻"
+                icon_svg = """
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 4V2C7 1.45 7.45 1 8 1h8c.55 0 1 .45 1 1v2h3c.55 0 1 .45 1 1s-.45 1-1 1h-1v13c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2V6H3c-.55 0-1-.45-1-1s.45-1 1-1h3zm2 2v12h8V6H9z"/>
+                </svg>
+                """ if channel_type.lower() == "ออฟไลน์" else """
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                </svg>
+                """
 
-                with st.expander(f"{channel_name} ({channel_type})", expanded=False):
+                with st.expander(f"{icon_svg} {channel_name} ({channel_type})", expanded=False):
                     st.markdown(f"""
                     <div style="padding: 16px; background: #F9FAFB; border-radius: 8px; margin: 8px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
