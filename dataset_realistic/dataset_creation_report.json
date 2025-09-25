@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-09-26T01:22:30.234781",
+  "config": {
+    "target_classes": 3,
+    "ood_classes": 4,
+    "variations_applied": [
+      "lighting",
+      "wear_levels",
+      "age_effects",
+      "shadow_intensity",
+      "color_shift"
+    ]
+  },
+  "classes_created": {
+    "phra_somdej": {
+      "type": "target",
+      "train_samples": 120,
+      "test_samples": 30,
+      "description": "พระสมเด็จ - รูปทรงสี่เหลี่ยม มียอดแหลม"
+    },
+    "phra_nang_phya": {
+      "type": "target",
+      "train_samples": 100,
+      "test_samples": 25,
+      "description": "พระนางพญา - รูปทรงโค้งมน มีลวดลาย"
+    },
+    "phra_rod": {
+      "type": "target",
+      "train_samples": 80,
+      "test_samples": 20,
+      "description": "พระรอด - รูปทรงเล็ก กลม"
+    },
+    "coins": {
+      "type": "ood",
+      "test_samples": 25,
+      "description": "เหรียญ - วัตถุกลมแบน คล้ายพระเครื่อง"
+    },
+    "jewelry": {
+      "type": "ood",
+      "test_samples": 25,
+      "description": "เครื่องประดับ - จี้ กำไล"
+    },
+    "stones": {
+      "type": "ood",
+      "test_samples": 20,
+      "description": "หิน - รูปทรงธรรมชาติ"
+    },
+    "buttons": {
+      "type": "ood",
+      "test_samples": 15,
+      "description": "กระดุม - วัตถุกลมเล็ก"
+    }
+  },
+  "statistics": {
+    "train_total": 300,
+    "test_total": 75,
+    "ood_total": 85,
+    "class_distribution": {
+      "phra_nang_phya_train": 100,
+      "phra_rod_train": 80,
+      "phra_somdej_train": 120,
+      "phra_nang_phya_test": 25,
+      "phra_rod_test": 20,
+      "phra_somdej_test": 30,
+      "buttons_ood": 15,
+      "coins_ood": 25,
+      "jewelry_ood": 25,
+      "stones_ood": 20
+    }
+  }
+}

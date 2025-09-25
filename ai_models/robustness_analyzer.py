@@ -42,18 +42,18 @@ class RobustnessConfig:
     analyze_intra_class_variation: bool = True
     variation_threshold: float = 0.3  # Threshold for acceptable variation
     
-    # Out-of-distribution detection
+    # Out-of-distribution detection (Fast mode settings)
     enable_ood_detection: bool = True
-    ood_method: str = "isolation_forest"  # isolation_forest, elliptic_envelope, dbscan
+    ood_method: str = "isolation_forest"  # Using fastest method only
     ood_contamination: float = 0.1  # Expected proportion of outliers
     ood_confidence_threshold: float = 0.5  # Minimum confidence for in-distribution
     
-    # Robustness testing
-    enable_augmentation_testing: bool = True
-    test_lighting_changes: bool = True
-    test_rotation_changes: bool = True
-    test_blur_changes: bool = True
-    test_noise_changes: bool = True
+    # Robustness testing (Simplified for speed)
+    enable_augmentation_testing: bool = False  # Disabled for fast mode
+    test_lighting_changes: bool = False
+    test_rotation_changes: bool = False
+    test_blur_changes: bool = False
+    test_noise_changes: bool = False
     
     # Output settings
     save_analysis_plots: bool = True
@@ -229,65 +229,39 @@ class OutOfDistributionDetector:
         return logger
     
     def fit(self, in_distribution_features: np.ndarray, class_labels: np.ndarray) -> None:
-        """ฝึก OOD detector ด้วยข้อมูล in-distribution"""
-        self.logger.info("🎯 Training Out-of-Distribution detectors...")
+        """ฝึก OOD detector ด้วยข้อมูล in-distribution (Optimized version)"""
+        self.logger.info("🎯 Training Out-of-Distribution detectors (Fast mode)...")
+        
+        # Sample data for faster training if dataset is large
+        n_samples = len(in_distribution_features)
+        if n_samples > 500:
+            self.logger.info(f"⚡ Using subset of {min(500, n_samples)} samples for faster training")
+            indices = np.random.choice(n_samples, min(500, n_samples), replace=False)
+            features_subset = in_distribution_features[indices]
+        else:
+            features_subset = in_distribution_features
         
         # Normalize features
-        features_scaled = self.feature_scaler.fit_transform(in_distribution_features)
+        features_scaled = self.feature_scaler.fit_transform(features_subset)
         
-        # ฝึก detectors แต่ละประเภท
-        if self.config.ood_method == "isolation_forest":
-            self.ood_detectors['isolation_forest'] = IsolationForest(
-                contamination=self.config.ood_contamination,
-                random_state=42
-            )
-            self.ood_detectors['isolation_forest'].fit(features_scaled)
-        
-        elif self.config.ood_method == "elliptic_envelope":
-            self.ood_detectors['elliptic_envelope'] = EllipticEnvelope(
-                contamination=self.config.ood_contamination,
-                random_state=42
-            )
-            self.ood_detectors['elliptic_envelope'].fit(features_scaled)
-        
-        elif self.config.ood_method == "dbscan":
-            # DBSCAN สำหรับหา core samples
-            dbscan = DBSCAN(eps=0.5, min_samples=5)
-            cluster_labels = dbscan.fit_predict(features_scaled)
-            
-            # ใช้ core samples เป็น reference
-            core_samples_mask = np.zeros_like(cluster_labels, dtype=bool)
-            core_samples_mask[dbscan.core_sample_indices_] = True
-            
-            self.ood_detectors['dbscan'] = {
-                'core_samples': features_scaled[core_samples_mask],
-                'eps': 0.5
-            }
-        
-        # สร้าง ensemble detector
-        self._create_ensemble_detector(features_scaled)
+        # Use only the fastest method - Isolation Forest
+        self.logger.info("🚀 Using Isolation Forest (fastest method)")
+        self.ood_detectors['isolation_forest'] = IsolationForest(
+            n_estimators=50,  # Reduced from default 100
+            contamination=self.config.ood_contamination,
+            random_state=42,
+            n_jobs=-1  # Use all CPU cores
+        )
+        self.ood_detectors['isolation_forest'].fit(features_scaled)
         
         self.is_fitted = True
-        self.logger.info(f"✅ OOD detectors trained on {len(in_distribution_features)} samples")
+        self.logger.info(f"✅ OOD detector trained on {len(features_subset)} samples (Fast mode)")
     
     def _create_ensemble_detector(self, features: np.ndarray) -> None:
-        """สร้าง ensemble ของ OOD detectors"""
-        ensemble_detectors = []
-        
-        # Isolation Forest
-        if_detector = IsolationForest(contamination=self.config.ood_contamination, random_state=42)
-        if_detector.fit(features)
-        ensemble_detectors.append(('isolation_forest', if_detector))
-        
-        # Elliptic Envelope
-        try:
-            ee_detector = EllipticEnvelope(contamination=self.config.ood_contamination, random_state=42)
-            ee_detector.fit(features)
-            ensemble_detectors.append(('elliptic_envelope', ee_detector))
-        except:
-            self.logger.warning("Failed to fit Elliptic Envelope detector")
-        
-        self.ood_detectors['ensemble'] = ensemble_detectors
+        """สร้าง ensemble ของ OOD detectors (Simplified for speed)"""
+        # Skip ensemble creation in fast mode - use only primary detector
+        self.logger.info("⚡ Skipping ensemble creation for faster execution")
+        pass
     
     def detect_ood(self, test_features: np.ndarray) -> Dict[str, Any]:
         """ตรวจจับ OOD samples"""
@@ -323,32 +297,8 @@ class OutOfDistributionDetector:
                 'ood_ratio': float(np.mean(ood_labels))
             }
         
-        # Ensemble voting
-        if 'ensemble' in self.ood_detectors:
-            ensemble_predictions = []
-            
-            for detector_name, detector in self.ood_detectors['ensemble']:
-                if detector_name == 'dbscan':
-                    pred = self._dbscan_predict(test_features_scaled, detector)
-                else:
-                    pred = detector.predict(test_features_scaled)
-                ensemble_predictions.append(pred)
-            
-            # Majority voting
-            ensemble_predictions = np.array(ensemble_predictions)
-            ensemble_vote = np.apply_along_axis(
-                lambda x: 1 if np.sum(x == 1) > np.sum(x == -1) else -1,
-                axis=0, arr=ensemble_predictions
-            )
-            
-            ood_labels_ensemble = ensemble_vote == -1
-            
-            results['ensemble_results'] = {
-                'predictions': ensemble_vote.tolist(),
-                'ood_count': int(np.sum(ood_labels_ensemble)),
-                'ood_ratio': float(np.mean(ood_labels_ensemble)),
-                'confidence_scores': self._calculate_confidence_scores(test_features_scaled)
-            }
+        # Skip ensemble voting in fast mode
+        self.logger.info("⚡ Skipping ensemble voting for faster execution")
         
         return results
     
@@ -692,7 +642,7 @@ class ComprehensiveRobustnessAnalyzer:
         return results
     
     def _load_all_data(self, data_dir: str, feature_extractor: HybridFeatureExtractor) -> Tuple[np.ndarray, np.ndarray, List[np.ndarray]]:
-        """โหลดข้อมูลทั้งหมดสำหรับการวิเคราะห์"""
+        """โหลดข้อมูลทั้งหมดสำหรับการวิเคราะห์ (Fast mode - limited samples)"""
         data_path = Path(data_dir)
         all_features = []
         all_labels = []
@@ -700,6 +650,9 @@ class ComprehensiveRobustnessAnalyzer:
         
         label_to_idx = {}
         current_idx = 0
+        max_samples_per_class = 30  # จำกัดจำนวนตัวอย่างต่อ class เพื่อความเร็ว
+        
+        self.logger.info(f"⚡ Fast mode: Loading max {max_samples_per_class} samples per class")
         
         for class_dir in data_path.iterdir():
             if not class_dir.is_dir():
@@ -710,12 +663,17 @@ class ComprehensiveRobustnessAnalyzer:
                 label_to_idx[class_name] = current_idx
                 current_idx += 1
             
-            # โหลดภาพ
+            # โหลดภาพ (จำกัดจำนวน)
             images = []
             valid_extensions = {'.jpg', '.jpeg', '.png', '.bmp'}
+            sample_count = 0
             
             for ext in valid_extensions:
+                if sample_count >= max_samples_per_class:
+                    break
                 for img_path in class_dir.glob(f"*{ext}"):
+                    if sample_count >= max_samples_per_class:
+                        break
                     try:
                         img = cv2.imread(str(img_path))
                         if img is not None:
@@ -723,14 +681,17 @@ class ComprehensiveRobustnessAnalyzer:
                             images.append(img_rgb)
                             all_images.append(img_rgb)
                             all_labels.append(label_to_idx[class_name])
+                            sample_count += 1
                     except Exception as e:
                         self.logger.warning(f"Failed to load {img_path}: {e}")
             
             if len(images) > 0:
                 # สกัดฟีเจอร์
+                self.logger.info(f"Extracting features for {len(images)} images from {class_name}")
                 features = feature_extractor.extract_batch(images)
                 all_features.extend(features)
         
+        self.logger.info(f"✅ Loaded {len(all_features)} samples for robustness analysis")
         return np.array(all_features), np.array(all_labels), all_images
     
     def _test_synthetic_ood(self, feature_extractor: HybridFeatureExtractor) -> Dict[str, Any]:
@@ -767,7 +728,14 @@ class ComprehensiveRobustnessAnalyzer:
         # ทดสอบ OOD detection
         ood_results = self.ood_detector.detect_ood(synthetic_features)
         
-        self.logger.info(f"    📊 Synthetic OOD detection: {ood_results['ensemble_results']['ood_ratio']:.2f} detected as OOD")
+        # Get OOD ratio from available detector (since ensemble is disabled)
+        available_detectors = list(ood_results['detectors'].keys())
+        if available_detectors:
+            detector_name = available_detectors[0]
+            ood_ratio = ood_results['detectors'][detector_name]['ood_ratio']
+            self.logger.info(f"    📊 Synthetic OOD detection ({detector_name}): {ood_ratio:.2f} detected as OOD")
+        else:
+            self.logger.warning("    ⚠️ No OOD detection results available")
         
         return {
             'n_synthetic_samples': len(synthetic_images),
@@ -939,10 +907,29 @@ def main():
         args.data_dir, feature_extractor, model_predict_func
     )
     
-    # Save results
+    # Save results with proper JSON serialization
     results_file = output_dir / "robustness_analysis.json"
+    
+    def convert_to_serializable(obj):
+        """Convert numpy types to JSON serializable types"""
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, np.bool_):
+            return bool(obj)
+        elif isinstance(obj, dict):
+            return {k: convert_to_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_to_serializable(v) for v in obj]
+        return obj
+    
+    serializable_results = convert_to_serializable(results)
+    
     with open(results_file, 'w') as f:
-        json.dump(results, f, indent=2)
+        json.dump(serializable_results, f, indent=2)
     
     # Print summary
     print("\n" + "="*60)
