@@ -1,8 +1,8 @@
 {
   "original_class_counts": {
     "phra_nang_phya": 200,
-    "phra_rod": 100,
-    "phra_somdej": 300
+    "phra_rod": 160,
+    "phra_somdej": 240
   },
   "total_samples": 600,
   "n_classes": 3,

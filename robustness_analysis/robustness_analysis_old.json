@@ -1,0 +1,249 @@
+{
+  "timestamp": "2025-09-26T01:12:09.596948",
+  "config": {
+    "data_dir": "dataset",
+    "variation_threshold": 0.3,
+    "ood_contamination": 0.1
+  },
+  "intra_class_analysis": {
+    "phra_nang_phya": {
+      "n_samples": 100,
+      "feature_dim": 4461,
+      "variation_metrics": {
+        "avg_distance": 4.7748918533325195,
+        "std_distance": 0.3306637704372406,
+        "variation_score": 0.2081298679113388,
+        "silhouette_score": 0.0,
+        "mean_feature_std": 0.042155876755714417,
+        "max_feature_std": 0.3631812334060669
+      },
+      "outliers": {
+        "n_outliers": 10,
+        "outlier_ratio": 0.1,
+        "outlier_paths": [
+          "dataset\\phra_nang_phya\\phra_nang_phya_012.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_014.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_017.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_032.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_035.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_049.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_064.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_079.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_093.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_094.jpg"
+        ]
+      },
+      "robustness_assessment": {
+        "is_robust": true,
+        "variation_level": "Medium",
+        "recommendations": []
+      }
+    },
+    "phra_rod": {
+      "n_samples": 50,
+      "feature_dim": 4461,
+      "variation_metrics": {
+        "avg_distance": 5.070496082305908,
+        "std_distance": 0.387155145406723,
+        "variation_score": 0.20914173126220703,
+        "silhouette_score": 0.0,
+        "mean_feature_std": 0.045017484575510025,
+        "max_feature_std": 0.3111822307109833
+      },
+      "outliers": {
+        "n_outliers": 5,
+        "outlier_ratio": 0.1,
+        "outlier_paths": [
+          "dataset\\phra_rod\\phra_rod_010.jpg",
+          "dataset\\phra_rod\\phra_rod_019.jpg",
+          "dataset\\phra_rod\\phra_rod_030.jpg",
+          "dataset\\phra_rod\\phra_rod_032.jpg",
+          "dataset\\phra_rod\\phra_rod_043.jpg"
+        ]
+      },
+      "robustness_assessment": {
+        "is_robust": true,
+        "variation_level": "Medium",
+        "recommendations": []
+      }
+    },
+    "phra_somdej": {
+      "n_samples": 150,
+      "feature_dim": 4461,
+      "variation_metrics": {
+        "avg_distance": 4.983851432800293,
+        "std_distance": 0.3556899130344391,
+        "variation_score": 0.1984880417585373,
+        "silhouette_score": 0.0,
+        "mean_feature_std": 0.043984394520521164,
+        "max_feature_std": 0.3091796040534973
+      },
+      "outliers": {
+        "n_outliers": 15,
+        "outlier_ratio": 0.1,
+        "outlier_paths": [
+          "dataset\\phra_somdej\\phra_somdej_009.jpg",
+          "dataset\\phra_somdej\\phra_somdej_033.jpg",
+          "dataset\\phra_somdej\\phra_somdej_051.jpg",
+          "dataset\\phra_somdej\\phra_somdej_054.jpg",
+          "dataset\\phra_somdej\\phra_somdej_058.jpg",
+          "dataset\\phra_somdej\\phra_somdej_066.jpg",
+          "dataset\\phra_somdej\\phra_somdej_072.jpg",
+          "dataset\\phra_somdej\\phra_somdej_078.jpg",
+          "dataset\\phra_somdej\\phra_somdej_082.jpg",
+          "dataset\\phra_somdej\\phra_somdej_104.jpg",
+          "dataset\\phra_somdej\\phra_somdej_124.jpg",
+          "dataset\\phra_somdej\\phra_somdej_128.jpg",
+          "dataset\\phra_somdej\\phra_somdej_133.jpg",
+          "dataset\\phra_somdej\\phra_somdej_142.jpg",
+          "dataset\\phra_somdej\\phra_somdej_143.jpg"
+        ]
+      },
+      "robustness_assessment": {
+        "is_robust": true,
+        "variation_level": "Low",
+        "recommendations": []
+      }
+    }
+  },
+  "ood_detection": {
+    "n_samples": 90,
+    "detectors": {
+      "isolation_forest": {
+        "predictions": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          -1,
+          1,
+          1,
+          -1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "ood_count": 9,
+        "ood_ratio": 0.1
+      }
+    },
+    "ensemble_results": {}
+  },
+  "synthetic_ood_test": {
+    "n_synthetic_samples": 12,
+    "ood_detection_results": {
+      "n_samples": 12,
+      "detectors": {
+        "isolation_forest": {
+          "predictions": [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "ood_count": 12,
+          "ood_ratio": 1.0
+        }
+      },
+      "ensemble_results": {}
+    },
+    "expected_ood_ratio": 1.0
+  },
+  "summary": {
+    "overall_score": 0.8973733931779861,
+    "overall_level": "Excellent",
+    "recommendations": [],
+    "component_scores": {
+      "variation_robustness": 0.7947467863559723,
+      "ood_detection": 1,
+      "model_robustness": null
+    }
+  }
+}

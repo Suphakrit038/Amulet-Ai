@@ -28,26 +28,31 @@ python launch_complete.py
 python launch_complete.py --test
 ```
 
-### วิธีที่ 4: รันตรงๆ (รวดเร็ว)
+### วิธีที่ 4: รันตरงๆ (รวดเร็ว)
 ```bash
 streamlit run frontend/app_streamlit.py
 ```
 
-## การใช้งาน
-
-เริ่มระบบทั้งหมดด้วยคำสั่ง:
+## 📁 โครงสร้างโปรเจค (อัพเดท 2025)
 
 ```
-python scripts/amulet_launcher.py
+Amulet-Ai/
+├── 🤖 ai_models/           # AI Models และ ML Pipeline  
+├── 🌐 backend/             # Backend APIs
+├── 🎨 frontend/            # User interfaces
+├── 📊 dataset_realistic/   # Training/Test datasets
+├── 🔧 tools/              # Development tools
+├── 📖 docs/               # Documentation และ Reports
+├── 🎯 trained_model/      # Active ML model (ล่าสุด)
+├── 🔍 robustness_analysis/ # Model testing results
+└── 💾 feature_cache/      # Performance cache (1,257 files)
 ```
 
-หรือใช้ไฟล์ batch:
-
-```
-scripts/launch.bat
-```
-
-ระบบจะเริ่มทำงานทั้ง Backend API และ Frontend พร้อมกัน
+### 📋 รายงานและเอกสาร
+- **System Status**: `docs/reports/REAL_SYSTEM_TRUTH_TABLE.md`
+- **Performance Report**: `docs/reports/ACCURACY_PERFORMANCE_REPORT.md` 
+- **Priority Matrix**: `docs/reports/SYSTEM_PRIORITY_MATRIX.md`
+- **Action Plan**: `docs/reports/PROBLEM_TRACKING_MATRIX.md`
 
 ### พารามิเตอร์เพิ่มเติม
 

@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-09-26T01:12:09.596948",
+  "timestamp": "2025-09-26T01:29:59.010811",
   "config": {
-    "data_dir": "dataset",
+    "data_dir": "dataset_realistic/train",
     "variation_threshold": 0.3,
     "ood_contamination": 0.1
   },
@@ -10,99 +10,105 @@
       "n_samples": 100,
       "feature_dim": 4461,
       "variation_metrics": {
-        "avg_distance": 4.7748918533325195,
-        "std_distance": 0.3306637704372406,
-        "variation_score": 0.2081298679113388,
+        "avg_distance": 15.597716331481934,
+        "std_distance": 2.580423593521118,
+        "variation_score": 0.8114117383956909,
         "silhouette_score": 0.0,
-        "mean_feature_std": 0.042155876755714417,
-        "max_feature_std": 0.3631812334060669
+        "mean_feature_std": 0.11553411930799484,
+        "max_feature_std": 1.3566468954086304
       },
       "outliers": {
         "n_outliers": 10,
         "outlier_ratio": 0.1,
         "outlier_paths": [
-          "dataset\\phra_nang_phya\\phra_nang_phya_012.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_014.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_017.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_032.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_035.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_049.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_064.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_079.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_093.jpg",
-          "dataset\\phra_nang_phya\\phra_nang_phya_094.jpg"
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_009.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_023.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_030.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_033.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_037.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_046.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_055.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_068.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_071.jpg",
+          "dataset_realistic\\train\\phra_nang_phya\\phra_nang_phya_086.jpg"
         ]
       },
       "robustness_assessment": {
-        "is_robust": true,
-        "variation_level": "Medium",
-        "recommendations": []
+        "is_robust": false,
+        "variation_level": "High",
+        "recommendations": [
+          "High intra-class variation detected. Consider data cleaning or feature engineering."
+        ]
       }
     },
     "phra_rod": {
-      "n_samples": 50,
+      "n_samples": 80,
       "feature_dim": 4461,
       "variation_metrics": {
-        "avg_distance": 5.070496082305908,
-        "std_distance": 0.387155145406723,
-        "variation_score": 0.20914173126220703,
+        "avg_distance": 15.10359001159668,
+        "std_distance": 2.338589906692505,
+        "variation_score": 0.9719581007957458,
         "silhouette_score": 0.0,
-        "mean_feature_std": 0.045017484575510025,
-        "max_feature_std": 0.3111822307109833
+        "mean_feature_std": 0.10928705334663391,
+        "max_feature_std": 1.5996341705322266
       },
       "outliers": {
-        "n_outliers": 5,
+        "n_outliers": 8,
         "outlier_ratio": 0.1,
         "outlier_paths": [
-          "dataset\\phra_rod\\phra_rod_010.jpg",
-          "dataset\\phra_rod\\phra_rod_019.jpg",
-          "dataset\\phra_rod\\phra_rod_030.jpg",
-          "dataset\\phra_rod\\phra_rod_032.jpg",
-          "dataset\\phra_rod\\phra_rod_043.jpg"
+          "dataset_realistic\\train\\phra_rod\\phra_rod_006.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_010.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_025.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_026.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_036.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_040.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_041.jpg",
+          "dataset_realistic\\train\\phra_rod\\phra_rod_045.jpg"
         ]
       },
       "robustness_assessment": {
-        "is_robust": true,
-        "variation_level": "Medium",
-        "recommendations": []
+        "is_robust": false,
+        "variation_level": "High",
+        "recommendations": [
+          "High intra-class variation detected. Consider data cleaning or feature engineering."
+        ]
       }
     },
     "phra_somdej": {
-      "n_samples": 150,
+      "n_samples": 120,
       "feature_dim": 4461,
       "variation_metrics": {
-        "avg_distance": 4.983851432800293,
-        "std_distance": 0.3556899130344391,
-        "variation_score": 0.1984880417585373,
+        "avg_distance": 14.5049409866333,
+        "std_distance": 2.3272175788879395,
+        "variation_score": 0.9755926728248596,
         "silhouette_score": 0.0,
-        "mean_feature_std": 0.043984394520521164,
-        "max_feature_std": 0.3091796040534973
+        "mean_feature_std": 0.10919974744319916,
+        "max_feature_std": 1.539460301399231
       },
       "outliers": {
-        "n_outliers": 15,
+        "n_outliers": 12,
         "outlier_ratio": 0.1,
         "outlier_paths": [
-          "dataset\\phra_somdej\\phra_somdej_009.jpg",
-          "dataset\\phra_somdej\\phra_somdej_033.jpg",
-          "dataset\\phra_somdej\\phra_somdej_051.jpg",
-          "dataset\\phra_somdej\\phra_somdej_054.jpg",
-          "dataset\\phra_somdej\\phra_somdej_058.jpg",
-          "dataset\\phra_somdej\\phra_somdej_066.jpg",
-          "dataset\\phra_somdej\\phra_somdej_072.jpg",
-          "dataset\\phra_somdej\\phra_somdej_078.jpg",
-          "dataset\\phra_somdej\\phra_somdej_082.jpg",
-          "dataset\\phra_somdej\\phra_somdej_104.jpg",
-          "dataset\\phra_somdej\\phra_somdej_124.jpg",
-          "dataset\\phra_somdej\\phra_somdej_128.jpg",
-          "dataset\\phra_somdej\\phra_somdej_133.jpg",
-          "dataset\\phra_somdej\\phra_somdej_142.jpg",
-          "dataset\\phra_somdej\\phra_somdej_143.jpg"
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_015.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_036.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_042.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_066.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_069.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_075.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_077.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_090.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_104.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_105.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_110.jpg",
+          "dataset_realistic\\train\\phra_somdej\\phra_somdej_114.jpg"
         ]
       },
       "robustness_assessment": {
-        "is_robust": true,
-        "variation_level": "Low",
-        "recommendations": []
+        "is_robust": false,
+        "variation_level": "High",
+        "recommendations": [
+          "High intra-class variation detected. Consider data cleaning or feature engineering."
+        ]
       }
     }
   },
@@ -111,11 +117,21 @@
     "detectors": {
       "isolation_forest": {
         "predictions": [
+          -1,
+          1,
+          1,
+          -1,
           1,
           1,
           1,
           1,
           1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          -1,
           1,
           1,
           1,
@@ -128,8 +144,6 @@
           -1,
           1,
           1,
-          -1,
-          -1,
           1,
           1,
           1,
@@ -142,37 +156,6 @@
           1,
           1,
           1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          -1,
-          1,
-          1,
-          1,
-          -1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          -1,
           1,
           1,
           1,
@@ -196,7 +179,30 @@
           1,
           1,
           1,
+          1,
+          1,
+          1,
           -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          -1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
           1,
           1,
           1,
@@ -215,11 +221,11 @@
       "detectors": {
         "isolation_forest": {
           "predictions": [
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
+            1,
+            1,
+            1,
+            1,
+            1,
             -1,
             -1,
             -1,
@@ -228,8 +234,8 @@
             -1,
             -1
           ],
-          "ood_count": 12,
-          "ood_ratio": 1.0
+          "ood_count": 7,
+          "ood_ratio": 0.5833333333333334
         }
       },
       "ensemble_results": {}
@@ -237,11 +243,14 @@
     "expected_ood_ratio": 1.0
   },
   "summary": {
-    "overall_score": 0.8973733931779861,
-    "overall_level": "Excellent",
-    "recommendations": [],
+    "overall_score": 0.5401729146639507,
+    "overall_level": "Needs Improvement",
+    "recommendations": [
+      "High intra-class variation detected in: phra_nang_phya, phra_rod, phra_somdej",
+      "Consider data cleaning, feature engineering, or collecting more diverse samples"
+    ],
     "component_scores": {
-      "variation_robustness": 0.7947467863559723,
+      "variation_robustness": 0.08034582932790124,
       "ood_detection": 1,
       "model_robustness": null
     }
