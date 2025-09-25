@@ -198,10 +198,10 @@ class AmuletAIComplete:
         # ลำดับความสำคัญ (สไตล์เก่าก่อน)
         frontend_options = [
             ('frontend/app_old_style.py', 'Old Style UI (สไตล์เก่าสวยงาม)'),
-            ('frontend/app_streamlit.py', 'Standard UI (สไตล์เก่าต้นฉบับ)'),
+            ('frontend/main_app.py', 'Main UI (แอปหลัก)'),
             ('frontend/app_simple.py', 'Simple UI (เรียบง่าย)'),
-            ('frontend/app_modern.py', 'Modern UI (ทันสมัย)'),
-            ('frontend/amulet_unified.py', 'Unified App (รวมทุกอย่าง)')
+            ('frontend/modern_ui.py', 'Modern UI (ทันสมัย)'),
+            ('frontend/unified_interface.py', 'Unified Interface (รวมทุกอย่าง)')
         ]
         
         for app_path, description in frontend_options:

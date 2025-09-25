@@ -12,7 +12,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 sys.path.insert(0, PROJECT_ROOT)
 
 # Import the API module
-from backend.api.api_with_reference_images import app
+from backend.api.reference_api import app
 
 if __name__ == "__main__":
     import uvicorn
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     print(f"Starting Amulet-AI Enhanced API on {args.host}:{args.port}")
     
     uvicorn.run(
-        "backend.api.api_with_reference_images:app",
+        "backend.api.reference_api:app",
         host=args.host,
         port=args.port,
         reload=args.reload

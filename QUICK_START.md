@@ -26,7 +26,7 @@ python launch_complete.py --test
 
 ### 3. ⚡ รันตรงๆ (รวดเร็ว)
 ```bash
-streamlit run frontend/app_simple.py
+streamlit run frontend/main_app.py
 ```
 
 ---
@@ -76,7 +76,7 @@ python -c "import streamlit; print('OK')"
 ```bash
 # หยุดระบบ: Ctrl+C
 # เริ่มใหม่
-streamlit run frontend/app_simple.py
+streamlit run frontend/main_app.py
 ```
 
 ---

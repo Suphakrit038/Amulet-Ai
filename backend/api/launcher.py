@@ -55,7 +55,7 @@ def launch_api(host="127.0.0.1", port=8000):
     try:
         # นำเข้าโมดูลที่จำเป็น
         import uvicorn
-        from backend.api.integrated_api import app
+        from backend.api.production_api import app
         
         logger.info(f"🚀 กำลังเริ่มระบบ API ที่ http://{host}:{port}...")
         logger.info(f"📚 API Documentation: http://{host}:{port}/docs")
