@@ -1,0 +1,110 @@
+{
+  "data_dir": "dataset",
+  "validation_split": 0.2,
+  "test_split": 0.15,
+  "random_state": 42,
+  "feature_config": {
+    "cnn_backbone": "resnet18",
+    "cnn_pretrained": true,
+    "cnn_freeze_weights": true,
+    "cnn_device": "cpu",
+    "cnn_batch_size": 4,
+    "enable_hog": true,
+    "enable_lbp": true,
+    "enable_color_hist": true,
+    "enable_texture": true,
+    "enable_edge_features": true,
+    "hog_orientations": 9,
+    "hog_pixels_per_cell": [
+      8,
+      8
+    ],
+    "hog_cells_per_block": [
+      2,
+      2
+    ],
+    "lbp_radius": 3,
+    "lbp_n_points": 24,
+    "color_bins": 32,
+    "color_ranges": [
+      [
+        0,
+        256
+      ],
+      [
+        0,
+        256
+      ],
+      [
+        0,
+        256
+      ]
+    ],
+    "target_size": [
+      224,
+      224
+    ],
+    "normalize_method": "imagenet",
+    "enable_caching": true,
+    "cache_dir": "ai_models/feature_cache",
+    "use_multiprocessing": false,
+    "verbose": true
+  },
+  "enable_feature_caching": true,
+  "apply_augmentation": false,
+  "augmentation_config": {
+    "target_samples_per_class": 40,
+    "max_augmentation_factor": 15,
+    "rotation_range": [
+      -15,
+      15
+    ],
+    "brightness_range": [
+      0.85,
+      1.15
+    ],
+    "contrast_range": [
+      0.9,
+      1.1
+    ],
+    "saturation_range": [
+      0.95,
+      1.05
+    ],
+    "noise_std": 5.0,
+    "blur_kernel_sizes": [
+      3
+    ],
+    "enable_quality_check": true,
+    "min_quality_score": 0.75,
+    "output_format": "jpg",
+    "output_quality": 95,
+    "preserve_originals": true,
+    "batch_size": 16,
+    "use_multiprocessing": true,
+    "random_seed": 42
+  },
+  "apply_scaling": true,
+  "scaler_type": "standard",
+  "apply_dimensionality_reduction": true,
+  "dr_method": "pca",
+  "dr_components": 200,
+  "ensemble_models": [
+    "random_forest",
+    "svm",
+    "gradient_boost"
+  ],
+  "voting_strategy": "soft",
+  "enable_calibration": true,
+  "use_stratified_cv": true,
+  "cv_folds": 3,
+  "enable_hyperparameter_tuning": false,
+  "tuning_method": "randomized",
+  "tuning_iterations": 10,
+  "handle_imbalance": true,
+  "class_weight_strategy": "balanced",
+  "n_jobs": -1,
+  "verbose": 1,
+  "model_save_dir": "trained_model",
+  "save_intermediate_results": true
+}

@@ -1,0 +1,446 @@
+{
+  "summary": {
+    "total_images": 170,
+    "total_classes": 3,
+    "avg_per_class": 56.666666666666664,
+    "min_per_class": 20,
+    "max_per_class": 100,
+    "imbalance_ratio": 5.0,
+    "total_corrupted": 0,
+    "total_duplicates": 85,
+    "recommended_k_fold": 5,
+    "cv_strategy_note": "✅ Use 5-fold stratified CV. Dataset size adequate for robust validation."
+  },
+  "class_statistics": {
+    "phra_nang_phya": {
+      "class_name": "phra_nang_phya",
+      "total_images": 50,
+      "corrupted_images": 0,
+      "duplicate_groups": [
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_000.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_000.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_001.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_001.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_002.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_002.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_003.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_003.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_004.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_004.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_005.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_005.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_006.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_006.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_007.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_007.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_008.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_008.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_009.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_009.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_010.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_010.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_011.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_011.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_012.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_012.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_013.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_013.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_014.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_014.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_015.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_015.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_016.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_016.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_017.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_017.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_018.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_018.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_019.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_019.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_020.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_020.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_021.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_021.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_022.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_022.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_023.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_023.jpg"
+        ],
+        [
+          "dataset\\phra_nang_phya\\phra_nang_phya_024.jpg",
+          "dataset\\phra_nang_phya\\phra_nang_phya_024.jpg"
+        ]
+      ],
+      "size_distribution": {
+        "224x224x3": 50
+      },
+      "sample_paths": [
+        "dataset\\phra_nang_phya\\phra_nang_phya_000.jpg",
+        "dataset\\phra_nang_phya\\phra_nang_phya_001.jpg",
+        "dataset\\phra_nang_phya\\phra_nang_phya_002.jpg"
+      ],
+      "recommended_augmentation": 0,
+      "health_status": "healthy"
+    },
+    "phra_rod": {
+      "class_name": "phra_rod",
+      "total_images": 20,
+      "corrupted_images": 0,
+      "duplicate_groups": [
+        [
+          "dataset\\phra_rod\\phra_rod_000.jpg",
+          "dataset\\phra_rod\\phra_rod_000.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_001.jpg",
+          "dataset\\phra_rod\\phra_rod_001.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_002.jpg",
+          "dataset\\phra_rod\\phra_rod_002.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_003.jpg",
+          "dataset\\phra_rod\\phra_rod_003.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_004.jpg",
+          "dataset\\phra_rod\\phra_rod_004.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_005.jpg",
+          "dataset\\phra_rod\\phra_rod_005.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_006.jpg",
+          "dataset\\phra_rod\\phra_rod_006.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_007.jpg",
+          "dataset\\phra_rod\\phra_rod_007.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_008.jpg",
+          "dataset\\phra_rod\\phra_rod_008.jpg"
+        ],
+        [
+          "dataset\\phra_rod\\phra_rod_009.jpg",
+          "dataset\\phra_rod\\phra_rod_009.jpg"
+        ]
+      ],
+      "size_distribution": {
+        "224x224x3": 20
+      },
+      "sample_paths": [
+        "dataset\\phra_rod\\phra_rod_000.jpg",
+        "dataset\\phra_rod\\phra_rod_001.jpg",
+        "dataset\\phra_rod\\phra_rod_002.jpg"
+      ],
+      "recommended_augmentation": 1,
+      "health_status": "healthy"
+    },
+    "phra_somdej": {
+      "class_name": "phra_somdej",
+      "total_images": 100,
+      "corrupted_images": 0,
+      "duplicate_groups": [
+        [
+          "dataset\\phra_somdej\\phra_somdej_000.jpg",
+          "dataset\\phra_somdej\\phra_somdej_000.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_001.jpg",
+          "dataset\\phra_somdej\\phra_somdej_001.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_002.jpg",
+          "dataset\\phra_somdej\\phra_somdej_002.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_003.jpg",
+          "dataset\\phra_somdej\\phra_somdej_003.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_004.jpg",
+          "dataset\\phra_somdej\\phra_somdej_004.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_005.jpg",
+          "dataset\\phra_somdej\\phra_somdej_005.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_006.jpg",
+          "dataset\\phra_somdej\\phra_somdej_006.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_007.jpg",
+          "dataset\\phra_somdej\\phra_somdej_007.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_008.jpg",
+          "dataset\\phra_somdej\\phra_somdej_008.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_009.jpg",
+          "dataset\\phra_somdej\\phra_somdej_009.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_010.jpg",
+          "dataset\\phra_somdej\\phra_somdej_010.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_011.jpg",
+          "dataset\\phra_somdej\\phra_somdej_011.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_012.jpg",
+          "dataset\\phra_somdej\\phra_somdej_012.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_013.jpg",
+          "dataset\\phra_somdej\\phra_somdej_013.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_014.jpg",
+          "dataset\\phra_somdej\\phra_somdej_014.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_015.jpg",
+          "dataset\\phra_somdej\\phra_somdej_015.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_016.jpg",
+          "dataset\\phra_somdej\\phra_somdej_016.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_017.jpg",
+          "dataset\\phra_somdej\\phra_somdej_017.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_018.jpg",
+          "dataset\\phra_somdej\\phra_somdej_018.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_019.jpg",
+          "dataset\\phra_somdej\\phra_somdej_019.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_020.jpg",
+          "dataset\\phra_somdej\\phra_somdej_020.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_021.jpg",
+          "dataset\\phra_somdej\\phra_somdej_021.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_022.jpg",
+          "dataset\\phra_somdej\\phra_somdej_022.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_023.jpg",
+          "dataset\\phra_somdej\\phra_somdej_023.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_024.jpg",
+          "dataset\\phra_somdej\\phra_somdej_024.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_025.jpg",
+          "dataset\\phra_somdej\\phra_somdej_025.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_026.jpg",
+          "dataset\\phra_somdej\\phra_somdej_026.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_027.jpg",
+          "dataset\\phra_somdej\\phra_somdej_027.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_028.jpg",
+          "dataset\\phra_somdej\\phra_somdej_028.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_029.jpg",
+          "dataset\\phra_somdej\\phra_somdej_029.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_030.jpg",
+          "dataset\\phra_somdej\\phra_somdej_030.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_031.jpg",
+          "dataset\\phra_somdej\\phra_somdej_031.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_032.jpg",
+          "dataset\\phra_somdej\\phra_somdej_032.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_033.jpg",
+          "dataset\\phra_somdej\\phra_somdej_033.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_034.jpg",
+          "dataset\\phra_somdej\\phra_somdej_034.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_035.jpg",
+          "dataset\\phra_somdej\\phra_somdej_035.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_036.jpg",
+          "dataset\\phra_somdej\\phra_somdej_036.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_037.jpg",
+          "dataset\\phra_somdej\\phra_somdej_037.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_038.jpg",
+          "dataset\\phra_somdej\\phra_somdej_038.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_039.jpg",
+          "dataset\\phra_somdej\\phra_somdej_039.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_040.jpg",
+          "dataset\\phra_somdej\\phra_somdej_040.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_041.jpg",
+          "dataset\\phra_somdej\\phra_somdej_041.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_042.jpg",
+          "dataset\\phra_somdej\\phra_somdej_042.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_043.jpg",
+          "dataset\\phra_somdej\\phra_somdej_043.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_044.jpg",
+          "dataset\\phra_somdej\\phra_somdej_044.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_045.jpg",
+          "dataset\\phra_somdej\\phra_somdej_045.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_046.jpg",
+          "dataset\\phra_somdej\\phra_somdej_046.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_047.jpg",
+          "dataset\\phra_somdej\\phra_somdej_047.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_048.jpg",
+          "dataset\\phra_somdej\\phra_somdej_048.jpg"
+        ],
+        [
+          "dataset\\phra_somdej\\phra_somdej_049.jpg",
+          "dataset\\phra_somdej\\phra_somdej_049.jpg"
+        ]
+      ],
+      "size_distribution": {
+        "224x224x3": 100
+      },
+      "sample_paths": [
+        "dataset\\phra_somdej\\phra_somdej_000.jpg",
+        "dataset\\phra_somdej\\phra_somdej_001.jpg",
+        "dataset\\phra_somdej\\phra_somdej_002.jpg"
+      ],
+      "recommended_augmentation": 0,
+      "health_status": "healthy"
+    }
+  },
+  "optional_data": {
+    "labels": {
+      "0": "buddha_in_vihara",
+      "1": "phra_san",
+      "2": "phra_sivali",
+      "3": "somdej_buddha_blessing",
+      "4": "somdej_fatherguay",
+      "5": "somdej_lion_base",
+      "6": "somdej_portrait_back",
+      "7": "somdej_prok_bodhi",
+      "8": "somdej_waek_man",
+      "9": "wat_nong_e_duk"
+    },
+    "consolidation_report": {
+      "total_images": 173,
+      "total_classes": 10,
+      "classes": {
+        "somdej_fatherguay": 36,
+        "buddha_in_vihara": 8,
+        "somdej_lion_base": 4,
+        "somdej_buddha_blessing": 23,
+        "somdej_portrait_back": 26,
+        "phra_san": 2,
+        "phra_sivali": 16,
+        "somdej_prok_bodhi": 20,
+        "somdej_waek_man": 21,
+        "wat_nong_e_duk": 17
+      }
+    }
+  },
+  "recommendations": [
+    "⚠️ MANY DUPLICATES: 85 duplicate images (50.0%). Consider deduplication."
+  ],
+  "metadata": {
+    "inspector_version": "1.0.0",
+    "scan_timestamp": "2025-09-25T23:16:33.898028",
+    "data_directory": "dataset",
+    "min_target_per_class": 30
+  }
+}
