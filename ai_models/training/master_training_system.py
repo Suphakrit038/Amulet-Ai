@@ -38,9 +38,9 @@ logger = logging.getLogger(__name__)
 class MasterTrainingConfig:
     """Configuration for master training system"""
     # Data configuration
-    dataset_path: str = r"C:\Users\Admin\Documents\GitHub\Amulet-Ai\dataset"
+    dataset_path: str = "data_base"
     organized_path: str = "dataset_organized"
-    split_path: str = "dataset_split"
+    split_path: str = "ai_models/dataset_split"
     
     # Model configuration
     model_name: str = "efficientnet-b4"

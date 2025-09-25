@@ -1,0 +1,94 @@
+{
+  "project_info": {
+    "name": "Amulet-AI",
+    "version": "2.0",
+    "description": "Advanced Thai Buddhist Amulet Recognition System",
+    "last_updated": "2025-09-25"
+  },
+  
+  "system": {
+    "mode": "lightweight_ml",
+    "backend_framework": "scikit-learn",
+    "frontend_framework": "streamlit",
+    "api_framework": "fastapi"
+  },
+  
+  "data": {
+    "dataset_path": "ai_models/dataset_split",
+    "image_size": [224, 224],
+    "supported_formats": ["jpg", "jpeg", "png", "webp"],
+    "classes": [
+      "somdej-fatherguay",
+      "พระพุทธเจ้าในวิหาร",
+      "พระสมเด็จฐานสิงห์",
+      "พระสมเด็จประทานพร พุทธกวัก",
+      "พระสมเด็จหลังรูปเหมือน",
+      "พระสรรค์",
+      "พระสิวลี",
+      "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
+      "สมเด็จแหวกม่าน",
+      "ออกวัดหนองอีดุก"
+    ]
+  },
+  
+  "model": {
+    "type": "lightweight_ml",
+    "algorithm": "random_forest",
+    "features": {
+      "hog": true,
+      "lbp": true,
+      "color_histogram": true,
+      "hu_moments": true
+    },
+    "pca_components": 100,
+    "model_path": "ai_models/lightweight_output/lightweight_amulet_model.joblib"
+  },
+  
+  "training": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "cross_validation": true,
+    "n_estimators": 100,
+    "max_depth": 10
+  },
+  
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "max_file_size": "10MB",
+    "allowed_origins": ["*"],
+    "timeout": 30
+  },
+  
+  "frontend": {
+    "title": "🔮 Amulet-AI - ระบบวิเคราะห์พระเครื่อง",
+    "theme": "light",
+    "language": "thai",
+    "max_upload_size": "10MB"
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/amulet_ai.log",
+    "max_size": "10MB",
+    "backup_count": 3
+  },
+  
+  "paths": {
+    "models": "ai_models",
+    "data": "ai_models/dataset_split",
+    "output": "ai_models/lightweight_output",
+    "logs": "logs",
+    "uploads": "uploads",
+    "frontend": "frontend",
+    "backend": "backend"
+  },
+  
+  "performance": {
+    "batch_processing": true,
+    "parallel_processing": true,
+    "cache_predictions": true,
+    "optimize_images": true
+  }
+}

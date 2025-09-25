@@ -1,7 +1,0 @@
-{
-  "model_path": "frontend\\models\\best_model.pth",
-  "labels_path": "frontend\\models\\labels.json",
-  "model_type": "efficientnet_b0",
-  "img_size": 224,
-  "timestamp": "2025-09-04"
-}

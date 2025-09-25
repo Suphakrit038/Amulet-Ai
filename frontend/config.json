@@ -1,8 +1,0 @@
-{
-  "api_url": "http://127.0.0.1:8001",
-  "max_file_size_mb": 10,
-  "supported_formats": ["jpg", "jpeg", "png", "webp", "bmp", "tiff"],
-  "timeout_seconds": 60,
-  "language": "th",
-  "theme": "thai_modern"
-}

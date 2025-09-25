@@ -10,13 +10,18 @@
 
 ### 1. 🖱️ วิธีง่ายที่สุด (Windows)
 ```cmd
-start_amulet_ai.bat
+start.bat
 ```
 **คลิกสองครั้งหรือรันใน Command Prompt**
 
-### 2. 🐍 ใช้ Python Launcher
+### 2. 🐍 ใช้ Python Launcher (ครบครัน)
 ```bash
-python launch_amulet_ai.py
+python launch_complete.py
+```
+
+### 3. 🧪 ทดสอบระบบ
+```bash
+python launch_complete.py --test
 ```
 
 ### 3. ⚡ รันตรงๆ (รวดเร็ว)
@@ -122,7 +127,7 @@ streamlit run frontend/app_simple.py
 
 ### 🚀 เริ่มใช้งานเลย:
 ```cmd
-start_amulet_ai.bat
+start.bat
 ```
 
 หรือเปิดเบราว์เซอร์ไปที่: **http://localhost:8501**

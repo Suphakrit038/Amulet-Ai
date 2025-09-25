@@ -1,23 +1,36 @@
-# Amulet AI System
+# 🔮 Amulet-AI - ระบบวิเคราะห์พระเครื่องด้วยปัญญาประดิษฐ์
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.95+-green.svg)](https://fastapi.tiangolo.com)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.24+-red.svg)](https://streamlit.io)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
-[![Status](https://img.shields.io/badge/Status-Real%20AI%20Model-brightgreen.svg)](https://github.com)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Python](https://img.shields.io/badge/python-3.8+-brightgreen)
+![Streamlit](https://img.shields.io/badge/streamlit-1.28+-red)
+![Status](https://img.shields.io/badge/status-production--ready-success)
 
 **ระบบปัญญาประดิษฐ์สำหรับการตรวจสอบและประเมินพระเครื่องไทย โดยใช้ Deep Learning**
+- ✅ **พร้อมใช้งาน Production** - ระบบเสถียรและทดสอบแล้ว
+- 🤖 **AI ทันสมัย** - Vision Transformer + EfficientNet
+- 📱 **Responsive UI** - รองรับมือถือและเดสก์ทอป
+- 🇹🇭 **ภาษาไทย** - รองรับภาษาไทยเต็มรูปแบบ
 
-## การติดตั้ง
+## 🚀 เริ่มใช้งานด่วน
 
-1. ติดตั้ง requirements
-```
-pip install -r requirements.txt
+### วิธีที่ 1: ใช้ Batch Script (แนะนำสำหรับ Windows)
+```bash
+start.bat
 ```
 
-2. ดาวน์โหลดโมเดล AI
+### วิธีที่ 2: ใช้ Python Launcher (ครบครัน)
+```bash
+python launch_complete.py
 ```
-python scripts/setup_models.py
+
+### วิธีที่ 3: ทดสอบระบบ
+```bash
+python launch_complete.py --test
+```
+
+### วิธีที่ 4: รันตรงๆ (รวดเร็ว)
+```bash
+streamlit run frontend/app_streamlit.py
 ```
 
 ## การใช้งาน

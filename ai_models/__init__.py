@@ -1,68 +1,62 @@
 """
-🧠 AI Models Module for Advanced Amulet Recognition System
+🧠 AI Models Module - Python 3.13 Compatible Version
 
-This module contains all AI-related components for maximum quality image recognition:
-- Advanced Image Processing System
-- Self-Supervised Learning with Contrastive Learning 
-- Advanced Data Pipeline
-- Dataset Organization & Embedding Database
-- Master Training System
-- Training Scripts
+This module contains AI components that work with Python 3.13:
+- Lightweight ML System (scikit-learn + OpenCV)
+- Compatible Data Pipeline 
+- Compatible Visualizer
+- AI Project Diagnostics
 """
 
-# ป้องกัน TensorFlow warnings
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
 import warnings
+
+# Suppress warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# Import core modules
-from .advanced_image_processor import AdvancedImageProcessor, advanced_processor, process_image_max_quality
-from .self_supervised_learning import (
-    ContrastiveLearningModel,
-    SelfSupervisedTrainer,
-    AdvancedEmbeddingSystem,
-    EmbeddingConfig,
-    create_self_supervised_system
-)
-from .advanced_data_pipeline import AdvancedDataPipeline, DataPipelineConfig, HighQualityAmuletDataset
-from .dataset_organizer import DatasetOrganizer, EmbeddingDatabase, create_embedding_record
-from .master_training_system import (
-    MasterTrainingSystem,
-    MasterTrainingConfig,
-    create_master_training_system
-)
+# Import compatible modules only
+try:
+    from .lightweight_ml_system import LightweightMLSystem, LightweightMLConfig
+except ImportError as e:
+    print(f"⚠️ Could not import lightweight_ml_system: {e}")
+    LightweightMLSystem = None
+    LightweightMLConfig = None
 
-__version__ = "2.0.0"
-__author__ = "Advanced Amulet AI Team"
+try:
+    from .compatible_data_pipeline import CompatibleDataPipeline, CompatibleDataPipelineConfig
+except ImportError as e:
+    print(f"⚠️ Could not import compatible_data_pipeline: {e}")
+    CompatibleDataPipeline = None
+    CompatibleDataPipelineConfig = None
+
+try:
+    from .compatible_visualizer import CompatibleVisualizer
+except ImportError as e:
+    print(f"⚠️ Could not import compatible_visualizer: {e}")
+    CompatibleVisualizer = None
+
+try:
+    from .ai_project_diagnostics import SystemDiagnostics
+except ImportError as e:
+    print(f"⚠️ Could not import ai_project_diagnostics: {e}")
+    SystemDiagnostics = None
+
+__version__ = "3.0.0-compatible"
+__author__ = "Amulet AI Team - Python 3.13 Compatible"
 
 __all__ = [
-    # Image Processing
-    'AdvancedImageProcessor',
-    'advanced_processor',
-    'process_image_max_quality',
+    # Compatible ML System
+    'LightweightMLSystem',
+    'LightweightMLConfig',
     
-    # Self-Supervised Learning
-    'ContrastiveLearningModel',
-    'SelfSupervisedTrainer', 
-    'AdvancedEmbeddingSystem',
-    'EmbeddingConfig',
-    'create_self_supervised_system',
+    # Compatible Data Pipeline
+    'CompatibleDataPipeline',
+    'CompatibleDataPipelineConfig',
     
-    # Data Pipeline
-    'AdvancedDataPipeline',
-    'DataPipelineConfig',
-    'HighQualityAmuletDataset',
+    # Compatible Visualization
+    'CompatibleVisualizer',
     
-    # Dataset Organization
-    'DatasetOrganizer',
-    'EmbeddingDatabase',
-    'create_embedding_record',
-    
-    # Training System
-    'MasterTrainingSystem',
-    'MasterTrainingConfig',
-    'create_master_training_system'
+    # Diagnostics
+    'SystemDiagnostics'
 ]

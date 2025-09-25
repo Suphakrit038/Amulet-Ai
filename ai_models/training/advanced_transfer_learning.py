@@ -51,7 +51,7 @@ logger = logging.getLogger("transfer_learning")
 class TransferLearningConfig:
     """Configuration for transfer learning model training"""
     # Data configuration
-    data_path: str = "unified_dataset"  # Uses the unified dataset from the data unification script
+    data_path: str = "ai_models/dataset_split"  # Uses the dataset split structure
     img_size: int = 224  # Input image size
     
     # Model configuration
