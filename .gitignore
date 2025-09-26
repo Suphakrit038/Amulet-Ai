@@ -1,5 +1,4 @@
-# Python
-__pycache__/
+ycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -80,3 +79,20 @@ scraped/
 # Empty folders
 logs/
 scripts/
+
+# Test artifacts
+test_scenarios/
+comprehensive_test_results.json
+phase3_test_summary.json
+
+# Temporary model files
+trained_model_temp/
+
+# IDE files
+.vscode/settings.json
+
+# After consolidation - ignore secondary systems
+lean_*
+*_secondary*
+*_alt*
+*_backup*

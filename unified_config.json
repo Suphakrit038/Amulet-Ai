@@ -1,22 +1,28 @@
 {
   "project_info": {
     "name": "Amulet-AI",
-    "version": "2.0",
-    "description": "Advanced Thai Buddhist Amulet Recognition System",
-    "last_updated": "2025-09-25"
+    "version": "4.0",
+    "description": "Enhanced Production-Ready Thai Buddhist Amulet Recognition System",
+    "last_updated": "2025-09-26"
   },
-  
   "system": {
-    "mode": "lightweight_ml",
+    "mode": "enhanced_production",
     "backend_framework": "scikit-learn",
     "frontend_framework": "streamlit",
     "api_framework": "fastapi"
   },
-  
   "data": {
-    "dataset_path": "ai_models/dataset_split",
-    "image_size": [224, 224],
-    "supported_formats": ["jpg", "jpeg", "png", "webp"],
+    "dataset_path": "dataset_optimized",
+    "image_size": [
+      224,
+      224
+    ],
+    "supported_formats": [
+      "jpg",
+      "jpeg",
+      "png",
+      "webp"
+    ],
     "classes": [
       "somdej-fatherguay",
       "พระพุทธเจ้าในวิหาร",
@@ -30,20 +36,23 @@
       "ออกวัดหนองอีดุก"
     ]
   },
-  
   "model": {
-    "type": "lightweight_ml",
-    "algorithm": "random_forest",
+    "type": "enhanced_production_ml",
+    "algorithm": "calibrated_random_forest",
     "features": {
-      "hog": true,
-      "lbp": true,
+      "statistical": true,
+      "edge_detection": true,
+      "lbp_texture": true,
       "color_histogram": true,
-      "hu_moments": true
+      "hu_moments": true,
+      "pair_comparison": true
     },
-    "pca_components": 100,
-    "model_path": "ai_models/lightweight_output/lightweight_amulet_model.joblib"
+    "pca_components": 50,
+    "model_path": "trained_model_enhanced/classifier.joblib",
+    "ood_detection": true,
+    "calibration": true,
+    "feature_caching": true
   },
-  
   "training": {
     "test_size": 0.2,
     "random_state": 42,
@@ -51,22 +60,21 @@
     "n_estimators": 100,
     "max_depth": 10
   },
-  
   "api": {
     "host": "0.0.0.0",
     "port": 8000,
     "max_file_size": "10MB",
-    "allowed_origins": ["*"],
+    "allowed_origins": [
+      "*"
+    ],
     "timeout": 30
   },
-  
   "frontend": {
     "title": "🔮 Amulet-AI - ระบบวิเคราะห์พระเครื่อง",
     "theme": "light",
     "language": "thai",
     "max_upload_size": "10MB"
   },
-  
   "logging": {
     "level": "INFO",
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -74,7 +82,6 @@
     "max_size": "10MB",
     "backup_count": 3
   },
-  
   "paths": {
     "models": "ai_models",
     "data": "ai_models/dataset_split",
@@ -84,11 +91,52 @@
     "frontend": "frontend",
     "backend": "backend"
   },
-  
   "performance": {
     "batch_processing": true,
     "parallel_processing": true,
     "cache_predictions": true,
-    "optimize_images": true
+    "optimize_images": true,
+    "performance_monitoring": true,
+    "structured_logging": true
+  },
+  "performance_targets": {
+    "model_metrics": {
+      "balanced_accuracy": 0.80,
+      "per_class_f1": 0.85,
+      "calibration_error": 0.05,
+      "ood_auroc": 0.90,
+      "ood_far_at_95tpr": 0.05
+    },
+    "system_metrics": {
+      "latency_p95_seconds": 2.0,
+      "latency_p99_seconds": 3.0,
+      "memory_usage_mb": 500,
+      "error_rate": 0.005,
+      "throughput_rps": 10
+    },
+    "user_experience": {
+      "task_success_rate": 0.90,
+      "time_to_result_seconds": 3.0,
+      "cache_hit_rate": 0.70,
+      "user_satisfaction": 0.80
+    }
+  },
+  "personas": {
+    "collectors_experts": {
+      "priority": "accuracy",
+      "requirements": ["high_precision", "explanations", "confidence_scores"]
+    },
+    "novice_buyers": {
+      "priority": "ease_of_use", 
+      "requirements": ["simple_ui", "thai_language", "clear_results"]
+    },
+    "merchants_dealers": {
+      "priority": "speed",
+      "requirements": ["batch_processing", "api_access", "fast_response"]
+    },
+    "researchers": {
+      "priority": "transparency",
+      "requirements": ["reproducibility", "model_explainability", "metadata_export"]
+    }
   }
 }

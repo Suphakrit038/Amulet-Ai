@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-09-27T00:19:13.283339",
+  "total_actions": 25,
+  "actions": [
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\ai_models\\production_system_v3.py (backup ใน C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\cleanup_backup)",
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\trained_model_production (backup ใน C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\cleanup_backup\\trained_model_production)",
+    "เปลี่ยนชื่อ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\trained_model_enhanced -> C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\trained_model",
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\backend\\api\\production_ready_api.py",
+    "เปลี่ยนชื่อ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\backend\\api\\enhanced_production_api.py -> C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\backend\\api\\main_api.py",
+    "ลบเอกสาร: PHASE3_FINAL_REPORT.md",
+    "ลบเอกสาร: ENHANCED_SYSTEM_FINAL_REPORT.md",
+    "ลบเอกสาร: PERSONA_TECHNICAL_SOLUTIONS.md",
+    "ลบเอกสาร: PERSONA_SOLUTIONS_QUICK_REFERENCE.md",
+    "ลบเอกสาร: persona_solutions_summary.json",
+    "ลบเอกสาร: project_analysis_report.json",
+    "ลบเอกสาร: system_validation_report.json",
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\ai_models\\__pycache__",
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\backend\\api\\__pycache__",
+    "ลบไฟล์ทดสอบ: enhanced_performance_test.py",
+    "ลบไฟล์ทดสอบ: simple_validation_test.py",
+    "ลบไฟล์ทดสอบ: generate_persona_solutions.py",
+    "ลบไฟล์ทดสอบ: generate_final_report.py",
+    "ลบไฟล์ทดสอบ: create_persona_summary.py",
+    "ลบไฟล์ทดสอบ: final_cleanup.py",
+    "ลบ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\dataset_dual_view (backup ใน C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\cleanup_backup\\dataset_dual_view)",
+    "เปลี่ยนชื่อ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\dataset_optimized -> C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\dataset",
+    "เปลี่ยนชื่อ: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\start_enhanced_system.bat -> C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\start.bat",
+    "อัพเดทเนื้อหา: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\start.bat",
+    "สร้าง README ใหม่: C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\README.md"
+  ],
+  "backup_location": "C:\\Users\\Admin\\Documents\\GitHub\\Amulet-Ai\\cleanup_backup"
+}

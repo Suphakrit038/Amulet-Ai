@@ -1,0 +1,56 @@
+{
+  "model_version": "4.0.0",
+  "is_fitted": true,
+  "use_pca": true,
+  "use_calibration": true,
+  "config": {
+    "n_estimators": 200,
+    "max_depth": 15,
+    "min_samples_split": 5,
+    "min_samples_leaf": 2,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "model_metrics": {
+    "overall_accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "per_class_metrics": {
+      "phra_nang_phya": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 13
+      },
+      "phra_rod": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 13
+      },
+      "phra_somdej": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 13
+      }
+    },
+    "calibration_error": 0.0,
+    "ood_auroc": 1.0,
+    "ood_far_at_95tpr": 0.0
+  },
+  "feature_count": 30,
+  "classes": [
+    "phra_nang_phya",
+    "phra_rod",
+    "phra_somdej"
+  ],
+  "training_timestamp": "2025-09-26T23:36:40.928128",
+  "performance_targets": {
+    "f1_per_class": 0.85,
+    "balanced_accuracy": 0.8,
+    "calibration_error": 0.05,
+    "ood_auroc": 0.9,
+    "latency_p95": 2.0,
+    "memory_mb": 500
+  }
+}
