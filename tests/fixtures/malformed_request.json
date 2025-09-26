@@ -1,0 +1,9 @@
+{
+  "invalid": "request",
+  "missing_required_fields": true,
+  "malformed_structure": {
+    "image": null,
+    "parameters": "should_be_object_not_string"
+  },
+  "purpose": "Test API error handling for malformed requests"
+}

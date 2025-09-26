@@ -33,15 +33,13 @@ from pathlib import Path
 
 # Import our enhanced classifier
 import sys
-sys.path.append(str(Path(__file__).parent.parent.parent / "ai_models"))
-sys.path.append("ai_models")
+sys.path.append(str(Path(__file__).parent.parent.parent))
 try:
-    from enhanced_production_system import EnhancedProductionClassifier
-except ImportError:
-    # Fallback to production system v3
-    sys.path.append(str(Path(__file__).parent.parent.parent / "ai_models"))
-    from production_system_v3 import ProductionAmuletClassifier as EnhancedProductionClassifier
-    print("⚠️ Using fallback production system v3")
+    from ai_models.enhanced_production_system import EnhancedProductionClassifier
+    print("✅ Using enhanced production system")
+except ImportError as e:
+    print(f"❌ Failed to import model: {e}")
+    sys.exit(1)
 
 # Configure structured logging
 logging.basicConfig(
@@ -126,21 +124,22 @@ def load_classifier():
     """Load the enhanced classifier"""
     global classifier
     
-    model_path = "trained_model_enhanced"
-    if Path(model_path).exists():
-        classifier = EnhancedProductionClassifier()
-        classifier.load_model(model_path)
-        logger.info("✅ Enhanced classifier loaded successfully")
-    else:
-        # If enhanced model doesn't exist, try production model
-        fallback_path = "trained_model_production"
-        if Path(fallback_path).exists():
-            classifier = EnhancedProductionClassifier()
-            classifier.load_model(fallback_path)
-            logger.info("✅ Fallback to production classifier")
-        else:
-            logger.error("❌ No trained model found")
-            classifier = None
+    # Try multiple model paths in order of preference
+    model_paths = ["trained_model", "trained_model_enhanced", "trained_model_production"]
+    
+    for model_path in model_paths:
+        if Path(model_path).exists():
+            try:
+                classifier = EnhancedProductionClassifier()
+                classifier.load_model(model_path)
+                logger.info(f"✅ Enhanced classifier loaded successfully from {model_path}")
+                return
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to load from {model_path}: {e}")
+                continue
+                
+    logger.error("❌ No trained model found in any expected location")
+    classifier = None
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -589,6 +588,6 @@ if __name__ == "__main__":
     logger.info(f"Server configuration: {config}")
     
     uvicorn.run(
-        "enhanced_production_api:app",
+        "backend.api.main_api:app",
         **config
     )

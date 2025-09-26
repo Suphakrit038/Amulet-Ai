@@ -897,19 +897,22 @@ class EnhancedProductionClassifier:
         self.use_calibration = metadata.get('use_calibration', True)
         self.config = metadata.get('config', self.config)
         
-        # Load core components
+        # Import compatibility loader to handle legacy models
+        from .compatibility_loader import try_load_model
+        
+        # Load core components with compatibility support
         if self.use_calibration:
-            self.calibrated_classifier = joblib.load(load_dir / 'classifier.joblib')
+            self.calibrated_classifier = try_load_model(str(load_dir / 'classifier.joblib'))
         else:
-            self.classifier = joblib.load(load_dir / 'classifier.joblib')
+            self.classifier = try_load_model(str(load_dir / 'classifier.joblib'))
             
-        self.scaler = joblib.load(load_dir / 'scaler.joblib')
-        self.label_encoder = joblib.load(load_dir / 'label_encoder.joblib')
+        self.scaler = try_load_model(str(load_dir / 'scaler.joblib'))
+        self.label_encoder = try_load_model(str(load_dir / 'label_encoder.joblib'))
         
         if self.use_pca:
-            self.pca = joblib.load(load_dir / 'pca.joblib')
+            self.pca = try_load_model(str(load_dir / 'pca.joblib'))
             
-        self.ood_detector = joblib.load(load_dir / 'ood_detector.joblib')
+        self.ood_detector = try_load_model(str(load_dir / 'ood_detector.joblib'))
         
         logger.info(f"Enhanced production model v4.0 loaded from {load_dir}")
 
