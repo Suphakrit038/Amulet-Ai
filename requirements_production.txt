@@ -1,0 +1,29 @@
+# Amulet-AI v2.0 Production Requirements
+# ไลบรารีที่จำเป็นสำหรับการใช้งานจริง
+
+# Core ML & CV
+numpy>=1.21.0
+opencv-python>=4.5.0
+scikit-learn>=1.0.0
+joblib>=1.1.0
+pillow>=8.0.0
+
+# API Framework
+fastapi>=0.68.0
+uvicorn[standard]>=0.15.0
+python-multipart>=0.0.5
+
+# Frontend
+streamlit>=1.28.0
+requests>=2.25.0
+
+# Data Processing
+pandas>=1.3.0
+
+# Utilities
+pathlib2>=2.3.6
+python-json-logger>=2.0.0
+
+# Optional Performance Enhancements
+# psutil>=5.8.0  # For system monitoring
+# gunicorn>=20.1.0  # For production deployment
