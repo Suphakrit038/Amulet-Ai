@@ -1,9 +1,0 @@
-This is not an image file.
-It's a text document used for testing OOD detection and file type validation.
-The API should reject this file with a 400 Bad Request error.
-
-Testing content:
-- Non-image file type
-- Text/plain content
-- Should trigger file validation errors
-- Used in test_api_complete.py

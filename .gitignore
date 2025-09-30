@@ -96,3 +96,18 @@ lean_*
 *_secondary*
 *_alt*
 *_backup*
+
+# Temporary analysis and report files
+*.png
+*_report.txt
+*_analysis.txt
+confusion_matrix.*
+dataset_*_samples.*
+analysis_report.*
+status_report.*
+
+# Temporary output folders
+temp/
+output/
+results/
+reports/

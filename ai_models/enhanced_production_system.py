@@ -329,6 +329,8 @@ class ProductionOODDetector:
         )
         self.is_fitted = False
         self.feature_stats = None
+        self.threshold = 0.5  # Default threshold
+        self.use_adaptive_threshold = True
         
     def fit(self, X: np.ndarray):
         """Fit the OOD detectors"""
@@ -367,13 +369,12 @@ class ProductionOODDetector:
         # 3. Statistical outlier detection
         stat_outlier, stat_score = self._statistical_outlier_check(features[0])
         
-        # Ensemble decision (majority vote with confidence weighting)
-        outlier_votes = [iso_outlier, svm_outlier, stat_outlier]
+        # Ensemble decision with configurable threshold
         outlier_scores = [abs(iso_score), abs(svm_score), stat_score]
-        
-        # Weighted majority decision
         weighted_score = np.average(outlier_scores, weights=[1.0, 1.0, 0.5])
-        is_outlier = sum(outlier_votes) >= 2  # Majority vote
+        
+        # Use threshold-based decision instead of hard voting
+        is_outlier = weighted_score > self.threshold
         
         # Generate explanation
         reasons = []
@@ -384,7 +385,10 @@ class ProductionOODDetector:
         if stat_outlier:
             reasons.append(f"Statistical outlier (score: {stat_score:.3f})")
             
-        reason = "; ".join(reasons) if reasons else "All detectors agree: in-domain"
+        if is_outlier:
+            reason = f"Weighted score {weighted_score:.3f} > threshold {self.threshold:.3f}. " + "; ".join(reasons)
+        else:
+            reason = f"Weighted score {weighted_score:.3f} <= threshold {self.threshold:.3f}. In-domain"
         
         return is_outlier, float(weighted_score), reason
         
@@ -410,6 +414,41 @@ class ProductionOODDetector:
         is_outlier = max_z_score > 3.0 or out_of_range > len(features) * 0.1
         
         return is_outlier, float(stat_score)
+    
+    def set_threshold(self, threshold: float):
+        """Set custom OOD threshold"""
+        self.threshold = float(threshold)
+        logger.info(f"OOD threshold updated to {self.threshold:.3f}")
+    
+    def get_threshold(self) -> float:
+        """Get current threshold"""
+        return self.threshold
+    
+    def calibrate_threshold_for_coverage(self, X_val: np.ndarray, target_coverage: float = 0.8):
+        """Calibrate threshold to achieve target coverage rate"""
+        if not self.is_fitted:
+            logger.warning("OOD detector not fitted - cannot calibrate threshold")
+            return
+        
+        logger.info(f"Calibrating threshold for {target_coverage:.1%} coverage...")
+        
+        # Compute scores for validation set
+        scores = []
+        for features in X_val:
+            _, score, _ = self.is_outlier(features)
+            scores.append(score)
+        
+        scores = np.array(scores)
+        
+        # Find threshold that gives target coverage
+        target_percentile = target_coverage * 100
+        new_threshold = np.percentile(scores, target_percentile)
+        
+        old_threshold = self.threshold
+        self.set_threshold(new_threshold)
+        
+        logger.info(f"Threshold calibrated: {old_threshold:.3f} -> {new_threshold:.3f}")
+        return new_threshold
 
 class EnhancedProductionClassifier:
     """Enhanced production classifier with comprehensive monitoring"""

@@ -1,0 +1,7 @@
+{
+  "deployed_at": "2025-09-29T00:41:35.086346",
+  "source_round": 1,
+  "source_accuracy": 1.0,
+  "deployment_method": "multi_round_training_selection",
+  "total_rounds_trained": 5
+}

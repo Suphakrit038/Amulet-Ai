@@ -1,62 +1,56 @@
 """
-🧠 AI Models Module - Python 3.13 Compatible Version
+🧠 AI Models Module - Core Components
 
-This module contains AI components that work with Python 3.13:
-- Lightweight ML System (scikit-learn + OpenCV)
-- Compatible Data Pipeline 
-- Compatible Visualizer
-- AI Project Diagnostics
+This module contains the main AI components for Amulet-AI:
+- Enhanced Production System (RandomForest + Calibration + OOD)
+- Two-Branch CNN System (PyTorch-based dual-view classifier)
+- Compatibility Layer (for legacy model loading)
 """
 
-import os
 import warnings
-
-# Suppress warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# Import compatible modules only
+# Core imports that actually exist
 try:
-    from .lightweight_ml_system import LightweightMLSystem, LightweightMLConfig
+    from .enhanced_production_system import EnhancedProductionClassifier
+    from .compatibility_loader import ProductionOODDetector, try_load_model
 except ImportError as e:
-    print(f"⚠️ Could not import lightweight_ml_system: {e}")
-    LightweightMLSystem = None
-    LightweightMLConfig = None
+    print(f"⚠️ Core AI import issue: {e}")
 
+# Two-Branch system (optional)
 try:
-    from .compatible_data_pipeline import CompatibleDataPipeline, CompatibleDataPipelineConfig
-except ImportError as e:
-    print(f"⚠️ Could not import compatible_data_pipeline: {e}")
-    CompatibleDataPipeline = None
-    CompatibleDataPipelineConfig = None
+    from .twobranch.inference import TwoBranchInference
+    from .twobranch.model import TwoBranchCNN
+    from .twobranch.config import TwoBranchConfig
+    _has_twobranch = True
+except ImportError:
+    TwoBranchInference = None
+    TwoBranchCNN = None
+    TwoBranchConfig = None
+    _has_twobranch = False
 
-try:
-    from .compatible_visualizer import CompatibleVisualizer
-except ImportError as e:
-    print(f"⚠️ Could not import compatible_visualizer: {e}")
-    CompatibleVisualizer = None
-
-try:
-    from .ai_project_diagnostics import SystemDiagnostics
-except ImportError as e:
-    print(f"⚠️ Could not import ai_project_diagnostics: {e}")
-    SystemDiagnostics = None
-
-__version__ = "3.0.0-compatible"
-__author__ = "Amulet AI Team - Python 3.13 Compatible"
+__version__ = "4.0.0"
+__author__ = "Amulet AI Team"
 
 __all__ = [
-    # Compatible ML System
-    'LightweightMLSystem',
-    'LightweightMLConfig',
+    # Core production system
+    'EnhancedProductionClassifier',
+    'ProductionOODDetector',
+    'try_load_model',
     
-    # Compatible Data Pipeline
-    'CompatibleDataPipeline',
-    'CompatibleDataPipelineConfig',
-    
-    # Compatible Visualization
-    'CompatibleVisualizer',
-    
-    # Diagnostics
-    'SystemDiagnostics'
+    # Two-Branch system (if available)
+    'TwoBranchInference',
+    'TwoBranchCNN', 
+    'TwoBranchConfig'
 ]
+
+# System info
+def get_system_info():
+    """Get AI system information"""
+    return {
+        'version': __version__,
+        'has_enhanced_system': True,
+        'has_twobranch': _has_twobranch,
+        'available_components': [name for name in __all__ if globals().get(name) is not None]
+    }

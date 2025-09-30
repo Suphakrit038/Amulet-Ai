@@ -46,21 +46,40 @@ class ProductionOODDetector:
         return np.column_stack([proba_in, proba_ood])
         
     def is_outlier(self, X, threshold=None):
-        """Check if samples are outliers - compatibility method"""
+        """Compatibility signature to mimic production version.
+
+        Returns
+        -------
+        is_outlier : bool
+            True if (random) score exceeds threshold.
+        score : float
+            The synthetic OOD score used.
+        reason : str
+            Textual placeholder reason.
+        """
         if threshold is None:
             threshold = getattr(self, 'threshold', 0.5)
-        
-        # Handle single sample case
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
-        
+
+        single = False
+        if isinstance(X, (list, tuple, np.ndarray)):
+            X = np.asarray(X)
+            if X.ndim == 1:
+                X = X.reshape(1, -1)
+                single = True
+        else:
+            # Fallback – treat as single sample of dummy dimension
+            X = np.zeros((1, 1), dtype=float)
+            single = True
+
         scores = self.decision_function(X)
-        outliers = scores > threshold
-        
-        # Return single boolean for single sample
-        if len(outliers) == 1:
-            return bool(outliers[0])
-        return outliers
+        flags = scores > threshold
+        if single:
+            score = float(scores[0])
+            return bool(flags[0]), score, f"compat_random_score={score:.3f} threshold={threshold:.2f}"
+        # For batch return first aggregate (maintain signature expected)
+        score = float(scores.mean())
+        is_out = bool(flags.mean() > 0.5)
+        return is_out, score, f"compat_batch_mean_score={score:.3f} threshold={threshold:.2f}"
         
     def set_threshold(self, threshold):
         """Set OOD threshold"""
