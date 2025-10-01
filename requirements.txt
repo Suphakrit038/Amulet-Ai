@@ -67,3 +67,5 @@ flake8>=6.0.0
 # Synthetic dataset generation utilities
 # optional: only if using tensorflow similarity search components
 # tensorflow-cpu==2.13.0
+
+watchdog>=2.1.0

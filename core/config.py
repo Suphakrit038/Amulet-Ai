@@ -21,10 +21,11 @@ class Config:
         return f"{self.API_PROTOCOL}://{self.API_HOST}:{self.API_PORT}"
     
     # Security Configuration
-    SECRET_KEY: str = os.getenv("AMULET_SECRET_KEY", "your-secret-key-change-in-production")
+    SECRET_KEY: str = os.getenv("AMULET_SECRET_KEY", "amulet-ai-development-key-2025")
     ALLOWED_ORIGINS: List[str] = os.getenv("AMULET_ALLOWED_ORIGINS", "http://localhost:8501,http://localhost:8511").split(",")
     TOKEN_ALGORITHM: str = os.getenv("AMULET_TOKEN_ALGORITHM", "HS256")
     TOKEN_EXPIRE_MINUTES: int = int(os.getenv("AMULET_TOKEN_EXPIRE_MINUTES", "30"))
+    REQUIRE_AUTH: bool = os.getenv("AMULET_REQUIRE_AUTH", "false").lower() == "true"
     
     # File Upload Configuration
     MAX_FILE_SIZE: int = int(os.getenv("AMULET_MAX_FILE_SIZE", str(10 * 1024 * 1024)))  # 10MB
@@ -38,9 +39,11 @@ class Config:
     RATE_LIMIT_WINDOW: int = int(os.getenv("AMULET_RATE_LIMIT_WINDOW", "60"))
     
     # Model Configuration
-    MODEL_PATHS: List[str] = os.getenv("AMULET_MODEL_PATHS", "trained_model,trained_model_enhanced,trained_model_production").split(",")
-    TWOBRANCH_PATHS: List[str] = os.getenv("AMULET_TWOBRANCH_PATHS", "trained_twobranch,trained_model_twobranch").split(",")
+    # Model paths and configurations
+    MODEL_PATH = "trained_model"  # Path to the trained model directory
+    TWOBRANCH_PATHS: List[str] = ["trained_twobranch", "ai_models/twobranch"]
     MODEL_CACHE_SIZE: int = int(os.getenv("AMULET_MODEL_CACHE_SIZE", "10"))
+    USE_MOCK_MODEL: bool = os.getenv("AMULET_USE_MOCK_MODEL", "false").lower() == "true"
     
     # Logging Configuration
     LOG_LEVEL: str = os.getenv("AMULET_LOG_LEVEL", "INFO")
@@ -83,9 +86,8 @@ class Config:
         errors = []
         
         # Check required paths exist
-        for path_str in cls.MODEL_PATHS:
-            if not Path(path_str).exists() and not cls.DEBUG:
-                errors.append(f"Model path does not exist: {path_str}")
+        if not Path(cls.MODEL_PATH).exists() and not cls.DEBUG:
+            errors.append(f"Model path does not exist: {cls.MODEL_PATH}")
         
         # Validate file size limits
         if cls.MAX_FILE_SIZE > 50 * 1024 * 1024:  # 50MB max

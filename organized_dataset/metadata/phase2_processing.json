@@ -1,0 +1,71 @@
+{
+  "created_at": "2025-10-01T17:56:19.618839",
+  "phase": 2,
+  "target_size": [
+    224,
+    224
+  ],
+  "processing_statistics": {
+    "processed": 173,
+    "augmented": 519
+  },
+  "split_statistics": {
+    "phra_sivali": {
+      "train_front": 21,
+      "validation_front": 4,
+      "test_front": 5,
+      "train_back": 21,
+      "validation_back": 4,
+      "test_back": 5
+    },
+    "portrait_back": {
+      "train_front": 37,
+      "validation_front": 8,
+      "test_front": 9,
+      "train_back": 37,
+      "validation_back": 8,
+      "test_back": 9
+    },
+    "prok_bodhi_9_leaves": {
+      "train_front": 33,
+      "validation_front": 7,
+      "test_front": 8,
+      "train_back": 33,
+      "validation_back": 7,
+      "test_back": 8
+    },
+    "somdej_pratanporn_buddhagavak": {
+      "train_front": 31,
+      "validation_front": 7,
+      "test_front": 7,
+      "train_back": 29,
+      "validation_back": 6,
+      "test_back": 7
+    },
+    "waek_man": {
+      "train_front": 54,
+      "validation_front": 12,
+      "test_front": 12,
+      "train_back": 6,
+      "validation_back": 1,
+      "test_back": 2
+    },
+    "wat_nong_e_duk": {
+      "train_front": 29,
+      "validation_front": 6,
+      "test_front": 7,
+      "train_back": 27,
+      "validation_back": 6,
+      "test_back": 6
+    }
+  },
+  "augmentation_methods": [
+    "rotation (±15°)",
+    "brightness adjustment (0.8x, 1.2x)",
+    "contrast adjustment (0.8x, 1.2x)",
+    "horizontal flip",
+    "gaussian blur",
+    "sharpness enhancement",
+    "color enhancement"
+  ]
+}

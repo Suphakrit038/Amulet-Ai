@@ -48,7 +48,7 @@ from core.thread_safety import (
 )
 
 try:
-    from ai_models.enhanced_production_system import EnhancedProductionClassifier
+    from ai_models.updated_classifier import UpdatedAmuletClassifier, get_updated_classifier
 except ImportError as e:
     print(f"Failed to import model: {e}")
     sys.exit(1)
@@ -148,44 +148,24 @@ def rate_limit_check(request: Request):
 @retry_on_failure(max_retries=3, exceptions=(Exception,))
 @thread_safe_operation("model_loading")
 def load_classifier():
-    """Load classifier with enhanced error handling and validation"""
-    global classifier, twobranch_infer
+    """Load updated classifier with new trained model"""
+    global classifier
     
     with error_context("model_loading"):
-        model_paths = config.MODEL_PATHS
-        
-        # Validate model paths exist
-        valid_paths = [path for path in model_paths if Path(path).exists()]
-        if not valid_paths:
-            raise ModelError(f"No valid model paths found in: {model_paths}")
-        
-        # Load main classifier
-        classifier_loaded = False
-        for model_path in valid_paths:
-            try:
-                with memory_limit_context(500):  # 500MB limit for model loading
-                    classifier = EnhancedProductionClassifier()
-                    classifier.load_model(model_path)
-                    error_logger.logger.info(f"Classifier loaded from {model_path}")
-                    classifier_loaded = True
-                    break
-            except Exception as e:
-                error_logger.log_error(e, context={"model_path": model_path})
-        
-        if not classifier_loaded:
-            raise ModelError("Failed to load any classifier model")
-        
-        # Load two-branch model if available
-        if _has_twobranch:
-            twobranch_paths = ["trained_twobranch", "trained_model_twobranch"]
-            for cand in twobranch_paths:
-                if Path(cand).exists():
-                    try:
-                        twobranch_infer = TwoBranchInference(cand)
-                        error_logger.logger.info(f"Two-Branch model loaded from {cand}")
-                        break
-                    except Exception as e:
-                        error_logger.log_error(e, context={"twobranch_path": cand})
+        try:
+            # ใช้ classifier ใหม่
+            classifier = get_updated_classifier()
+            
+            if classifier.model is None:
+                raise ModelError("Failed to load updated classifier model")
+                
+            error_logger.logger.info(f"✅ Updated classifier loaded successfully")
+            error_logger.logger.info(f"📊 Model accuracy: {classifier.model_info.get('accuracy', 0):.4f}")
+            error_logger.logger.info(f"🏷️ Classes: {len(classifier.class_mapping)}")
+            
+        except Exception as e:
+            error_logger.log_error(e, context={"model_type": "updated_classifier"})
+            raise ModelError(f"Failed to load updated classifier: {str(e)}")
 
 app = FastAPI(
     title="Amulet-AI API",
@@ -378,33 +358,21 @@ async def predict_amulet(
                 back_np = process_uploaded_image(back_data, back_image.content_type)
                 
                 validate_image_pair(front_np, back_np)
-        primary_model = model
-        if primary_model == "twobranch":
-            if twobranch_infer is None:
-                raise HTTPException(status_code=503, detail="Two-Branch model not available")
-            result = twobranch_infer.predict(front_np, back_np, request_id=request_id, use_advanced=(preprocess == 'advanced'))
-            result.setdefault('performance', {})
-            result.setdefault('timestamp', datetime.now().isoformat())
-        else:
-            result = classifier.predict_production(front_np, back_np, request_id=request_id)
-        if twobranch_infer is not None and primary_model in ("enhanced", "auto"):
-            try:
-                shadow_res = twobranch_infer.predict(front_np, back_np, request_id=request_id, use_advanced=(preprocess == 'advanced'))
-                if result.get('predicted_class') != shadow_res.get('predicted_class'):
-                    result.setdefault('shadow', {})['twobranch_disagreement'] = {
-                        'shadow_pred': shadow_res.get('predicted_class'),
-                        'shadow_conf': shadow_res.get('confidence'),
-                        'primary_pred': result.get('predicted_class'),
-                        'primary_conf': result.get('confidence'),
-                    }
-            except Exception as e:
-                logger.warning(f"Shadow two-branch inference failed: {e}")
-        # Add performance metrics
-        end_time = time.time()
-        processing_time = end_time - start_time
-        result.setdefault('performance', {})['processing_time'] = processing_time
-        result.setdefault('request_id', request_id)
-        result.setdefault('timestamp', datetime.now().isoformat())
+        
+        # ใช้ classifier ใหม่สำหรับการทำนาย
+        result = classifier.predict(front_np)  # ใช้รูปหน้าเป็นหลัก
+        
+        # เพิ่มข้อมูลเพิ่มเติม
+        result.update({
+            'request_id': request_id,
+            'timestamp': datetime.now().isoformat(),
+            'model_version': '2.0',
+            'processing_time': time.time() - start_time,
+            'performance': {
+                'memory_usage': memory_monitor.get_memory_usage(),
+                'request_count': request_count
+            }
+        })
         
         # Create response with rate limiting headers
         response = JSONResponse(content=result)

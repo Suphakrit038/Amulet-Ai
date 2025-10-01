@@ -1,0 +1,599 @@
+{
+  "timestamp": "2025-10-01T18:57:17.618663",
+  "components": {
+    "ai_models": {
+      "status": "available",
+      "issues": [],
+      "performance": {
+        "model_type": "RandomForestClassifier",
+        "n_estimators": 100,
+        "n_features": 150528,
+        "prediction_time": 0.14613842964172363,
+        "memory_usage_mb": 2.0,
+        "n_classes": 6
+      },
+      "recommendations": []
+    },
+    "api_systems": {
+      "endpoints": {
+        "api/main_api.py": {
+          "exists": true,
+          "size_kb": 20.7294921875,
+          "issues": [],
+          "features": [
+            "FastAPI framework",
+            "CORS enabled",
+            "Security measures",
+            "Rate limiting"
+          ]
+        },
+        "api/main_api_fast.py": {
+          "exists": true,
+          "size_kb": 6.5810546875,
+          "issues": [
+            "Listening on all interfaces - security risk",
+            "CORS allows all origins - security risk"
+          ],
+          "features": [
+            "FastAPI framework",
+            "CORS enabled",
+            "Rate limiting"
+          ]
+        }
+      },
+      "performance": {},
+      "security": {
+        "risk_level": "high",
+        "issues": [
+          "Listening on all interfaces - security risk",
+          "CORS allows all origins - security risk"
+        ]
+      },
+      "issues": [],
+      "recommendations": [],
+      "connectivity": {
+        "http://localhost:8000/health": {
+          "status_code": 200,
+          "response_time": 2.188478,
+          "accessible": true
+        },
+        "http://localhost:8000/docs": {
+          "status_code": 200,
+          "response_time": 2.193057,
+          "accessible": true
+        },
+        "http://localhost:8000/": {
+          "status_code": 200,
+          "response_time": 2.015987,
+          "accessible": true
+        }
+      }
+    },
+    "frontend": {
+      "apps": {
+        "main_streamlit_app.py": {
+          "size_kb": 45.0009765625,
+          "features": [
+            "File upload",
+            "Image display",
+            "Data visualization",
+            "Session management"
+          ],
+          "issues": [
+            "High number of Streamlit components - may affect performance"
+          ],
+          "complexity": "high",
+          "lines_of_code": 1089
+        },
+        "main_streamlit_app_problematic.py": {
+          "size_kb": 53.3876953125,
+          "features": [
+            "File upload",
+            "Image display",
+            "Session management"
+          ],
+          "issues": [
+            "Generic exception handling - should be more specific"
+          ],
+          "complexity": "medium",
+          "lines_of_code": 956
+        },
+        "main_streamlit_app_simple.py": {
+          "size_kb": 32.3759765625,
+          "features": [
+            "File upload",
+            "Image display",
+            "Session management"
+          ],
+          "issues": [
+            "High number of Streamlit components - may affect performance"
+          ],
+          "complexity": "high",
+          "lines_of_code": 745
+        }
+      },
+      "components": {
+        "count": 5,
+        "modular": true
+      },
+      "performance": {},
+      "usability": {},
+      "issues": [],
+      "recommendations": [],
+      "features": [
+        "Custom styling"
+      ]
+    },
+    "data_management": {
+      "datasets": {
+        "raw": {
+          "exists": true,
+          "file_count": 173,
+          "folder_count": 18,
+          "total_size_mb": 1229.4507761001587
+        },
+        "processed": {
+          "exists": true,
+          "file_count": 173,
+          "folder_count": 18,
+          "total_size_mb": 4.710463523864746
+        },
+        "augmented": {
+          "exists": true,
+          "file_count": 519,
+          "folder_count": 18,
+          "total_size_mb": 14.012194633483887
+        },
+        "splits": {
+          "exists": true,
+          "file_count": 519,
+          "folder_count": 57,
+          "total_size_mb": 14.012194633483887
+        },
+        "metadata": {
+          "exists": true,
+          "file_count": 3,
+          "folder_count": 0,
+          "total_size_mb": 0.004815101623535156
+        },
+        "split_balance": {
+          "train": {
+            "phra_sivali": 42,
+            "portrait_back": 74,
+            "prok_bodhi_9_leaves": 66,
+            "somdej_pratanporn_buddhagavak": 60,
+            "waek_man": 60,
+            "wat_nong_e_duk": 56
+          },
+          "validation": {
+            "phra_sivali": 8,
+            "portrait_back": 16,
+            "prok_bodhi_9_leaves": 14,
+            "somdej_pratanporn_buddhagavak": 13,
+            "waek_man": 13,
+            "wat_nong_e_duk": 12
+          },
+          "test": {
+            "phra_sivali": 10,
+            "portrait_back": 18,
+            "prok_bodhi_9_leaves": 16,
+            "somdej_pratanporn_buddhagavak": 14,
+            "waek_man": 14,
+            "wat_nong_e_duk": 13
+          }
+        }
+      },
+      "organization": {
+        "structured": true
+      },
+      "storage": {},
+      "issues": [],
+      "recommendations": []
+    }
+  },
+  "issues": [],
+  "recommendations": [],
+  "performance_metrics": {
+    "system_resources": {
+      "cpu_percent": 56.6,
+      "memory_percent": 77.8,
+      "disk_usage_percent": 89.2
+    },
+    "file_sizes": {
+      "large_files": [
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_011.png",
+          "size_mb": 10.02
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_013.png",
+          "size_mb": 12.3
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_015.png",
+          "size_mb": 12.38
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_017.png",
+          "size_mb": 12.29
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_019.png",
+          "size_mb": 10.73
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\back\\wat_nong_e_duk_back_024.png",
+          "size_mb": 10.58
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\front\\wat_nong_e_duk_front_014.png",
+          "size_mb": 11.31
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\front\\wat_nong_e_duk_front_016.png",
+          "size_mb": 11.88
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\front\\wat_nong_e_duk_front_020.png",
+          "size_mb": 12.39
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\front\\wat_nong_e_duk_front_021.png",
+          "size_mb": 10.58
+        },
+        {
+          "path": "organized_dataset\\raw\\wat_nong_e_duk\\front\\wat_nong_e_duk_front_025.png",
+          "size_mb": 10.13
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_009.png",
+          "size_mb": 11.79
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_010.png",
+          "size_mb": 10.25
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_012.png",
+          "size_mb": 10.85
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_014.png",
+          "size_mb": 10.64
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_015.png",
+          "size_mb": 11.8
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_017.png",
+          "size_mb": 10.05
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_018.png",
+          "size_mb": 10.52
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_019.png",
+          "size_mb": 11.11
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_020.png",
+          "size_mb": 11.11
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_021.png",
+          "size_mb": 11.13
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_022.png",
+          "size_mb": 10.28
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_023.png",
+          "size_mb": 10.15
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_024.png",
+          "size_mb": 10.14
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_026.png",
+          "size_mb": 11.27
+        },
+        {
+          "path": "organized_dataset\\raw\\waek_man\\front\\waek_man_front_028.png",
+          "size_mb": 10.54
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\back\\somdej_pratanporn_buddhagavak_back_011.png",
+          "size_mb": 10.49
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\back\\somdej_pratanporn_buddhagavak_back_013.png",
+          "size_mb": 11.52
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\back\\somdej_pratanporn_buddhagavak_back_014.png",
+          "size_mb": 11.05
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\back\\somdej_pratanporn_buddhagavak_back_015.png",
+          "size_mb": 11.13
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\front\\somdej_pratanporn_buddhagavak_front_020.png",
+          "size_mb": 10.41
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\front\\somdej_pratanporn_buddhagavak_front_021.png",
+          "size_mb": 10.04
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\front\\somdej_pratanporn_buddhagavak_front_026.png",
+          "size_mb": 11.57
+        },
+        {
+          "path": "organized_dataset\\raw\\somdej_pratanporn_buddhagavak\\front\\somdej_pratanporn_buddhagavak_front_028.png",
+          "size_mb": 11.73
+        },
+        {
+          "path": "organized_dataset\\raw\\prok_bodhi_9_leaves\\back\\prok_bodhi_9_leaves_back_015.png",
+          "size_mb": 11.35
+        },
+        {
+          "path": "organized_dataset\\raw\\prok_bodhi_9_leaves\\back\\prok_bodhi_9_leaves_back_020.png",
+          "size_mb": 10.9
+        },
+        {
+          "path": "organized_dataset\\raw\\prok_bodhi_9_leaves\\back\\prok_bodhi_9_leaves_back_022.png",
+          "size_mb": 10.45
+        },
+        {
+          "path": "organized_dataset\\raw\\prok_bodhi_9_leaves\\front\\prok_bodhi_9_leaves_front_026.png",
+          "size_mb": 10.35
+        },
+        {
+          "path": "organized_dataset\\raw\\prok_bodhi_9_leaves\\front\\prok_bodhi_9_leaves_front_031.png",
+          "size_mb": 10.06
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\back\\portrait_back_back_011.png",
+          "size_mb": 11.37
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\back\\portrait_back_back_020.png",
+          "size_mb": 10.68
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\back\\portrait_back_back_022.png",
+          "size_mb": 10.03
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\front\\portrait_back_front_024.png",
+          "size_mb": 10.26
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\front\\portrait_back_front_028.png",
+          "size_mb": 10.62
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\front\\portrait_back_front_030.png",
+          "size_mb": 11.51
+        },
+        {
+          "path": "organized_dataset\\raw\\portrait_back\\front\\portrait_back_front_033.png",
+          "size_mb": 10.76
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman10front.png",
+          "size_mb": 11.79
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman11front.png",
+          "size_mb": 10.25
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman13front.png",
+          "size_mb": 10.85
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman15front.png",
+          "size_mb": 10.64
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman16front.png",
+          "size_mb": 11.8
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman18front.png",
+          "size_mb": 10.05
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman19front.png",
+          "size_mb": 10.52
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman1front.png",
+          "size_mb": 11.11
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman20front.png",
+          "size_mb": 11.11
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman21front.png",
+          "size_mb": 11.13
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman2front.png",
+          "size_mb": 10.28
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman3front.png",
+          "size_mb": 10.15
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman4front.png",
+          "size_mb": 10.14
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman6front.png",
+          "size_mb": 11.27
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\แหวกม่าน\\สมเด็จแหวกม่าน ไฟล์ใหญ่\\somdejHæwkman8front.png",
+          "size_mb": 10.54
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar back1.png",
+          "size_mb": 11.37
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar back6.png",
+          "size_mb": 10.68
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar back8.png",
+          "size_mb": 10.03
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar front1.png",
+          "size_mb": 10.26
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar front13.png",
+          "size_mb": 10.62
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar front3.png",
+          "size_mb": 11.51
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\หลังรูปเหมือน\\หลังรูปเหมือน ไฟล์ใหญ่\\Similiar front6.png",
+          "size_mb": 10.76
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk1back.png",
+          "size_mb": 10.02
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk2back.png",
+          "size_mb": 12.3
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk2front.png",
+          "size_mb": 11.31
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk3back.png",
+          "size_mb": 12.38
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk3front.png",
+          "size_mb": 11.88
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk4back.png",
+          "size_mb": 12.29
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk5back.png",
+          "size_mb": 10.73
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk5front.png",
+          "size_mb": 12.39
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk6front.png",
+          "size_mb": 10.58
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk8back.png",
+          "size_mb": 10.58
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\วัดหนองอีดุก\\วัดหนองอีกดุก ไฟล์ใหญ่\\watnongEduk8front.png",
+          "size_mb": 10.13
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck back14.png",
+          "size_mb": 10.49
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck back5.png",
+          "size_mb": 11.52
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck back6.png",
+          "size_mb": 11.05
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck back7.png",
+          "size_mb": 11.13
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck front12.png",
+          "size_mb": 10.41
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck front13.png",
+          "size_mb": 10.04
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck front5.png",
+          "size_mb": 11.57
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\พระสมเด็จประทานพร ไฟล์ใหญ่\\Budtha quck front7.png",
+          "size_mb": 11.73
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\ปรกโพธิ์9ใบ\\ปรกโพธิ์9ใบ รูปที่มีขนาดไฟล์ใหญ่\\Pokpo9bai back2.png",
+          "size_mb": 11.35
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\ปรกโพธิ์9ใบ\\ปรกโพธิ์9ใบ รูปที่มีขนาดไฟล์ใหญ่\\Pokpo9bai back7.png",
+          "size_mb": 10.9
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\ปรกโพธิ์9ใบ\\ปรกโพธิ์9ใบ รูปที่มีขนาดไฟล์ใหญ่\\Pokpo9bai back9.png",
+          "size_mb": 10.45
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\ปรกโพธิ์9ใบ\\ปรกโพธิ์9ใบ รูปที่มีขนาดไฟล์ใหญ่\\Pokpo9bai front2.png",
+          "size_mb": 10.35
+        },
+        {
+          "path": "archive\\Data_set\\Data set\\ปรกโพธิ์9ใบ\\ปรกโพธิ์9ใบ รูปที่มีขนาดไฟล์ใหญ่\\Pokpo9bai front8.png",
+          "size_mb": 10.06
+        },
+        {
+          "path": ".git\\objects\\pack\\pack-3b7d353ce276a326e6902d850f2ea3b636c4e69f.pack",
+          "size_mb": 1673.69
+        }
+      ],
+      "model_size_mb": 4.27,
+      "total_files": 1735
+    },
+    "bottlenecks": [],
+    "recommendations": []
+  },
+  "security_assessment": {
+    "vulnerabilities": [
+      "CORS allows all origins in api/main_api_fast.py"
+    ],
+    "risk_level": "low",
+    "recommendations": [],
+    "file_permissions": {},
+    "exposed_secrets": []
+  },
+  "summary": {
+    "total_components_analyzed": 4,
+    "total_issues_found": 1,
+    "critical_issues": 0,
+    "security_risk_level": "low",
+    "overall_health": "good"
+  }
+}

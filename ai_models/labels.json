@@ -1,64 +1,21 @@
 {
-  "0": "buddha_in_vihara",
-  "1": "phra_san",
-  "2": "phra_sivali",
-  "3": "somdej_buddha_blessing",
-  "4": "somdej_fatherguay",
-  "5": "somdej_lion_base",
-  "6": "somdej_portrait_back",
-  "7": "somdej_prok_bodhi",
-  "8": "somdej_waek_man",
-  "9": "wat_nong_e_duk",
-  "thai_names": {
-    "buddha_in_vihara": "พระพุทธเจ้าในวิหาร",
-    "phra_san": "พระสรรค์",
-    "phra_sivali": "พระสิวลี",
-    "somdej_buddha_blessing": "พระสมเด็จประทานพร (พุทธกวัก)",
-    "somdej_fatherguay": "พระสมเด็จหลวงพ่อกวย",
-    "somdej_lion_base": "พระสมเด็จฐานสิงห์",
-    "somdej_portrait_back": "พระสมเด็จหลังรูปเหมือน",
-    "somdej_prok_bodhi": "สมเด็จพิมพ์ปรกโพธิ์ 9 ใบ",
-    "somdej_waek_man": "สมเด็จแหวกม่าน",
-    "wat_nong_e_duk": "ออกวัดหนองอีดุก"
+  "current_classes": {
+    "0": "phra_sivali",
+    "1": "portrait",
+    "2": "prok_bodhi_9_leaves",
+    "3": "somdej_pratanporn_buddhagavak",
+    "4": "waek_man",
+    "5": "wat_nong_e_duk"
   },
   "class_mapping": {
-    "classes": [
-      "phra_khunpaen",
-      "phra_leela",
-      "phra_nang_phya",
-      "phra_phong",
-      "phra_prang",
-      "phra_rod",
-      "phra_sangkachai",
-      "phra_singh",
-      "phra_somdej",
-      "phra_somdej_variant"
-    ],
-    "class_to_index": {
-      "phra_khunpaen": 0,
-      "phra_leela": 1,
-      "phra_nang_phya": 2,
-      "phra_phong": 3,
-      "phra_prang": 4,
-      "phra_rod": 5,
-      "phra_sangkachai": 6,
-      "phra_singh": 7,
-      "phra_somdej": 8,
-      "phra_somdej_variant": 9
-    },
-    "index_to_class": {
-      "0": "phra_khunpaen",
-      "1": "phra_leela",
-      "2": "phra_nang_phya",
-      "3": "phra_phong",
-      "4": "phra_prang",
-      "5": "phra_rod",
-      "6": "phra_sangkachai",
-      "7": "phra_singh",
-      "8": "phra_somdej",
-      "9": "phra_somdej_variant"
-    },
-    "total_classes": 10,
-    "created_at": "2025-09-28T23:24:35.673622"
-  }
+    "phra_sivali": 0,
+    "portrait": 1,
+    "prok_bodhi_9_leaves": 2,
+    "somdej_pratanporn_buddhagavak": 3,
+    "waek_man": 4,
+    "wat_nong_e_duk": 5
+  },
+  "total_classes": 6,
+  "version": "3.0",
+  "last_updated": "2025-10-01T16:30:00.000000"
 }

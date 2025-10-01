@@ -1,0 +1,79 @@
+{
+  "total_classes": 6,
+  "total_images": 346,
+  "class_details": {
+    "ปรกโพธิ์9ใบ": {
+      "total_files": 64,
+      "valid_files": 64,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\ปรกโพธิ์9ใบ\\Pokpo9bai 2512-2515 back3.png",
+        "Data set\\ปรกโพธิ์9ใบ\\Pokpo9bai 2512-2515 front3.png",
+        "Data set\\ปรกโพธิ์9ใบ\\Pokpo9bai 2513 back1.png",
+        "Data set\\ปรกโพธิ์9ใบ\\Pokpo9bai 2513 back2 .png",
+        "Data set\\ปรกโพธิ์9ใบ\\Pokpo9bai 2513 back6.png"
+      ]
+    },
+    "พระสมเด็จประธานพรเนื้อพุทธกวัก": {
+      "total_files": 58,
+      "valid_files": 58,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\Budtha-quck1-Less-produde.png",
+        "Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\Budtha-quck2-Less-produde.png",
+        "Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\Budtha-quck3-Less-Produce.png",
+        "Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\Budtha-quck4-Less-Produce.png",
+        "Data set\\พระสมเด็จประธานพรเนื้อพุทธกวัก\\Pratanporn.png"
+      ]
+    },
+    "พระสีวลี": {
+      "total_files": 40,
+      "valid_files": 40,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\พระสีวลี\\back-sewaree-2515-back1.png",
+        "Data set\\พระสีวลี\\back-sewaree-2515-front1.png",
+        "Data set\\พระสีวลี\\noyam-watbancare-back1.png",
+        "Data set\\พระสีวลี\\noyam-watbancare-front1.png",
+        "Data set\\พระสีวลี\\พระสีวลี ไฟล์ใหญ่\\Prasewaree back1.png"
+      ]
+    },
+    "วัดหนองอีดุก": {
+      "total_files": 54,
+      "valid_files": 54,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\วัดหนองอีดุก\\Mrs triangle with med back1.png",
+        "Data set\\วัดหนองอีดุก\\Mrs triangle with med front1.png",
+        "Data set\\วัดหนองอีดุก\\pa sam fish egg tanbua back1.png",
+        "Data set\\วัดหนองอีดุก\\pa sam fish egg tanbua front1.png",
+        "Data set\\วัดหนองอีดุก\\pim budtha nalis back1.png"
+      ]
+    },
+    "หลังรูปเหมือน": {
+      "total_files": 72,
+      "valid_files": 72,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\หลังรูปเหมือน\\Similiar 2515 back1.png",
+        "Data set\\หลังรูปเหมือน\\Similiar 2515 front1.png",
+        "Data set\\หลังรูปเหมือน\\Similiar 2516-2518 back1.png",
+        "Data set\\หลังรูปเหมือน\\Similiar 2516-2518 back2.png",
+        "Data set\\หลังรูปเหมือน\\Similiar 2516-2518 front1.png"
+      ]
+    },
+    "แหวกม่าน": {
+      "total_files": 58,
+      "valid_files": 58,
+      "invalid_files": 0,
+      "file_paths": [
+        "Data set\\แหวกม่าน\\bigchest vichai back1.png",
+        "Data set\\แหวกม่าน\\bigchest vichai front1.png",
+        "Data set\\แหวกม่าน\\pim tor 2513-2521 front1.png",
+        "Data set\\แหวกม่าน\\vichai with med 2500 back1.png",
+        "Data set\\แหวกม่าน\\vichai with med 2500 front1.png"
+      ]
+    }
+  },
+  "problematic_files": []
+}
