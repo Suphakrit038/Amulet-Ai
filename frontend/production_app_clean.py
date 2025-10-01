@@ -54,14 +54,19 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 # Theme Colors
 COLORS = {
-    'maroon': '#8B0000',
-    'gold': '#DAA520',
+    'primary': '#800000',
+    'maroon': '#800000',
+    'accent': '#B8860B',
     'dark_gold': '#B8860B',
-    'light_gold': '#F4E4BC',
-    'green': '#28a745',
-    'blue': '#007bff',
-    'yellow': '#ffc107',
-    'red': '#dc3545',
+    'gold': '#D4AF37',
+    'success': '#10b981',
+    'green': '#10b981',
+    'warning': '#f59e0b',
+    'yellow': '#f59e0b',
+    'error': '#ef4444',
+    'red': '#ef4444',
+    'info': '#3b82f6',
+    'blue': '#3b82f6',
     'gray': '#6c757d',
     'white': '#ffffff',
     'black': '#000000'
@@ -75,149 +80,557 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Production CSS - NO EMOJI, CLASSIC STYLE
+# Modern Modal Design CSS
 st.markdown(f"""
 <style>
-    /* Basic App Styling */
+    /* Import Modern Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    /* Modern App Background - Creamy White */
     .stApp {{
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f5f5f5;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #fdfbf7 0%, #f5f3ef 100%);
+        background-attachment: fixed;
     }}
     
-    /* Logo Header Container */
+    /* Glassmorphism Container */
+    .main .block-container {{
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(128, 0, 0, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        padding: 40px;
+        margin: 20px auto;
+        max-width: 1400px;
+    }}
+    
+    /* Modal-Style Logo Header */
     .logo-header {{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 40px;
-        background: white;
-        border-bottom: 3px solid {COLORS['maroon']};
-        margin-bottom: 30px;
+        padding: 35px 60px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }}
+    
+    .logo-header::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, {COLORS['primary']}, {COLORS['gold']}, {COLORS['primary']});
     }}
     
     .logo-left {{
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 25px;
+        z-index: 1;
     }}
     
     .logo-right {{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
+        z-index: 1;
     }}
     
     .logo-img {{
-        height: 80px;
+        height: 150px;
         width: auto;
         object-fit: contain;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        transition: transform 0.3s ease;
+    }}
+    
+    .logo-img:hover {{
+        transform: scale(1.05);
     }}
     
     .logo-img-small {{
-        height: 60px;
+        height: 110px;
         width: auto;
         object-fit: contain;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        transition: transform 0.3s ease;
     }}
     
-    /* Main Header */
-    .main-header {{
-        background-color: {COLORS['maroon']};
-        color: white;
-        padding: 40px;
-        text-align: center;
-        margin-bottom: 30px;
-        border: 2px solid {COLORS['dark_gold']};
+    .logo-img-small:hover {{
+        transform: scale(1.05);
     }}
     
-    /* Success Box */
-    .success-box {{
-        background-color: #d4edda;
-        border: 2px solid #28a745;
-        color: #155724;
-        padding: 20px;
-        margin: 20px 0;
-    }}
-    
-    /* Info Box */
-    .info-box {{
-        background-color: #d1ecf1;
-        border: 2px solid #17a2b8;
-        color: #0c5460;
-        padding: 20px;
-        margin: 20px 0;
-    }}
-    
-    /* Warning Box */
-    .warning-box {{
-        background-color: #fff3cd;
-        border: 2px solid #ffc107;
-        color: #856404;
-        padding: 20px;
-        margin: 20px 0;
-    }}
-    
-    /* Error Box */
-    .error-box {{
-        background-color: #f8d7da;
-        border: 2px solid #dc3545;
-        color: #721c24;
-        padding: 20px;
-        margin: 20px 0;
-    }}
-    
-    /* Card Style */
+    /* Modal Card Style with Glassmorphism */
     .card {{
-        background: white;
-        padding: 25px;
-        border: 1px solid #ddd;
-        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        margin: 35px 0;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }}
     
-    /* Button Styling */
+    .card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+    }}
+    
+    .card::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, {COLORS['primary']}, {COLORS['gold']});
+    }}
+    
+    /* Modern Typography */
+    h1 {{
+        font-size: 3.8rem !important;
+        font-weight: 800 !important;
+        letter-spacing: -1px !important;
+        margin-bottom: 25px !important;
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }}
+    
+    h2 {{
+        font-size: 3rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: 22px !important;
+        color: #2d3748 !important;
+    }}
+    
+    h3 {{
+        font-size: 2.4rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 18px !important;
+        color: #2d3748 !important;
+    }}
+    
+    h4 {{
+        font-size: 2rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 16px !important;
+        color: #4a5568 !important;
+    }}
+    
+    /* Modern Button with Gradient and Animation */
     .stButton > button {{
-        background-color: {COLORS['maroon']};
+        background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['accent']} 100%);
         color: white;
-        border: 2px solid {COLORS['dark_gold']};
-        padding: 12px 30px;
-        font-weight: bold;
-        font-size: 16px;
-        transition: all 0.3s;
+        border: none;
+        border-radius: 12px;
+        padding: 20px 50px;
+        font-weight: 600;
+        font-size: 1.3rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        box-shadow: 0 6px 20px rgba(128, 0, 0, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }}
+    
+    .stButton > button::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }}
+    
+    .stButton > button:hover::before {{
+        left: 100%;
     }}
     
     .stButton > button:hover {{
-        background-color: {COLORS['dark_gold']};
-        border-color: {COLORS['maroon']};
+        background: linear-gradient(135deg, {COLORS['accent']} 0%, {COLORS['primary']} 100%);
+        box-shadow: 0 10px 30px rgba(128, 0, 0, 0.5);
+        transform: translateY(-3px) scale(1.02);
     }}
     
-    /* Section Divider */
+    .stButton > button:active {{
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: 0 4px 15px rgba(128, 0, 0, 0.4);
+    }}
+    
+    /* Modern Text Styling */
+    p {{
+        font-size: 1.4rem !important;
+        line-height: 1.9 !important;
+        color: #4a5568 !important;
+        font-weight: 400 !important;
+    }}
+    
+    /* Modern Input Fields with Glassmorphism */
+    .stTextInput > div > div > input {{
+        font-size: 1.3rem !important;
+        padding: 18px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 2px solid rgba(128, 0, 0, 0.2) !important;
+        transition: all 0.3s ease !important;
+    }}
+    
+    .stTextInput > div > div > input:focus {{
+        border-color: {COLORS['primary']} !important;
+        box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1) !important;
+    }}
+    
+    /* Modern File Uploader */
+    [data-testid="stFileUploader"] {{
+        font-size: 1.3rem !important;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 16px;
+        border: 2px dashed {COLORS['primary']};
+        transition: all 0.3s ease;
+    }}
+    
+    [data-testid="stFileUploader"]:hover {{
+        background: rgba(255, 255, 255, 0.95);
+        border-color: {COLORS['gold']};
+        transform: scale(1.01);
+    }}
+    
+    [data-testid="stFileUploader"] label {{
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        color: {COLORS['primary']} !important;
+    }}
+    
+    /* Modern Tabs */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 12px;
+        background: transparent;
+    }}
+    
+    .stTabs [data-baseweb="tab"] {{
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        padding: 18px 40px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 2px solid transparent !important;
+        transition: all 0.3s ease !important;
+    }}
+    
+    .stTabs [data-baseweb="tab"]:hover {{
+        background: rgba(255, 255, 255, 1) !important;
+        border-color: {COLORS['primary']} !important;
+        transform: translateY(-2px);
+    }}
+    
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {{
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['accent']}) !important;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(128, 0, 0, 0.3);
+    }}
+    
+    /* Modern Alert Boxes with Glassmorphism */
+    .stAlert {{
+        border-radius: 16px !important;
+        padding: 25px !important;
+        font-size: 1.3rem !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }}
+    
+    /* Modal Success Box */
+    .success-box {{
+        background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(200, 230, 201, 0.95));
+        backdrop-filter: blur(10px);
+        color: #1b5e20;
+        padding: 30px;
+        border-radius: 16px;
+        border-left: 5px solid #4caf50;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+        margin: 30px 0;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }}
+    
+    .success-box:hover {{
+        transform: translateX(5px);
+    }}
+    
+    /* Modal Info Box */
+    .info-box {{
+        background: linear-gradient(135deg, rgba(227, 242, 253, 0.95), rgba(187, 222, 251, 0.95));
+        backdrop-filter: blur(10px);
+        color: #0d47a1;
+        padding: 30px;
+        border-radius: 16px;
+        border-left: 5px solid #2196f3;
+        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
+        margin: 30px 0;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }}
+    
+    .info-box:hover {{
+        transform: translateX(5px);
+    }}
+    
+    /* Modal Warning Box */
+    .warning-box {{
+        background: linear-gradient(135deg, rgba(255, 243, 224, 0.95), rgba(255, 224, 178, 0.95));
+        backdrop-filter: blur(10px);
+        color: #e65100;
+        padding: 30px;
+        border-radius: 16px;
+        border-left: 5px solid #ff9800;
+        box-shadow: 0 8px 25px rgba(255, 152, 0, 0.2);
+        margin: 30px 0;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }}
+    
+    .warning-box:hover {{
+        transform: translateX(5px);
+    }}
+    
+    /* Modal Error Box */
+    .error-box {{
+        background: linear-gradient(135deg, rgba(255, 235, 238, 0.95), rgba(255, 205, 210, 0.95));
+        backdrop-filter: blur(10px);
+        color: #b71c1c;
+        padding: 30px;
+        border-radius: 16px;
+        border-left: 5px solid #f44336;
+        box-shadow: 0 8px 25px rgba(244, 67, 54, 0.2);
+        margin: 30px 0;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }}
+    
+    .error-box:hover {{
+        transform: translateX(5px);
+    }}
+    
+    /* Modern Section Divider */
     .section-divider {{
         height: 2px;
-        background-color: {COLORS['gold']};
+        background: linear-gradient(90deg, transparent, {COLORS['gold']}, transparent);
+        margin: 60px 0;
+        border-radius: 2px;
+    }}
+    
+    /* Modal Tips Card */
+    .tips-card {{
+        background: linear-gradient(135deg, rgba(255, 253, 231, 0.95), rgba(255, 249, 196, 0.95));
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 35px;
+        margin: 35px 0;
+        box-shadow: 0 8px 25px rgba(218, 165, 32, 0.15);
+        border-left: 5px solid {COLORS['gold']};
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }}
+    
+    .tips-card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(218, 165, 32, 0.25);
+    }}
+    
+    /* Feature Card */
+    .feature-card {{
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 250, 0.95));
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 40px;
+        margin: 25px 0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+        height: 100%;
+    }}
+    
+    .feature-card:hover {{
+        transform: translateY(-8px);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        border-color: {COLORS['gold']};
+    }}
+    
+    .feature-card h3 {{
+        color: {COLORS['primary']} !important;
+        margin-bottom: 20px !important;
+    }}
+    
+    .feature-card ul {{
+        list-style: none;
+        padding-left: 0;
+    }}
+    
+    .feature-card ul li {{
+        padding: 12px 0;
+        padding-left: 30px;
+        position: relative;
+        font-size: 1.2rem;
+        line-height: 1.8;
+    }}
+    
+    .feature-card ul li:before {{
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: {COLORS['gold']};
+        font-weight: bold;
+        font-size: 1.4rem;
+    }}
+    
+    /* Step Card */
+    .step-card {{
+        background: linear-gradient(135deg, rgba(227, 242, 253, 0.95), rgba(187, 222, 251, 0.95));
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 35px;
+        margin: 25px 0;
+        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+        border-left: 5px solid {COLORS['info']};
+        transition: transform 0.3s ease;
+    }}
+    
+    .step-card:hover {{
+        transform: translateX(8px);
+        box-shadow: 0 10px 30px rgba(33, 150, 243, 0.25);
+    }}
+    
+    .step-card h4 {{
+        color: {COLORS['info']} !important;
+        margin-bottom: 15px !important;
+    }}
+    
+    /* Hero Section */
+    .hero-section {{
+        text-align: center;
+        padding: 60px 40px;
+        background: linear-gradient(135deg, rgba(128, 0, 0, 0.05), rgba(212, 175, 55, 0.05));
+        border-radius: 24px;
         margin: 40px 0;
     }}
     
-    /* Tips Card */
-    .tips-card {{
-        background-color: #fffbf0;
-        border: 2px solid {COLORS['gold']};
-        padding: 20px;
-        margin: 20px 0;
+    .hero-title {{
+        font-size: 4.5rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 20px !important;
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }}
     
-    /* Result Card */
+    .hero-subtitle {{
+        font-size: 1.8rem !important;
+        color: {COLORS['gray']} !important;
+        margin-bottom: 0 !important;
+    }}
+    
+    /* Modal Result Card */
     .result-card {{
-        background: white;
-        padding: 30px;
-        border: 2px solid {COLORS['maroon']};
-        margin: 20px 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(250, 250, 250, 0.98));
+        backdrop-filter: blur(15px);
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        margin: 35px 0;
+        border-top: 5px solid {COLORS['primary']};
+        position: relative;
+        overflow: hidden;
     }}
     
-    /* Hide Streamlit Elements and Sidebar */
+    .result-card::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, {COLORS['gold']}, transparent);
+        opacity: 0.1;
+        border-radius: 50%;
+    }}
+    
+    /* Column Styling */
+    [data-testid="column"] {{
+        padding: 25px;
+    }}
+    
+    /* Modern Spinner */
+    .stSpinner > div {{
+        border-color: {COLORS['primary']} {COLORS['gold']} {COLORS['primary']} {COLORS['gold']} !important;
+    }}
+    
+    /* Modern Labels */
+    label {{
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        color: #2d3748 !important;
+        margin-bottom: 10px !important;
+    }}
+    
+    /* Progress Bar */
+    .stProgress > div > div > div > div {{
+        background: linear-gradient(90deg, {COLORS['primary']}, {COLORS['gold']}) !important;
+    }}
+    
+    /* Metric Cards */
+    [data-testid="stMetricValue"] {{
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }}
+    
+    /* Hide Streamlit Elements */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     .stDeployButton {{display: none;}}
     [data-testid="stSidebar"] {{display: none;}}
     [data-testid="collapsedControl"] {{display: none;}}
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {{
+        width: 12px;
+    }}
+    
+    ::-webkit-scrollbar-track {{
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }}
+    
+    ::-webkit-scrollbar-thumb {{
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
+        border-radius: 10px;
+    }}
+    
+    ::-webkit-scrollbar-thumb:hover {{
+        background: linear-gradient(135deg, {COLORS['gold']}, {COLORS['primary']});
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -437,7 +850,7 @@ def main():
         <div class="logo-left">
             {logo_left_html}
             <div>
-                <h2 style="margin: 0; color: {COLORS['maroon']};">Amulet-AI</h2>
+                <h2 style="margin: 0; color: {COLORS['primary']};">Amulet-AI</h2>
                 <p style="margin: 0; color: {COLORS['gray']}; font-size: 0.9rem;">ระบบจำแนกพระเครื่องอัจฉริยะ</p>
             </div>
         </div>
@@ -446,6 +859,30 @@ def main():
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Hero Section
+    st.markdown(f"""
+    <div class="hero-section">
+        <h1 class="hero-title">🔮 Amulet-AI</h1>
+        <p class="hero-subtitle">ระบบวิเคราะห์วัตถุมงคลด้วย AI</p>
+        <p class="hero-subtitle">AI ช่วยวิเคราะห์และจำแนกพระเครื่องแบบง่าย ๆ ให้คุณเข้าใจได้ภายในไม่กี่วินาที</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    
+    # Introduction Section - 3 Cards
+    show_introduction_section()
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    
+    # How It Works Section
+    show_how_it_works_section()
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    
+    # Who Made This & Who Is This For
+    show_about_section()
     
     # Default settings (no settings UI)
     analysis_mode = "สองด้าน (หน้า+หลัง)"
@@ -605,24 +1042,170 @@ def dual_image_mode(show_confidence, show_probabilities):
         </div>
         """, unsafe_allow_html=True)
 
+def show_introduction_section():
+    """แสดงส่วนแนะนำ - เว็บไซต์นี้ทำอะไร"""
+    st.markdown("## 📋 เว็บไซต์นี้ทำอะไร")
+    st.markdown("<p style='text-align: center; font-size: 1.3rem; color: #6c757d;'>ระบบ Amulet-AI ให้บริการหลากหลายเพื่อช่วยคุณวิเคราะห์พระเครื่อง</p>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div class="feature-card">
+            <h3>🎯 ฟีเจอร์หลัก</h3>
+            <ul>
+                <li>จำแนกประเภทพระเครื่องจากรูปภาพ</li>
+                <li>รองรับภาพด้านหน้าและด้านหลัง</li>
+                <li>บอกความเชื่อมั่นของการทำนาย</li>
+                <li>แสดงจุดที่ AI ให้ความสำคัญ</li>
+                <li>ดาวน์โหลดรายงานผลลัพธ์</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="feature-card">
+            <h3>⚡ ใช้งานง่าย</h3>
+            <ul>
+                <li>อัปโหลดรูปหรือถ่ายรูปได้ทันที</li>
+                <li>ผลลัพธ์ออกภายในไม่กี่วินาที</li>
+                <li>แสดงผลแบบกราฟและภาพประกอบ</li>
+                <li>ไม่ต้องติดตั้งโปรแกรม</li>
+                <li>ใช้งานผ่านเว็บเบราว์เซอร์</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="feature-card">
+            <h3>🔒 ปลอดภัย</h3>
+            <ul>
+                <li>ประมวลผลตามนโยบายความเป็นส่วนตัว</li>
+                <li>ข้อมูลเข้ารหัสอย่างปลอดภัย</li>
+                <li>สามารถขอลบข้อมูลได้</li>
+                <li>ไม่แชร์ข้อมูลโดยไม่ได้รับอนุญาต</li>
+                <li>ใช้เทคโนโลยี AI ที่ทันสมัย</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+def show_how_it_works_section():
+    """แสดงวิธีการทำงาน 3 ขั้นตอน"""
+    st.markdown("## 🔄 ระบบทำงานอย่างไร")
+    st.markdown("<p style='text-align: center; font-size: 1.3rem; color: #6c757d;'>เข้าใจง่ายใน 3 ขั้นตอน</p>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div class="step-card">
+            <h3>📁 ขั้นตอนที่ 1</h3>
+            <h4>อัปโหลดรูปภาพ</h4>
+            <p>ถ่ายรูปหรือเลือกไฟล์ภาพด้านหน้า/หลังของพระเครื่อง ระบบรองรับไฟล์ JPG, PNG</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="step-card">
+            <h3>🤖 ขั้นตอนที่ 2</h3>
+            <h4>AI วิเคราะห์</h4>
+            <p>ระบบตรวจสอบภาพ ดึงลักษณะเด่น และทำนายประเภทพร้อมคำนวณความเชื่อมั่น</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="step-card">
+            <h3>📊 ขั้นตอนที่ 3</h3>
+            <h4>แสดงผลพร้อมคำอธิบาย</h4>
+            <p>ผลลัพธ์, กราฟความน่าจะเป็น และคำแนะนำขั้นตอนถัดไป</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+def show_about_section():
+    """แสดงส่วนเกี่ยวกับผู้พัฒนาและกลุ่มเป้าหมาย"""
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        <div class="info-box">
+            <h3>👥 ใครสร้างระบบนี้</h3>
+            <p><strong>พัฒนาโดยทีมผู้เชี่ยวชาญ</strong> ด้าน Machine Learning, Computer Vision และผู้รู้เกี่ยวกับพระเครื่อง</p>
+            <p><strong>ทำงานร่วมกับเครือข่าย</strong> ผู้เชี่ยวชาญและชุมชนสะสมพระเพื่อปรับปรุงความแม่นยำ</p>
+            <p><strong>จุดมุ่งหมาย:</strong> ทำให้ความรู้ด้านพระเครื่องเข้าถึงได้ง่ายขึ้น และช่วยให้การประเมินเบื้องต้นทำได้รวดเร็ว</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="info-box">
+            <h3>🎯 เหมาะกับใคร</h3>
+            <p><strong>• ผู้เริ่มต้น</strong> - อยากรู้ว่าพระเครื่องที่มีเป็นรุ่นไหนเบื้องต้น</p>
+            <p><strong>• นักสะสม/พ่อค้า</strong> - ตรวจสอบและจัดหมวดหมู่เบื้องต้นก่อนซื้อ-ขาย</p>
+            <p><strong>• ผู้พัฒนา/นักวิจัย</strong> - สนใจข้อมูลเชิงเทคนิคหรือ dataset (มี API ให้เชื่อมต่อ)</p>
+            <p><strong>• ผู้ที่สนใจเทคโนโลยี AI</strong> - เรียนรู้การประยุกต์ใช้ AI ในงานจำแนก</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Expectations & Limitations
+    st.markdown("""
+    <div class="warning-box">
+        <h3>⚠️ ควรคาดหวังอะไร (Expectations & Limitations)</h3>
+        <p><strong>• ผลลัพธ์เป็นการประเมินเบื้องต้น</strong> — ไม่ใช่การยืนยันความแท้ 100%</p>
+        <p><strong>• คุณภาพของรูปมีผลต่อผลลัพธ์</strong> — รูปชัด แสงดี มุมถูกต้อง = ผลดีขึ้น</p>
+        <p><strong>• หากความเชื่อมั่นต่ำ</strong> — ระบบจะแนะนำให้ส่งให้ผู้เชี่ยวชาญตรวจสอบ</p>
+        <p><strong>• ใช้เป็นข้อมูลประกอบการตัดสินใจเท่านั้น</strong> — ไม่ควรใช้เป็นเกณฑ์เดียวในการซื้อ-ขาย</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Privacy Notice
+    st.markdown("""
+    <div class="info-box">
+        <h3>🔒 ความเป็นส่วนตัว (Privacy)</h3>
+        <p><strong>• ภาพจะถูกประมวลผล</strong> เพื่อการวิเคราะห์ตามนโยบายความเป็นส่วนตัว</p>
+        <p><strong>• ถ้าคุณยินยอมให้เก็บภาพ</strong> ระบบจะใช้ภาพเพื่อปรับปรุงโมเดล แต่สามารถขอลบข้อมูลได้</p>
+        <p><strong>• ข้อมูลทุกชิ้นเข้ารหัส</strong> และจัดเก็บอย่างปลอดภัยตามมาตรฐาน</p>
+    </div>
+    """, unsafe_allow_html=True)
+
 def show_tips_section():
-    """แสดงเคล็ดลับ"""
+    """แสดงคู่มือการใช้งานแบบละเอียด"""
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
     
-    st.markdown("## เคล็ดลับสำหรับผลลัพธ์ที่ดีที่สุด")
+    st.markdown("## 📖 คู่มือการใช้งานอย่างละเอียด")
+    st.markdown("<p style='text-align: center; font-size: 1.3rem; color: #6c757d;'>ทำตามขั้นตอนเหล่านี้เพื่อผลลัพธ์ที่ดีที่สุด</p>", unsafe_allow_html=True)
+    
+    # Quick Start Guide
+    st.markdown("""
+    <div class="tips-card">
+        <h3>🚀 วิธีใช้งานอย่างง่าย (Quick Start)</h3>
+        <ol style="font-size: 1.2rem; line-height: 2;">
+            <li><strong>กด 📁 อัปโหลดรูป หรือ 📷 ถ่ายรูป</strong> เพื่อแนบภาพด้านหน้าและด้านหลัง</li>
+            <li><strong>ตรวจสอบภาพตัวอย่าง</strong> (Preview) ว่าไม่เบลอและเห็นรายละเอียด</li>
+            <li><strong>กด 🔍 เริ่มการวิเคราะห์</strong> (ปุ่มใช้งานได้เมื่อมีทั้งสองภาพ)</li>
+            <li><strong>รอผล</strong> — ระบบจะแจ้งสถานะและแสดงวงหมุน</li>
+            <li><strong>อ่านผล</strong> — ดู Top-1/Top-3, ค่าความเชื่อมั่น และกราฟ</li>
+            <li><strong>ถ้าผลไม่ชัด</strong> → ถ่ายใหม่หรือปรึกษาผู้เชี่ยวชาญ</li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
         <div class="tips-card">
-            <h3>การถ่ายรูปที่ดี</h3>
+            <h3>📸 คำแนะนำการถ่ายรูปให้ได้ผลดี</h3>
             <ul>
-                <li>ใช้แสงสว่างเพียงพอและสม่ำเสมอ</li>
-                <li>รูปภาพชัดเจน ไม่เบลอ</li>
-                <li>พื้นหลังสีเรียบ</li>
-                <li>ถ่ายให้เห็นรายละเอียด</li>
-                <li>หลีกเลี่ยงเงาบนพระเครื่อง</li>
+                <li><strong>ใช้แสงเพียงพอ</strong> (ไม่ย้อนแสง)</li>
+                <li><strong>พื้นหลังเรียบ</strong> (เช่น ผ้าขาว / กระดาษสีเรียบ)</li>
+                <li><strong>ภาพชัด ไม่เบลอ</strong> และถ่ายให้เห็นลักษณะเด่น</li>
+                <li><strong>ถ่ายให้เห็นทั้งองค์</strong> ไม่ตัดขอบสำคัญออก</li>
+                <li><strong>หลีกเลี่ยงเงา</strong> บนพระเครื่อง</li>
+                <li><strong>ถ่ายในระยะใกล้พอสมควร</strong> ให้เห็นรายละเอียด</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -630,13 +1213,13 @@ def show_tips_section():
     with col2:
         st.markdown("""
         <div class="tips-card">
-            <h3>การตีความผล</h3>
+            <h3>📊 การตีความผลลัพธ์</h3>
             <ul>
-                <li><strong>>90%</strong>: เชื่อถือได้สูงมาก</li>
-                <li><strong>70-90%</strong>: เชื่อถือได้ดี</li>
-                <li><strong>50-70%</strong>: ควรตรวจสอบเพิ่ม</li>
-                <li><strong><50%</strong>: ควรถ่ายใหม่</li>
-                <li>ใช้ข้อมูลประกอบเท่านั้น</li>
+                <li><strong>มากกว่า 90%</strong><br/>🎯 <strong>ความเชื่อมั่นสูง</strong> — ผลลัพธ์น่าเชื่อถือ</li>
+                <li><strong>70-90%</strong><br/>✅ <strong>เชื่อถือได้ดี</strong> — แต่ควรพิจารณาเพิ่มเติม</li>
+                <li><strong>50-70%</strong><br/>⚠️ <strong>ควรตรวจสอบเพิ่ม</strong> — อาจต้องถ่ายใหม่</li>
+                <li><strong>น้อยกว่า 50%</strong><br/>❌ <strong>ควรถ่ายใหม่</strong> — หรือส่งตรวจผู้เชี่ยวชาญ</li>
+                <li><strong>ใช้ข้อมูลประกอบเท่านั้น</strong> — ไม่ควรเป็นเกณฑ์เดียว</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -644,7 +1227,7 @@ def show_tips_section():
     with col3:
         st.markdown("""
         <div class="tips-card">
-            <h3>ประเภทที่รองรับ</h3>
+            <h3>🏷️ ประเภทที่รองรับ</h3>
             <ul>
                 <li>พระศิวลี</li>
                 <li>พระสมเด็จ</li>
@@ -653,8 +1236,22 @@ def show_tips_section():
                 <li>หลังรูปเหมือน</li>
                 <li>วัดหนองอีดุก</li>
             </ul>
+            <p style="margin-top: 20px; font-size: 1.1rem;"><strong>หมายเหตุ:</strong> ระบบมีการอัพเดทและเพิ่มประเภทใหม่อยู่เสมอ</p>
         </div>
         """, unsafe_allow_html=True)
+    
+    # Warning Card
+    st.markdown("""
+    <div class="error-box">
+        <h3>⚠️ คำเตือนสำคัญ</h3>
+        <p style="font-size: 1.3rem; line-height: 1.9;">
+            <strong>• ผลลัพธ์เป็นเพียงการประเมินเบื้องต้น</strong> — ควรใช้ร่วมกับผู้เชี่ยวชาญก่อนตัดสินใจซื้อ/ขาย<br/>
+            <strong>• หากต้องการผลยืนยัน</strong> — ให้ปรึกษาผู้เชี่ยวชาญด้านพระเครื่องโดยตรง<br/>
+            <strong>• ระบบไม่รับประกันความแท้</strong> — เป็นเพียงเครื่องมือช่วยตัดสินใจเบื้องต้น<br/>
+            <strong>• ถ้าคุณต้องการความช่วยเหลือ</strong> — อ่านคู่มือ / FAQ ในเมนู Documentation
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
