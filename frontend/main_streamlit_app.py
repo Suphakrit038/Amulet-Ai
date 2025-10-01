@@ -103,6 +103,45 @@ st.markdown(f"""
         50% {{ background-position: 100% 50%; }}
     }}
     
+    /* Floating Glowing Orbs Animation - Enhanced Visibility */
+    .stApp::after {{
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%),
+            radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%),
+            radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%),
+            radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%),
+            radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+        background-size: 80px 80px, 120px 120px, 60px 60px, 100px 100px, 90px 90px;
+        background-position: 0 0, 40px 60px, 130px 270px, 70px 100px, 200px 150px;
+        animation: floatingOrbs 20s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.8;
+    }}
+    
+    @keyframes floatingOrbs {{
+        0% {{
+            transform: translateY(100vh) translateX(0px);
+            opacity: 0;
+        }}
+        10% {{
+            opacity: 0.8;
+        }}
+        90% {{
+            opacity: 0.8;
+        }}
+        100% {{
+            transform: translateY(-100px) translateX(50px);
+            opacity: 0;
+        }}
+    }}
+    
     .main-header {{
         background: linear-gradient(135deg, {THEME_COLORS['primary']} 0%, {THEME_COLORS['accent']} 100%);
         padding: 2rem;
@@ -212,18 +251,18 @@ st.markdown(f"""
     }}
     
     .logo-img {{
-        height: 120px;
-        max-width: 250px;
+        height: 180px;
+        max-width: 400px;
         object-fit: contain;
-        padding: 10px;
+        padding: 15px;
         background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s ease;
     }}
     
     .logo-img:hover {{
-        transform: scale(1.05);
+        transform: scale(1.08);
     }}
     
     .status-indicator {{

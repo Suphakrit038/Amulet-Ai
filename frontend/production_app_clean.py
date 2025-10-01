@@ -83,12 +83,12 @@ st.set_page_config(
 # Modern Modal Design CSS
 st.markdown(f"""
 <style>
-    /* Import Modern Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    /* Import Modern Fonts - Thai + English */
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@200;300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap');
     
     /* Modern App Background - Creamy White */
     .stApp {{
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
         background: linear-gradient(135deg, #fdfbf7 0%, #f5f3ef 100%);
         background-attachment: fixed;
     }}
@@ -102,7 +102,7 @@ st.markdown(f"""
         border: 1px solid rgba(212, 175, 55, 0.2);
         padding: 40px;
         margin: 20px auto;
-        max-width: 1400px;
+        max-width: 1000px;
     }}
     
     /* Modal-Style Logo Header */
@@ -110,13 +110,13 @@ st.markdown(f"""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 35px 60px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-        backdrop-filter: blur(10px);
+        padding: 60px 80px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 100%);
+        backdrop-filter: blur(15px);
         border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        margin-bottom: 40px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 20px rgba(128, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid rgba(212, 175, 55, 0.15);
         position: relative;
         overflow: hidden;
     }}
@@ -127,46 +127,71 @@ st.markdown(f"""
         top: 0;
         left: 0;
         right: 0;
-        height: 4px;
+        height: 3px;
         background: linear-gradient(90deg, {COLORS['primary']}, {COLORS['gold']}, {COLORS['primary']});
     }}
     
     .logo-left {{
         display: flex;
         align-items: center;
-        gap: 25px;
+        gap: 20px;
         z-index: 1;
+    }}
+    
+    .logo-text {{
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }}
+    
+    .logo-title {{
+        font-family: 'Prompt', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: {COLORS['primary']};
+        margin: 0;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }}
+    
+    .logo-subtitle {{
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: {COLORS['gray']};
+        margin: 0;
+        letter-spacing: 0.3px;
     }}
     
     .logo-right {{
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 25px;
         z-index: 1;
     }}
     
     .logo-img {{
-        height: 150px;
+        height: 160px;
         width: auto;
         object-fit: contain;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
         transition: transform 0.3s ease;
     }}
     
     .logo-img:hover {{
-        transform: scale(1.05);
+        transform: scale(1.03);
     }}
     
     .logo-img-small {{
-        height: 110px;
+        height: 180px;
         width: auto;
         object-fit: contain;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
         transition: transform 0.3s ease;
     }}
     
     .logo-img-small:hover {{
-        transform: scale(1.05);
+        transform: scale(1.03);
     }}
     
     /* Modal Card Style with Glassmorphism */
@@ -200,50 +225,58 @@ st.markdown(f"""
     
     /* Modern Typography */
     h1 {{
-        font-size: 3.8rem !important;
-        font-weight: 800 !important;
-        letter-spacing: -1px !important;
-        margin-bottom: 25px !important;
+        font-family: 'Prompt', sans-serif;
+        font-size: 2.6rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: 20px !important;
         background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        line-height: 1.3 !important;
     }}
     
     h2 {{
-        font-size: 3rem !important;
-        font-weight: 700 !important;
-        letter-spacing: -0.5px !important;
-        margin-bottom: 22px !important;
+        font-family: 'Prompt', sans-serif;
+        font-size: 2.2rem !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.3px !important;
+        margin-bottom: 18px !important;
         color: #2d3748 !important;
+        line-height: 1.4 !important;
     }}
     
     h3 {{
-        font-size: 2.4rem !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.65rem !important;
         font-weight: 600 !important;
-        margin-bottom: 18px !important;
+        margin-bottom: 14px !important;
         color: #2d3748 !important;
+        line-height: 1.4 !important;
     }}
     
     h4 {{
-        font-size: 2rem !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.4rem !important;
         font-weight: 600 !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 12px !important;
         color: #4a5568 !important;
+        line-height: 1.5 !important;
     }}
     
     /* Modern Button with Gradient and Animation */
     .stButton > button {{
-        background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['accent']} 100%);
+        font-family: 'Sarabun', sans-serif;
+        background: {COLORS['accent']};
         color: white;
         border: none;
-        border-radius: 12px;
-        padding: 20px 50px;
+        border-radius: 10px;
+        padding: 14px 40px;
         font-weight: 600;
-        font-size: 1.3rem;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        box-shadow: 0 6px 20px rgba(128, 0, 0, 0.4);
+        font-size: 1.05rem;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
         transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         position: relative;
         overflow: hidden;
@@ -256,7 +289,7 @@ st.markdown(f"""
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         transition: left 0.5s;
     }}
     
@@ -265,20 +298,21 @@ st.markdown(f"""
     }}
     
     .stButton > button:hover {{
-        background: linear-gradient(135deg, {COLORS['accent']} 0%, {COLORS['primary']} 100%);
-        box-shadow: 0 10px 30px rgba(128, 0, 0, 0.5);
-        transform: translateY(-3px) scale(1.02);
+        background: {COLORS['gold']};
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        transform: translateY(-2px) scale(1.01);
     }}
     
     .stButton > button:active {{
-        transform: translateY(-1px) scale(0.98);
-        box-shadow: 0 4px 15px rgba(128, 0, 0, 0.4);
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 2px 10px rgba(184, 134, 11, 0.3);
     }}
     
     /* Modern Text Styling */
     p {{
-        font-size: 1.4rem !important;
-        line-height: 1.9 !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.05rem !important;
+        line-height: 1.7 !important;
         color: #4a5568 !important;
         font-weight: 400 !important;
     }}
@@ -311,7 +345,7 @@ st.markdown(f"""
     
     [data-testid="stFileUploader"]:hover {{
         background: rgba(255, 255, 255, 0.95);
-        border-color: {COLORS['gold']};
+        border-color: {COLORS['accent']};
         transform: scale(1.01);
     }}
     
@@ -323,30 +357,35 @@ st.markdown(f"""
     
     /* Modern Tabs */
     .stTabs [data-baseweb="tab-list"] {{
-        gap: 12px;
+        gap: 10px;
         background: transparent;
+        padding: 0;
+        margin-bottom: 25px;
     }}
     
     .stTabs [data-baseweb="tab"] {{
-        font-size: 1.4rem !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.05rem !important;
         font-weight: 600 !important;
-        padding: 18px 40px !important;
-        border-radius: 12px !important;
-        background: rgba(255, 255, 255, 0.8) !important;
-        border: 2px solid transparent !important;
-        transition: all 0.3s ease !important;
+        padding: 14px 32px !important;
+        border-radius: 10px !important;
+        background: #f5ebe0 !important;
+        border: none !important;
+        transition: all 0.25s ease !important;
+        color: #6c757d !important;
     }}
     
     .stTabs [data-baseweb="tab"]:hover {{
-        background: rgba(255, 255, 255, 1) !important;
-        border-color: {COLORS['primary']} !important;
-        transform: translateY(-2px);
+        background: #ede0d4 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(128, 0, 0, 0.1);
+        color: {COLORS['primary']} !important;
     }}
     
     .stTabs [data-baseweb="tab"][aria-selected="true"] {{
-        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['accent']}) !important;
+        background: {COLORS['accent']} !important;
         color: white !important;
-        box-shadow: 0 4px 15px rgba(128, 0, 0, 0.3);
+        box-shadow: 0 3px 12px rgba(184, 134, 11, 0.35);
     }}
     
     /* Modern Alert Boxes with Glassmorphism */
@@ -433,10 +472,11 @@ st.markdown(f"""
     
     /* Modern Section Divider */
     .section-divider {{
-        height: 2px;
+        height: 1.5px;
         background: linear-gradient(90deg, transparent, {COLORS['gold']}, transparent);
-        margin: 60px 0;
+        margin: 35px 0;
         border-radius: 2px;
+        opacity: 0.6;
     }}
     
     /* Modal Tips Card */
@@ -487,11 +527,11 @@ st.markdown(f"""
     }}
     
     .feature-card ul li {{
-        padding: 12px 0;
-        padding-left: 30px;
+        padding: 10px 0;
+        padding-left: 28px;
         position: relative;
-        font-size: 1.2rem;
-        line-height: 1.8;
+        font-size: 1.0rem;
+        line-height: 1.7;
     }}
     
     .feature-card ul li:before {{
@@ -500,7 +540,7 @@ st.markdown(f"""
         left: 0;
         color: {COLORS['gold']};
         font-weight: bold;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }}
     
     /* Step Card */
@@ -528,25 +568,29 @@ st.markdown(f"""
     /* Hero Section */
     .hero-section {{
         text-align: center;
-        padding: 60px 40px;
-        background: linear-gradient(135deg, rgba(128, 0, 0, 0.05), rgba(212, 175, 55, 0.05));
-        border-radius: 24px;
-        margin: 40px 0;
+        padding: 45px 35px;
+        background: linear-gradient(135deg, rgba(128, 0, 0, 0.04), rgba(212, 175, 55, 0.04));
+        border-radius: 20px;
+        margin: 30px 0;
     }}
     
     .hero-title {{
-        font-size: 4.5rem !important;
-        font-weight: 800 !important;
-        margin-bottom: 20px !important;
+        font-family: 'Prompt', sans-serif;
+        font-size: 2.8rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 15px !important;
         background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['gold']});
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        line-height: 1.3 !important;
     }}
     
     .hero-subtitle {{
-        font-size: 1.8rem !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.15rem !important;
         color: {COLORS['gray']} !important;
         margin-bottom: 0 !important;
+        line-height: 1.6 !important;
     }}
     
     /* Modal Result Card */
@@ -586,10 +630,11 @@ st.markdown(f"""
     
     /* Modern Labels */
     label {{
-        font-size: 1.4rem !important;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 1.05rem !important;
         font-weight: 600 !important;
         color: #2d3748 !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 8px !important;
     }}
     
     /* Progress Bar */
@@ -849,9 +894,9 @@ def main():
     <div class="logo-header">
         <div class="logo-left">
             {logo_left_html}
-            <div>
-                <h2 style="margin: 0; color: {COLORS['primary']};">Amulet-AI</h2>
-                <p style="margin: 0; color: {COLORS['gray']}; font-size: 0.9rem;">ระบบจำแนกพระเครื่องอัจฉริยะ</p>
+            <div class="logo-text">
+                <div class="logo-title">Amulet-AI Unified</div>
+                <div class="logo-subtitle">ระบบวิเคราะห์พระเครื่องด้วย AI อัจฉริยะ</div>
             </div>
         </div>
         <div class="logo-right">
@@ -860,55 +905,75 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Hero Section
-    st.markdown(f"""
-    <div class="hero-section">
-        <h1 class="hero-title">🔮 Amulet-AI</h1>
-        <p class="hero-subtitle">ระบบวิเคราะห์วัตถุมงคลด้วย AI</p>
-        <p class="hero-subtitle">AI ช่วยวิเคราะห์และจำแนกพระเครื่องแบบง่าย ๆ ให้คุณเข้าใจได้ภายในไม่กี่วินาที</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-    
-    # Introduction Section - 3 Cards
-    show_introduction_section()
-    
-    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-    
-    # How It Works Section
-    show_how_it_works_section()
-    
-    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-    
-    # Who Made This & Who Is This For
-    show_about_section()
     
     # Default settings (no settings UI)
     analysis_mode = "สองด้าน (หน้า+หลัง)"
     show_confidence = True
     show_probabilities = True
     
+    # Create Tabs for different sections
+    tab1, tab2, tab3, tab4 = st.tabs(["🏠 หน้าหลัก", "📖 เกี่ยวกับระบบ", "📚 คู่มือการใช้งาน", "❓ คำถามที่พบบ่อย"])
+    
+    # Tab 1: Main Upload Section
+    with tab1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.header("อัปโหลดรูปพระเครื่อง")
+        st.markdown("<p style='text-align: center; font-size: 1.3rem; color: #6c757d;'>อัปโหลดรูปภาพด้านหน้าและด้านหลังของพระเครื่องเพื่อเริ่มการวิเคราะห์</p>", unsafe_allow_html=True)
+        
+        # Always use dual image mode
+        dual_image_mode(show_confidence, show_probabilities)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Tab 2: About System
+    with tab2:
+        # Introduction Section - 3 Cards
+        show_introduction_section()
+        
+        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+        
+        # How It Works Section
+        show_how_it_works_section()
+        
+        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+        
+        # Who Made This & Who Is This For
+        show_about_section()
+    
+    # Tab 3: User Guide
+    with tab3:
+        show_tips_section()
+    
+    # Tab 4: FAQ
+    with tab4:
+        show_faq_section()
+    
+    # Footer with Credits
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
     
-    # Main Content
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.header("อัปโหลดรูปพระเครื่อง")
-    
-    # Always use dual image mode
-    dual_image_mode(show_confidence, show_probabilities)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Tips Section
-    show_tips_section()
-    
-    # Footer
-    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-    st.markdown(f"""
-    <div style="text-align: center; padding: 20px; color: {COLORS['gray']};">
-        <p>© 2025 Amulet-AI | พัฒนาโดยความร่วมมือกับ Thai-Austrian และ DEPA</p>
-        <p style="font-size: 0.9rem;">ระบบนี้ใช้ AI ช่วยในการจำแนกพระเครื่อง ผลลัพธ์ควรใช้ประกอบการตัดสินใจเท่านั้น</p>
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 16px; padding: 2rem; border: 2px solid #dee2e6; margin: 2rem 0;
+                box-shadow: 0 4px 15px rgba(108, 117, 125, 0.1);">
+        <h3 style="color: #495057; margin-top: 0; font-family: 'Prompt', sans-serif; font-size: 1.6rem; text-align: center;">🙏 ขอขอบคุณ</h3>
+        <p style="font-size: 1.05rem; color: #495057; margin-bottom: 1rem; line-height: 1.8; font-family: 'Sarabun', sans-serif; text-align: center;">
+            คณะกรรมการจาก <strong>สำนักงานส่งเสริมเศรษฐกิจดิจิทัล (depa)</strong><br>
+            ที่มอบโอกาสอันมีค่าแก่ทีม <strong>Taxes1112 วิทยาลัยเทคนิคสัตหีบ</strong><br>
+            ในการเข้าร่วมโครงการและนำเสนอผลงานนวัตกรรมดิจิทัลในครั้งนี้
+        </p>
+        <p style="color: #6c757d; font-size: 1.0rem; margin-bottom: 1.5rem; line-height: 1.7; font-family: 'Sarabun', sans-serif; text-align: center;">
+            นับเป็นประสบการณ์สำคัญที่ช่วยเสริมสร้างศักยภาพของนักศึกษา<br>
+            และเป็นแรงบันดาลใจในการต่อยอดความรู้สู่การสร้างสรรค์ผลงานในอนาคต
+        </p>
+        <hr style="border: none; border-top: 1px solid #dee2e6; margin: 1.5rem 0;">
+        <p style="text-align: center; color: #495057; font-family: 'Sarabun', sans-serif; font-size: 1.0rem; margin-bottom: 0.8rem; font-weight: 500;">
+            © 2025 Amulet-AI | พัฒนาโดยความร่วมมือกับ Thai-Austrian และ depa
+        </p>
+        <p style="text-align: center; font-size: 0.95rem; color: #6c757d; font-family: 'Sarabun', sans-serif; margin: 0;">
+            ℹ️ ระบบนี้ใช้ AI เพื่อช่วยจำแนกพระเครื่อง<br>
+            ผลลัพธ์เป็นเพียงข้อมูลประกอบการตัดสินใจเท่านั้น
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -927,7 +992,7 @@ def dual_image_mode(show_confidence, show_probabilities):
         front_image = None
         
         with front_upload:
-            front_image = st.file_uploader("เลือกรูปด้านหน้า", type=['jpg', 'jpeg', 'png'], key="front_upload")
+            front_image = st.file_uploader("เลือกรูปด้านหน้า", type=['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'tif', 'webp', 'heic', 'heif'], key="front_upload")
         
         with front_camera:
             # Camera will only activate when user enters this tab
@@ -949,7 +1014,7 @@ def dual_image_mode(show_confidence, show_probabilities):
         back_image = None
         
         with back_upload:
-            back_image = st.file_uploader("เลือกรูปด้านหลัง", type=['jpg', 'jpeg', 'png'], key="back_upload")
+            back_image = st.file_uploader("เลือกรูปด้านหลัง", type=['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'tif', 'webp', 'heic', 'heif'], key="back_upload")
         
         with back_camera:
             # Camera will only activate when user enters this tab
@@ -1041,6 +1106,103 @@ def dual_image_mode(show_confidence, show_probabilities):
             <p>การวิเคราะห์ทั้งสองด้านจะช่วยเพิ่มความแม่นยำ</p>
         </div>
         """, unsafe_allow_html=True)
+
+def show_faq_section():
+    """แสดงส่วนคำถามที่พบบ่อย"""
+    st.markdown("## ❓ คำถามที่พบบ่อย (FAQ)")
+    st.markdown("<p style='text-align: center; font-size: 1.3rem; color: #6c757d;'>ข้อมูลสำคัญที่ควรทราบก่อนใช้งานระบบ</p>", unsafe_allow_html=True)
+    
+    # Expectations & Limitations
+    st.markdown("""
+    <div class="warning-box">
+        <h3>⚠️ ควรคาดหวังอะไร (Expectations & Limitations)</h3>
+        <p><strong>• ผลลัพธ์เป็นการประเมินเบื้องต้น</strong> — ไม่ใช่การยืนยันความแท้ 100%</p>
+        <p><strong>• คุณภาพของรูปมีผลต่อผลลัพธ์</strong> — รูปชัด แสงดี มุมถูกต้อง = ผลดีขึ้น</p>
+        <p><strong>• หากความเชื่อมั่นต่ำ</strong> — ระบบจะแนะนำให้ส่งให้ผู้เชี่ยวชาญตรวจสอบ</p>
+        <p><strong>• ใช้เป็นข้อมูลประกอบการตัดสินใจเท่านั้น</strong> — ไม่ควรใช้เป็นเกณฑ์เดียวในการซื้อ-ขาย</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    
+    # Privacy Notice
+    st.markdown("""
+    <div class="info-box">
+        <h3>🔒 ความเป็นส่วนตัว (Privacy)</h3>
+        <p><strong>• ภาพจะถูกประมวลผล</strong> เพื่อการวิเคราะห์ตามนโยบายความเป็นส่วนตัว</p>
+        <p><strong>• ถ้าคุณยินยอมให้เก็บภาพ</strong> ระบบจะใช้ภาพเพื่อปรับปรุงโมเดล แต่สามารถขอลบข้อมูลได้</p>
+        <p><strong>• ข้อมูลทุกชิ้นเข้ารหัส</strong> และจัดเก็บอย่างปลอดภัยตามมาตรฐาน</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    
+    # Common Questions
+    st.markdown("### 💡 คำถามที่พบบ่อย")
+    
+    with st.expander("❓ ระบบนี้แม่นยำแค่ไหน?"):
+        st.markdown("""
+        ระบบมีความแม่นยำขึ้นอยู่กับหลายปัจจัย:
+        - **คุณภาพของรูปภาพ**: รูปที่ชัด แสงดี จะได้ผลดีกว่า
+        - **ประเภทพระเครื่อง**: บางประเภทที่มี dataset มากจะแม่นยำกว่า
+        - **ความเชื่อมั่น >90%**: แม่นยำสูงมาก น่าเชื่อถือ
+        - **ความเชื่อมั่น 70-90%**: แม่นยำดี แต่ควรตรวจสอบเพิ่มเติม
+        - **ความเชื่อมั่น <70%**: ควรถ่ายรูปใหม่หรือปรึกษาผู้เชี่ยวชาญ
+        """)
+    
+    with st.expander("❓ ใช้เวลานานแค่ไหนในการวิเคราะห์?"):
+        st.markdown("""
+        - **โดยเฉลี่ย**: 2-5 วินาที ต่อภาพ
+        - **ภาพคู่ (หน้า+หลัง)**: ประมาณ 5-10 วินาที
+        - ขึ้นอยู่กับขนาดไฟล์และความเร็วอินเทอร์เน็ต
+        """)
+    
+    with st.expander("❓ รองรับไฟล์รูปภาพแบบไหนบ้าง?"):
+        st.markdown("""
+        - **รองรับ**: JPG, JPEG, PNG, BMP, GIF, TIFF, WebP, HEIC/HEIF
+        - **ขนาดไฟล์สูงสุด**: 10 MB
+        - **ความละเอียดที่แนะนำ**: อย่างน้อย 800x800 pixels
+        """)
+    
+    with st.expander("❓ ถ้าผลลัพธ์ไม่ตรงกับความเป็นจริงต้องทำอย่างไร?"):
+        st.markdown("""
+        1. **ลองถ่ายรูปใหม่** ด้วยแสงที่ดีกว่าและมุมที่ชัดเจน
+        2. **ตรวจสอบว่ารูปไม่เบลอ** และไม่มีสิ่งบดบังพระเครื่อง
+        3. **อ่านค่าความเชื่อมั่น** ถ้าต่ำ แสดงว่า AI ไม่แน่ใจ
+        4. **ปรึกษาผู้เชี่ยวชาญ** เพื่อการยืนยันที่แน่นอน
+        5. **รายงานปัญหา** ผ่านทีมพัฒนาเพื่อปรับปรุงระบบ
+        """)
+    
+    with st.expander("❓ ระบบจะเก็บรูปภาพของฉันไว้หรือไม่?"):
+        st.markdown("""
+        - **โดยค่าเริ่มต้น**: รูปภาพจะถูกลบหลังจากการวิเคราะห์เสร็จสิ้น
+        - **หากคุณยินยอม**: รูปอาจถูกเก็บไว้เพื่อปรับปรุงโมเดล (แบบไม่ระบุตัวตน)
+        - **สิทธิ์ของคุณ**: สามารถขอลบข้อมูลได้ทุกเมื่อ
+        - **ความปลอดภัย**: ข้อมูลเข้ารหัสและจัดเก็บตามมาตรฐานสากล
+        """)
+    
+    with st.expander("❓ สามารถใช้งานบนมือถือได้หรือไม่?"):
+        st.markdown("""
+        **ใช้ได้!** ระบบรองรับการใช้งานบนมือถือ:
+        - เปิดผ่านเว็บเบราว์เซอร์บนมือถือ
+        - สามารถถ่ายรูปโดยตรงจากกล้องมือถือ
+        - อัปโหลดรูปจากแกลเลอรี่
+        - หน้าจอปรับขนาดให้เหมาะกับอุปกรณ์โดยอัตโนมัติ
+        """)
+    
+    with st.expander("❓ มีค่าใช้จ่ายในการใช้งานหรือไม่?"):
+        st.markdown("""
+        - **ปัจจุบัน**: ใช้งานฟรี
+        - **อนาคต**: อาจมีแผนพรีเมียมสำหรับฟีเจอร์เพิ่มเติม
+        - **สำหรับผู้เชี่ยวชาญ/นักวิจัย**: มี API แบบเสียค่าใช้จ่าย
+        """)
+    
+    with st.expander("❓ ต้องการความช่วยเหลือเพิ่มเติมติดต่อที่ไหน?"):
+        st.markdown("""
+        - **อ่านคู่มือ**: ไปที่แท็บ "📚 คู่มือการใช้งาน"
+        - **เกี่ยวกับระบบ**: ไปที่แท็บ "📖 เกี่ยวกับระบบ"
+        - **ติดต่อทีมพัฒนา**: ผ่านช่องทางที่ระบุในหน้า Footer
+        """)
 
 def show_introduction_section():
     """แสดงส่วนแนะนำ - เว็บไซต์นี้ทำอะไร"""
@@ -1149,27 +1311,6 @@ def show_about_section():
             <p><strong>• ผู้ที่สนใจเทคโนโลยี AI</strong> - เรียนรู้การประยุกต์ใช้ AI ในงานจำแนก</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Expectations & Limitations
-    st.markdown("""
-    <div class="warning-box">
-        <h3>⚠️ ควรคาดหวังอะไร (Expectations & Limitations)</h3>
-        <p><strong>• ผลลัพธ์เป็นการประเมินเบื้องต้น</strong> — ไม่ใช่การยืนยันความแท้ 100%</p>
-        <p><strong>• คุณภาพของรูปมีผลต่อผลลัพธ์</strong> — รูปชัด แสงดี มุมถูกต้อง = ผลดีขึ้น</p>
-        <p><strong>• หากความเชื่อมั่นต่ำ</strong> — ระบบจะแนะนำให้ส่งให้ผู้เชี่ยวชาญตรวจสอบ</p>
-        <p><strong>• ใช้เป็นข้อมูลประกอบการตัดสินใจเท่านั้น</strong> — ไม่ควรใช้เป็นเกณฑ์เดียวในการซื้อ-ขาย</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Privacy Notice
-    st.markdown("""
-    <div class="info-box">
-        <h3>🔒 ความเป็นส่วนตัว (Privacy)</h3>
-        <p><strong>• ภาพจะถูกประมวลผล</strong> เพื่อการวิเคราะห์ตามนโยบายความเป็นส่วนตัว</p>
-        <p><strong>• ถ้าคุณยินยอมให้เก็บภาพ</strong> ระบบจะใช้ภาพเพื่อปรับปรุงโมเดล แต่สามารถขอลบข้อมูลได้</p>
-        <p><strong>• ข้อมูลทุกชิ้นเข้ารหัส</strong> และจัดเก็บอย่างปลอดภัยตามมาตรฐาน</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 def show_tips_section():
     """แสดงคู่มือการใช้งานแบบละเอียด"""
