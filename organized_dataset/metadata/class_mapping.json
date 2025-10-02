@@ -1,0 +1,35 @@
+{
+  "classes": [
+    "phra_sivali",
+    "portrait_back",
+    "prok_bodhi_9_leaves",
+    "somdej_pratanporn_buddhagavak",
+    "waek_man",
+    "wat_nong_e_duk"
+  ],
+  "class_to_idx": {
+    "phra_sivali": 0,
+    "portrait_back": 1,
+    "prok_bodhi_9_leaves": 2,
+    "somdej_pratanporn_buddhagavak": 3,
+    "waek_man": 4,
+    "wat_nong_e_duk": 5
+  },
+  "idx_to_class": {
+    "0": "phra_sivali",
+    "1": "portrait_back",
+    "2": "prok_bodhi_9_leaves",
+    "3": "somdej_pratanporn_buddhagavak",
+    "4": "waek_man",
+    "5": "wat_nong_e_duk"
+  },
+  "num_classes": 6,
+  "thai_names": {
+    "phra_sivali": "พระสีวลี",
+    "portrait_back": "หลังรูปเหมือน",
+    "prok_bodhi_9_leaves": "ปรกโพธิ์9ใบ",
+    "somdej_pratanporn_buddhagavak": "พระสมเด็จประธานพรเนื้อพุทธกวัก",
+    "waek_man": "แหวกม่าน",
+    "wat_nong_e_duk": "วัดหนองอีดุก"
+  }
+}

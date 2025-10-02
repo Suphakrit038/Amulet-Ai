@@ -28,10 +28,45 @@ import sys
 import os
 from datetime import datetime
 import io
+import torch
+import torch.nn.functional as F
+from torchvision import transforms
+
+# Lazy import joblib to avoid threading issues
+def load_joblib_file(file_path):
+    """Lazy load joblib file to avoid threading issues in Python 3.13"""
+    try:
+        import joblib
+        return joblib.load(file_path)
+    except Exception as e:
+        print(f"Warning: Failed to load joblib file {file_path}: {e}")
+        return None
 
 # Add project root to path
-project_root = Path(__file__).parent.parent
-sys.path.append(str(project_root))
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Debug: Print sys.path and project_root
+print(f"Project root: {project_root}")
+print(f"sys.path[0]: {sys.path[0]}")
+
+# Import Phase 2 components (with fallback)
+PYTORCH_AVAILABLE = False
+try:
+    from model_training.transfer_learning import AmuletTransferModel
+    from evaluation.calibration import TemperatureScaling
+    from evaluation.ood_detection import IsolationForestDetector, extract_features
+    from explainability.gradcam import visualize_gradcam, generate_explanation
+    PYTORCH_AVAILABLE = True
+    print("✓ PyTorch components loaded successfully")
+except ImportError as e:
+    print(f"⚠️  Warning: PyTorch components not available: {e}")
+    print("   Frontend will show error messages for predictions")
+    # Create dummy classes for type hints
+    AmuletTransferModel = None
+    TemperatureScaling = None
+    IsolationForestDetector = None
 
 # Import enhanced modules (with fallback)
 try:
@@ -604,6 +639,10 @@ st.markdown(f"""
         border-top: 5px solid {COLORS['primary']};
         position: relative;
         overflow: hidden;
+        max-width: 1200px;
+        width: 98vw;
+        min-width: 350px;
+        margin: 30px auto;
     }}
     
     .result-card::before {{
@@ -719,25 +758,138 @@ def check_api_health():
         return False
 
 def check_model_status():
-    """ตรวจสอบสถานะโมเดล"""
-    model_files = [
+    """ตรวจสอบสถานะโมเดล PyTorch และ sklearn"""
+    # Check PyTorch model first
+    if PYTORCH_AVAILABLE:
+        pytorch_files = [
+            "trained_model/best_model.pth",
+            "trained_model/model_config.json",
+            "ai_models/labels.json"
+        ]
+        
+        missing_pytorch = []
+        for file_path in pytorch_files:
+            full_path = project_root / file_path
+            if not full_path.exists():
+                missing_pytorch.append(file_path)
+        
+        if len(missing_pytorch) == 0:
+            return True, []  # PyTorch model available
+    
+    # Fallback to sklearn model
+    sklearn_files = [
         "trained_model/classifier.joblib",
         "trained_model/scaler.joblib",
         "trained_model/label_encoder.joblib"
     ]
     
-    missing_files = []
-    for file_path in model_files:
+    missing_sklearn = []
+    for file_path in sklearn_files:
         full_path = project_root / file_path
         if not full_path.exists():
-            missing_files.append(file_path)
+            missing_sklearn.append(file_path)
     
-    return len(missing_files) == 0, missing_files
+    return len(missing_sklearn) == 0, missing_sklearn
+
+@st.cache_resource
+def load_pytorch_model():
+    """โหลดโมเดล PyTorch พร้อม calibration และ OOD detection"""
+    if not PYTORCH_AVAILABLE:
+        return None
+    
+    try:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        # Check if PyTorch model exists
+        model_path = project_root / "trained_model/best_model.pth"
+        if not model_path.exists():
+            return None
+        
+        # Load model config
+        config_path = project_root / "trained_model/model_config.json"
+        if config_path.exists():
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+        else:
+            # Default config
+            config = {'backbone': 'resnet50'}
+        
+        # Load class labels
+        labels_path = project_root / "ai_models/labels.json"
+        if labels_path.exists():
+            with open(labels_path, 'r', encoding='utf-8') as f:
+                labels_data = json.load(f)
+        else:
+            return None
+        
+        num_classes = len(labels_data.get('current_classes', {}))
+        
+        # Get backbone name (support both 'backbone' and 'backbone_name')
+        backbone_name = config.get('backbone_name', config.get('backbone', 'resnet50'))
+        
+        # Create model
+        model = AmuletTransferModel(
+            backbone_name=backbone_name,
+            num_classes=num_classes,
+            pretrained=False
+        )
+        
+        # Load trained weights
+        checkpoint = torch.load(model_path, map_location=device)
+        
+        if 'model_state_dict' in checkpoint:
+            model.load_state_dict(checkpoint['model_state_dict'])
+        else:
+            model.load_state_dict(checkpoint)
+        
+        model = model.to(device)
+        model.eval()
+        
+        # Load temperature scaler (optional)
+        temp_scaler = None
+        temp_scaler_path = project_root / "trained_model/temperature_scaler.pth"
+        if temp_scaler_path.exists():
+            temp_scaler = TemperatureScaling()
+            temp_scaler.load_state_dict(torch.load(temp_scaler_path, map_location=device))
+            temp_scaler.to(device)
+        
+        # Load OOD detector (optional)
+        ood_detector = None
+        ood_detector_path = project_root / "trained_model/ood_detector.joblib"
+        if ood_detector_path.exists():
+            ood_detector = load_joblib_file(ood_detector_path)
+        
+        # Image preprocessing transforms
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )
+        ])
+        
+        return {
+            'model': model,
+            'temperature_scaler': temp_scaler,
+            'ood_detector': ood_detector,
+            'transform': transform,
+            'labels': labels_data,
+            'config': config,
+            'device': device
+        }
+        
+    except Exception as e:
+        print(f"Error loading PyTorch model: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
 
 @error_handler("frontend")
 def classify_image(uploaded_file):
-    """จำแนกรูปภาพ"""
+    """จำแนกรูปภาพด้วย PyTorch model หรือ sklearn fallback"""
     try:
+        # Save temp file
         temp_path = f"temp_{uploaded_file.name}"
         with open(temp_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
@@ -756,11 +908,36 @@ def classify_image(uploaded_file):
         except:
             pass
         
-        # Fallback to local prediction
-        result = local_prediction(temp_path)
-        result["method"] = "Local"
-        Path(temp_path).unlink(missing_ok=True)
-        return result
+        # Use PyTorch model (main method)
+        if PYTORCH_AVAILABLE:
+            try:
+                model_data = load_pytorch_model()
+                if model_data is not None:
+                    result = pytorch_local_prediction(temp_path, model_data)
+                    result["method"] = "Local (PyTorch)"
+                    Path(temp_path).unlink(missing_ok=True)
+                    return result
+                else:
+                    Path(temp_path).unlink(missing_ok=True)
+                    return {
+                        "status": "error",
+                        "error": "ไม่สามารถโหลดโมเดล PyTorch ได้ กรุณาตรวจสอบไฟล์ trained_model/best_model.pth",
+                        "method": "None"
+                    }
+            except Exception as e:
+                Path(temp_path).unlink(missing_ok=True)
+                return {
+                    "status": "error",
+                    "error": f"PyTorch prediction error: {str(e)}",
+                    "method": "None"
+                }
+        else:
+            Path(temp_path).unlink(missing_ok=True)
+            return {
+                "status": "error",
+                "error": "PyTorch ไม่พร้อมใช้งาน กรุณาติดตั้ง PyTorch และ dependencies ที่จำเป็น",
+                "method": "None"
+            }
         
     except Exception as e:
         return {
@@ -769,100 +946,378 @@ def classify_image(uploaded_file):
             "method": "None"
         }
 
-def local_prediction(image_path):
-    """การทำนายแบบ local"""
+def pytorch_local_prediction(image_path, model_data):
+    """การทำนายด้วย PyTorch model พร้อม calibration, OOD detection และ Grad-CAM"""
     try:
-        import joblib
+        model = model_data['model']
+        temp_scaler = model_data['temperature_scaler']
+        ood_detector = model_data['ood_detector']
+        transform = model_data['transform']
+        labels = model_data['labels']
+        device = model_data['device']
         
-        classifier = joblib.load(str(project_root / "trained_model/classifier.joblib"))
-        scaler = joblib.load(str(project_root / "trained_model/scaler.joblib"))
-        label_encoder = joblib.load(str(project_root / "trained_model/label_encoder.joblib"))
+        # Load and preprocess image
+        image_pil = Image.open(image_path).convert('RGB')
+        image_tensor = transform(image_pil).unsqueeze(0).to(device)
         
-        image = cv2.imread(image_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image_resized = cv2.resize(image, (224, 224))
-        image_normalized = image_resized.astype(np.float32) / 255.0
-        features = image_normalized.flatten()
+        # Extract features for OOD detection
+        ood_score = None
+        is_ood = False
+        if ood_detector is not None and PYTORCH_AVAILABLE:
+            try:
+                with torch.no_grad():
+                    features = extract_features(model, image_tensor, device)
+                    features_np = features.cpu().numpy()
+                    ood_score = ood_detector.score_samples(features_np)[0]
+                    is_ood = ood_detector.predict(features_np)[0] == -1
+            except Exception as e:
+                print(f"OOD detection error: {e}")
         
-        features_scaled = scaler.transform(features.reshape(1, -1))
-        prediction = classifier.predict(features_scaled)[0]
-        probabilities = classifier.predict_proba(features_scaled)[0]
-        predicted_class = label_encoder.inverse_transform([prediction])[0]
-        confidence = float(probabilities[prediction])
+        # Model inference
+        with torch.no_grad():
+            logits = model(image_tensor)
+            
+            # Apply temperature scaling if available
+            if temp_scaler is not None:
+                logits = temp_scaler(logits)
+            
+            probs = F.softmax(logits, dim=1)
+            probs_np = probs.cpu().numpy()[0]
+            
+            # Get prediction
+            predicted_idx = int(np.argmax(probs_np))
+            confidence = float(probs_np[predicted_idx])
         
-        try:
-            labels_path = project_root / "ai_models/labels.json"
-            with open(labels_path, "r", encoding="utf-8") as f:
-                labels = json.load(f)
-            thai_name = labels.get("current_classes", {}).get(str(prediction), predicted_class)
-        except:
-            thai_name = predicted_class
+        # Generate Grad-CAM visualization
+        gradcam_image = None
+        if PYTORCH_AVAILABLE:
+            try:
+                gradcam_result = visualize_gradcam(
+                    model=model,
+                    image_tensor=image_tensor,
+                    target_class=predicted_idx,
+                    device=device
+                )
+                if gradcam_result is not None:
+                    gradcam_image = gradcam_result
+            except Exception as e:
+                print(f"Grad-CAM error: {e}")
         
-        return {
+        # Get class names
+        current_classes = labels.get('current_classes', {})
+        class_names = [current_classes.get(str(i), f"Class_{i}") 
+                      for i in range(len(probs_np))]
+        
+        predicted_class = class_names[predicted_idx]
+        thai_name = predicted_class
+        
+        # Build probability dictionary
+        probabilities = {
+            class_names[i]: float(probs_np[i])
+            for i in range(len(probs_np))
+        }
+        
+        result = {
             "status": "success",
             "predicted_class": predicted_class,
             "thai_name": thai_name,
             "confidence": confidence,
-            "probabilities": {
-                label_encoder.classes_[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            "probabilities": probabilities,
+            "is_ood": is_ood,
+            "ood_score": float(ood_score) if ood_score is not None else None,
+            "gradcam_available": gradcam_image is not None
         }
         
+        # Store Grad-CAM in session state
+        if gradcam_image is not None:
+            if 'gradcam_images' not in st.session_state:
+                st.session_state.gradcam_images = {}
+            st.session_state.gradcam_images[image_path] = gradcam_image
+        
+        return result
+        
     except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        print(f"PyTorch prediction error: {error_detail}")
         return {
             "status": "error",
             "error": str(e)
         }
 
-def display_classification_result(result, show_confidence=True, show_probabilities=True):
-    """แสดงผลการจำแนก"""
+
+
+def display_classification_result(result, show_confidence=True, show_probabilities=True, image_path=None):
+    """แสดงผลการจำแนกทั้งหมดในกล่องเดียว รวมทุกอย่าง - ปรับปรุง HTML rendering"""
     if result.get("status") == "success" or "predicted_class" in result:
         predicted_class = result.get('predicted_class', 'Unknown')
         thai_name = result.get('thai_name', predicted_class)
         confidence = result.get('confidence', 0)
+        is_ood = result.get('is_ood', False)
+        ood_score = result.get('ood_score', None)
+        
+        # กำหนดสีและสถานะตามความมั่นใจ
+        if is_ood:
+            conf_color = "#ff6b6b"
+            status_text = "ผิดปกติ"
+            status_emoji = "⚠️"
+            header_gradient = "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)"
+        elif confidence >= 0.92:
+            conf_color = "#4CAF50"
+            status_text = "ยอดเยี่ยม"
+            status_emoji = "🌟"
+            header_gradient = "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+        elif confidence >= 0.7:
+            conf_color = "#FFA726"
+            status_text = "ดี"
+            status_emoji = "👍"
+            header_gradient = "linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
+        else:
+            conf_color = "#EF5350"
+            status_text = "ควรตรวจสอบ"
+            status_emoji = "🤔"
+            header_gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        
+        # เริ่มกล่องหลัก
+        st.markdown(f"""
+        <div style="background: white; border-radius: 25px; padding: 50px; 
+                    box-shadow: 0 15px 50px rgba(0,0,0,0.12); 
+                    max-width: 1200px; width: 98vw; min-width: 350px; margin: 30px auto; 
+                    border: 1px solid #e0e0e0;">
+            
+            <!-- Header -->
+            <div style="background: {header_gradient}; color: white; padding: 40px; 
+                        border-radius: 18px; margin-bottom: 35px; text-align: center; 
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.15);">
+                <div style="font-size: 3.5rem; margin-bottom: 12px;">🙏</div>
+                <h1 style="margin: 0; font-size: 2.8rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                    {thai_name}
+                </h1>
+                <h2 style="margin: 18px 0 0 0; font-size: 1.4rem; opacity: 0.95; font-weight: 500;">
+                    ประเภท: {predicted_class}
+                </h2>
+            </div>
+            
+            <!-- Confidence Section -->
+            <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+                        padding: 40px; border-radius: 18px; margin: 35px 0; text-align: center;">
+                <h2 style="color: #333; margin: 0 0 25px 0; font-size: 1.8rem;">📊 ความมั่นใจของ AI</h2>
+                <div style="font-size: 6rem; font-weight: bold; color: {conf_color}; margin: 25px 0; 
+                            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);">
+                    {confidence:.0%}
+                </div>
+                <div style="margin: 25px 0;">
+                    <span style="background: {conf_color}; color: white; padding: 12px 40px; 
+                                border-radius: 50px; font-size: 1.4rem; font-weight: bold; 
+                                display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        {status_emoji} {status_text}
+                    </span>
+                </div>
+                <div style="background: #dee2e6; border-radius: 50px; height: 45px; overflow: hidden; 
+                            margin: 30px auto; max-width: 85%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="background: linear-gradient(90deg, {conf_color} 0%, {conf_color}dd 100%); 
+                                width: {confidence*100}%; height: 100%; 
+                                display: flex; align-items: center; justify-content: center;
+                                color: white; font-weight: bold; font-size: 1.4rem;
+                                transition: width 0.8s ease; border-radius: 50px;">
+                        {confidence:.1%}
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # คำแนะนำตามระดับความมั่นใจ
+        if is_ood:
+            advice_html = """
+            <div style="background: #fff3cd; border-left: 6px solid #ffc107; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                <p style="margin: 0; color: #856404; font-size: 1.08rem; line-height: 1.6;">
+                    ⚠️ <strong>คำเตือน:</strong> ระบบตรวจพบความผิดปกติ ความเชื่อมั่นอาจไม่น่าเชื่อถือ 
+                    โปรดตรวจสอบว่ารูปชัดเจน เป็นพระเครื่องจริง และอยู่ในประเภทที่ระบบรองรับ
+                </p>
+            </div>
+            """
+        elif confidence >= 0.92:
+            advice_html = """
+            <div style="background: #d4edda; border-left: 6px solid #28a745; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                <p style="margin: 0; color: #155724; font-size: 1.08rem; line-height: 1.6;">
+                    ✅ <strong>ความเชื่อมั่นสูงมาก:</strong> ผลลัพธ์น่าเชื่อถือมาก AI มั่นใจในการจำแนกประเภทนี้
+                </p>
+            </div>
+            """
+        elif confidence >= 0.7:
+            advice_html = """
+            <div style="background: #fff3cd; border-left: 6px solid #ffc107; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                <p style="margin: 0; color: #856404; font-size: 1.08rem; line-height: 1.6;">
+                    ⚠️ <strong>ความเชื่อมั่นปานกลาง:</strong> ควรตรวจสอบเพิ่มเติมหรือปรึกษาผู้เชี่ยวชาญ
+                </p>
+            </div>
+            """
+        else:
+            advice_html = """
+            <div style="background: #f8d7da; border-left: 6px solid #dc3545; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                <p style="margin: 0; color: #721c24; font-size: 1.08rem; line-height: 1.6;">
+                    ❌ <strong>ความเชื่อมั่นต่ำ:</strong> แนะนำให้ถ่ายรูปใหม่ หรือปรึกษาผู้เชี่ยวชาญโดยตรง
+                </p>
+            </div>
+            """
+        
+        st.markdown(advice_html, unsafe_allow_html=True)
+        
+        # Grad-CAM Section (ใช้ st.image แทน HTML img)
+        if result.get('gradcam_available') and image_path:
+            if 'gradcam_images' in st.session_state and image_path in st.session_state.gradcam_images:
+                st.markdown("""
+                <div style="margin: 35px 0; padding: 30px; background: #e3f2fd; border-radius: 15px; border-left: 8px solid #2196F3;">
+                    <h2 style="color: #1565C0; margin: 0 0 10px 0; font-size: 1.6rem;">
+                        🔍 การอธิบายผลลัพธ์ด้วย AI (Grad-CAM)
+                    </h2>
+                    <p style="color: #1976D2; font-size: 1rem; margin: 10px 0 20px 0; line-height: 1.6;">
+                        💡 <strong>Grad-CAM Heatmap</strong> แสดงบริเวณที่ AI ให้ความสำคัญ<br>
+                        🔴 <strong>สีแดง-ส้ม</strong> = บริเวณสำคัญสูง | 
+                        🔵 <strong>สีน้ำเงิน-เขียว</strong> = บริเวณสำคัญน้อย
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("<h3 style='text-align: center; color: #333; font-size: 1.2rem;'>🖼️ รูปต้นฉบับ</h3>", 
+                               unsafe_allow_html=True)
+                    st.image(image_path, use_container_width=True)
+                with col2:
+                    st.markdown("<h3 style='text-align: center; color: #333; font-size: 1.2rem;'>🔥 Grad-CAM Heatmap</h3>", 
+                               unsafe_allow_html=True)
+                    gradcam_img = st.session_state.gradcam_images[image_path]
+                    st.image(gradcam_img, use_container_width=True)
+        
+        # Top Predictions
+        if show_probabilities and 'probabilities' in result:
+            st.markdown("""
+            <h2 style="color: #333; margin: 35px 0 20px 0; font-size: 1.6rem; 
+                       border-bottom: 3px solid #667eea; padding-bottom: 10px;">
+                📈 ความน่าจะเป็นทั้งหมด (Top 5)
+            </h2>
+            """, unsafe_allow_html=True)
+            
+            probs = result['probabilities']
+            top_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)[:5]
+            
+            for idx, (class_name, prob) in enumerate(top_probs, 1):
+                medal = "🥇" if idx == 1 else "🥈" if idx == 2 else "🥉" if idx == 3 else f"#{idx}"
+                bar_color = "#4CAF50" if idx == 1 else "#66BB6A" if idx == 2 else "#81C784" if idx == 3 else "#A5D6A7"
+                
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 8px 0;">
+                        <span style="font-size: 1.8rem;">{medal}</span>
+                        <span style="font-size: 1.15rem; font-weight: 600; color: #333;">{class_name}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(prob)
+                with col2:
+                    st.markdown(f"""
+                    <div style="font-size: 1.5rem; font-weight: bold; color: {bar_color}; 
+                               text-align: right; padding-top: 8px;">
+                        {prob:.1%}
+                    </div>
+                    """, unsafe_allow_html=True)
+        
+        # Tips (ถ้าความมั่นใจต่ำ)
+        if confidence < 0.7 or is_ood:
+            st.markdown("""
+            <h2 style="color: #f57c00; margin: 35px 0 20px 0; font-size: 1.6rem; 
+                       padding: 25px; background: #fff9e6; border-radius: 15px; 
+                       border-left: 8px solid #ffc107;">
+                💡 Tips: วิธีถ่ายรูปให้ได้ผลลัพธ์ที่ดี
+            </h2>
+            """, unsafe_allow_html=True)
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.markdown("""
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">💡</div>
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem;">แสงสว่าง</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown("""
+                - ใช้แสงธรรมชาติ
+                - หลีกเลี่ยงแสงสะท้อน
+                - ไม่ควรมืดเกินไป
+                """)
+            
+            with col2:
+                st.markdown("""
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">📸</div>
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem;">การถ่ายภาพ</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown("""
+                - ถ่ายให้ชัด ไม่เบลอ
+                - เห็นพระเครื่องเต็มตัว
+                - ระยะใกล้พอประมาณ
+                """)
+            
+            with col3:
+                st.markdown("""
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🎨</div>
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem;">พื้นหลัง</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown("""
+                - ใช้พื้นหลังสีเรียบ
+                - ไม่มีสิ่งบดบัง
+                - ความคมชัดดี
+                """)
+        
+        # Footer
+        method_info = f"🔧 วิธีการทำนาย: {result.get('method', 'Unknown')}"
+        if ood_score is not None:
+            method_info += f" | 📊 OOD Score: {ood_score:.4f}"
         
         st.markdown(f"""
-        <div class="success-box">
-            <h3>ผลการจำแนก</h3>
-            <p style="font-size: 1.2rem;"><strong>ประเภทพระเครื่อง:</strong> {predicted_class}</p>
-            <p style="font-size: 1.2rem;"><strong>ชื่อภาษาไทย:</strong> {thai_name}</p>
+            <div style="text-align: center; color: #999; font-size: 1rem; margin-top: 40px; 
+                        padding-top: 25px; border-top: 2px solid #e0e0e0;">
+                {method_info}
+            </div>
         </div>
         """, unsafe_allow_html=True)
         
-        if show_confidence and confidence > 0:
-            col1, col2 = st.columns([1, 3])
-            with col1:
-                st.metric("ความเชื่อมั่น", f"{confidence:.1%}")
-            with col2:
-                st.progress(confidence)
-            
-            if confidence >= 0.9:
-                st.success("ความเชื่อมั่นสูงมาก - ผลลัพธ์น่าเชื่อถือ")
-            elif confidence >= 0.7:
-                st.warning("ความเชื่อมั่นปานกลาง - ควรตรวจสอบเพิ่มเติม")
-            else:
-                st.error("ความเชื่อมั่นต่ำ - ควรถ่ายรูปใหม่หรือปรึกษาผู้เชี่ยวชาญ")
-        
-        if show_probabilities and 'probabilities' in result:
-            with st.expander("ดูความน่าจะเป็นทั้งหมด"):
-                probs = result['probabilities']
-                for class_name, prob in sorted(probs.items(), key=lambda x: x[1], reverse=True)[:5]:
-                    col1, col2 = st.columns([2, 1])
-                    with col1:
-                        st.write(f"**{class_name}**")
-                    with col2:
-                        st.write(f"{prob:.1%}")
-                    st.progress(prob)
-        
-        st.caption(f"วิธีการทำนาย: {result.get('method', 'Unknown')}")
-        
     else:
+        # Error display - ก็ในกล่องเดียวเช่นกัน
         error_msg = result.get('error', 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ')
         st.markdown(f"""
-        <div class="error-box">
-            <h3>เกิดข้อผิดพลาด</h3>
-            <p>{error_msg}</p>
+        <div style="background: white; border-radius: 25px; padding: 50px; 
+                    box-shadow: 0 15px 50px rgba(255,107,107,0.25); margin: 30px 0; 
+                    border: 2px solid #ff6b6b;">
+            <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); 
+                        color: white; padding: 35px; border-radius: 18px; text-align: center;
+                        box-shadow: 0 6px 20px rgba(255,107,107,0.3);">
+                <div style="font-size: 4rem; margin-bottom: 15px;">❌</div>
+                <h2 style="color: white; margin: 0; font-size: 2.2rem; font-weight: bold;">
+                    เกิดข้อผิดพลาด
+                </h2>
+            </div>
+            <div style="background: #fff5f5; padding: 30px; border-radius: 15px; 
+                        margin: 30px 0; border-left: 6px solid #ff6b6b;">
+                <p style="font-family: monospace; font-size: 1.15rem; color: #333; 
+                        margin: 0; line-height: 1.7; word-wrap: break-word;">
+                    {error_msg}
+                </p>
+            </div>
+            <div style="background: #fff3cd; padding: 25px; border-radius: 15px; 
+                        border-left: 6px solid #ffc107;">
+                <p style="margin: 0; color: #856404; font-size: 1.1rem; line-height: 1.7;">
+                    💡 <strong>คำแนะนำ:</strong><br>
+                    • ตรวจสอบว่ามีไฟล์โมเดล (best_model.pth, temperature_scaler.pth) ครบถ้วน<br>
+                    • ลองรันใหม่อีกครั้ง หรือ Restart Streamlit<br>
+                    • ตรวจสอบ Console สำหรับข้อผิดพลาดเพิ่มเติม
+                </p>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1057,27 +1512,33 @@ def dual_image_mode(show_confidence, show_probabilities):
                 with st.spinner("AI กำลังวิเคราะห์ทั้งสองด้าน..."):
                     start_time = time.time()
                     
+                    # Save temp paths for Grad-CAM
+                    front_temp_path = f"temp_front_{final_front.name}"
+                    back_temp_path = f"temp_back_{final_back.name}"
+                    
+                    with open(front_temp_path, "wb") as f:
+                        f.write(final_front.getbuffer())
+                    with open(back_temp_path, "wb") as f:
+                        f.write(final_back.getbuffer())
+                    
                     front_result = classify_image(final_front)
                     back_result = classify_image(final_back)
                     
                     processing_time = time.time() - start_time
-                    
-                    st.success(f"เสร็จสิ้น! ({processing_time:.2f}s)")
-                    
-                    st.markdown("### ผลการวิเคราะห์")
+                    kdown("### ผลการวิเคราะห์")
                     
                     col1, col2 = st.columns(2)
                     
                     with col1:
                         st.markdown('<div class="result-card">', unsafe_allow_html=True)
                         st.markdown("#### ด้านหน้า")
-                        display_classification_result(front_result, show_confidence, show_probabilities)
+                        display_classification_result(front_result, show_confidence, show_probabilities, front_temp_path)
                         st.markdown('</div>', unsafe_allow_html=True)
                     
                     with col2:
                         st.markdown('<div class="result-card">', unsafe_allow_html=True)
                         st.markdown("#### ด้านหลัง")
-                        display_classification_result(back_result, show_confidence, show_probabilities)
+                        display_classification_result(back_result, show_confidence, show_probabilities, back_temp_path)
                         st.markdown('</div>', unsafe_allow_html=True)
                     
                     # Comparison
@@ -1376,7 +1837,7 @@ def show_tips_section():
                 <li><strong>70-90%</strong><br/>✅ <strong>เชื่อถือได้ดี</strong> — แต่ควรพิจารณาเพิ่มเติม</li>
                 <li><strong>50-70%</strong><br/>⚠️ <strong>ควรตรวจสอบเพิ่ม</strong> — อาจต้องถ่ายใหม่</li>
                 <li><strong>น้อยกว่า 50%</strong><br/>❌ <strong>ควรถ่ายใหม่</strong> — หรือส่งตรวจผู้เชี่ยวชาญ</li>
-                <li><strong>ใช้ข้อมูลประกอบเท่านั้น</strong> — ไม่ควรเป็นเกณฑ์เดียว</li>
+                <li><strong>ใช้ข้อมูลประกอบเท่านั้น</strong> — ไม่ควรเป็นเกณฑ์เดียวในการซื้อ-ขาย</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -1409,6 +1870,3 @@ def show_tips_section():
         </p>
     </div>
     """, unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()

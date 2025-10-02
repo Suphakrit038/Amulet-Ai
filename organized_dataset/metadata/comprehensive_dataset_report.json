@@ -1,0 +1,136 @@
+{
+  "report_info": {
+    "title": "🗂️ Amulet-AI Dataset Management Summary",
+    "generated_at": "2025-10-02T22:41:13.639985",
+    "version": "2.0",
+    "description": "Complete dataset reorganization, cleaning, augmentation, and splitting"
+  },
+  "dataset_overview": {
+    "classes": [
+      "phra_sivali",
+      "portrait_back",
+      "prok_bodhi_9_leaves",
+      "somdej_pratanporn_buddhagavak",
+      "waek_man",
+      "wat_nong_e_duk"
+    ],
+    "num_classes": 6,
+    "thai_names": {
+      "phra_sivali": "พระสีวลี",
+      "portrait_back": "หลังรูปเหมือน",
+      "prok_bodhi_9_leaves": "ปรกโพธิ์9ใบ",
+      "somdej_pratanporn_buddhagavak": "พระสมเด็จประธานพรเนื้อพุทธกวัก",
+      "waek_man": "แหวกม่าน",
+      "wat_nong_e_duk": "วัดหนองอีดุก"
+    },
+    "total_processed_files": 1076
+  },
+  "phase_1_cleaning": {
+    "operation": "Dataset Cleaning & Reorganization",
+    "timestamp": "2025-10-02T22:32:50.428175",
+    "results": {
+      "total_files_scanned": 1036,
+      "duplicate_files_removed": 518,
+      "corrupted_files_removed": 0,
+      "cleaned_files": 0
+    },
+    "structure_created": {
+      "raw_dataset": "E:\\Amulet-Ai\\organized_dataset\\raw",
+      "processed_dataset": "E:\\Amulet-Ai\\organized_dataset\\processed",
+      "augmented_dataset": "E:\\Amulet-Ai\\organized_dataset\\augmented",
+      "splits_dataset": "E:\\Amulet-Ai\\organized_dataset\\splits",
+      "metadata": "E:\\Amulet-Ai\\organized_dataset\\metadata"
+    }
+  },
+  "phase_2_augmentation": {
+    "operation": "Advanced Data Augmentation",
+    "timestamp": "2025-10-02T22:36:10.895659",
+    "techniques_applied": [
+      "Geometric transformations (rotation, scale, shift)",
+      "Perspective and elastic transforms",
+      "Color jittering and lighting effects",
+      "CLAHE and gamma correction",
+      "Noise injection (Gaussian, ISO)",
+      "Blur effects (Motion, Median, Gaussian)",
+      "Unsharp masking",
+      "Coarse dropout",
+      "Quality enhancement (denoising, edge enhancement)"
+    ],
+    "results": {
+      "original_files": 172,
+      "processed_files": 172,
+      "augmented_files": 688,
+      "enhanced_files": 0
+    },
+    "target_size": [
+      224,
+      224
+    ]
+  },
+  "phase_3_splitting": {
+    "operation": "Advanced Dataset Splitting",
+    "timestamp": "2025-10-02T22:38:48.023614",
+    "split_ratios": {
+      "train": 0.7,
+      "val": 0.2,
+      "test": 0.1
+    },
+    "results": {
+      "total_files": 1076,
+      "train_files": 751,
+      "val_files": 214,
+      "test_files": 111
+    },
+    "class_distribution": {
+      "phra_sivali": 136,
+      "portrait_back": 216,
+      "prok_bodhi_9_leaves": 196,
+      "somdej_pratanporn_buddhagavak": 181,
+      "waek_man": 176,
+      "wat_nong_e_duk": 171
+    },
+    "balance_metrics": {
+      "min_class_size": 136,
+      "max_class_size": 216,
+      "mean_class_size": 179.33333333333334,
+      "std_class_size": 24.43813049769197,
+      "balance_ratio": 0.6296296296296297
+    },
+    "quality_analysis": {
+      "resolution_distribution": {
+        "224x224": 90
+      },
+      "size_distribution": {
+        "0.1-0.5MB": 44,
+        "< 0.1MB": 46
+      },
+      "format_distribution": {
+        ".PNG": 90
+      }
+    }
+  },
+  "final_statistics": {
+    "data_multiplication_factor": 1.04,
+    "storage_efficiency": {},
+    "quality_improvements": {},
+    "readiness_score": 88.9,
+    "readiness_breakdown": [
+      [
+        "Class Balance",
+        18.88888888888889
+      ],
+      [
+        "Data Volume",
+        25
+      ],
+      [
+        "Augmentation Quality",
+        25
+      ],
+      [
+        "Data Organization",
+        20
+      ]
+    ]
+  }
+}

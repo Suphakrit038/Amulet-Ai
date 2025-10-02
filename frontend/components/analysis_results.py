@@ -5,8 +5,24 @@
 
 import streamlit as st
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
+from PIL import Image
+import io
+import base64
+try:
+    import torch
+    from pathlib import Path
+    import sys
+    
+    # Add project root to path for imports
+    project_root = Path(__file__).parent.parent.parent
+    sys.path.append(str(project_root))
+    
+    from explainability.gradcam import visualize_gradcam, generate_explanation, get_target_layer
+    GRADCAM_AVAILABLE = True
+except ImportError:
+    GRADCAM_AVAILABLE = False
 
 
 class AnalysisResultsComponent:
@@ -14,6 +30,7 @@ class AnalysisResultsComponent:
     
     def __init__(self, confidence_threshold: float = 0.7):
         self.confidence_threshold = confidence_threshold
+        self.gradcam_available = GRADCAM_AVAILABLE
     
     def display_results(self, result: Dict[str, Any], analysis_type: str = "single_image", show_details: bool = True):
         """แสดงผลลัพธ์การวิเคราะห์แบบครบถ้วน"""
@@ -39,6 +56,12 @@ class AnalysisResultsComponent:
         # Display enhanced features if available
         if show_details and 'enhanced_features' in result:
             self._display_enhanced_features(result['enhanced_features'])
+        
+        # Display Grad-CAM explanations if available
+        if show_details and 'gradcam_results' in result:
+            self._display_gradcam_explanations(result['gradcam_results'])
+        elif show_details and self.gradcam_available:
+            self._display_gradcam_placeholder(result)
     
     def _display_analysis_summary(self, result: Dict[str, Any], analysis_type: str):
         """แสดงสรุปการวิเคราะห์"""
@@ -207,6 +230,136 @@ class AnalysisResultsComponent:
             
             st.markdown("</div>", unsafe_allow_html=True)
     
+    def _display_gradcam_explanations(self, gradcam_results: Dict[str, Any]):
+        """แสดง Grad-CAM visual explanations"""
+        st.markdown("### 🔍 การอธิบายผลด้วย AI (Grad-CAM)")
+        
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+                    padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border: 1px solid rgba(168, 85, 247, 0.2);">
+            <p style="color: #374151; margin: 0; text-align: center; font-size: 0.9rem;">
+                🎯 AI แสดงให้เห็นว่าส่วนไหนของภาพที่สำคัญต่อการตัดสินใจ
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Display top predictions with explanations
+        top_predictions = gradcam_results.get('top_predictions', [])
+        
+        for i, prediction in enumerate(top_predictions[:3]):
+            class_name = prediction.get('class', 'ไม่ระบุ')
+            confidence = prediction.get('confidence', 0)
+            overlay_image = prediction.get('overlay')
+            
+            # Create expandable section for each prediction
+            with st.expander(f"{'🥇' if i == 0 else '🥈' if i == 1 else '🥉'} {class_name} ({confidence:.1%})", expanded=(i == 0)):
+                if overlay_image is not None:
+                    col1, col2 = st.columns([1, 1])
+                    
+                    with col1:
+                        st.markdown("**ภาพต้นฉบับ**")
+                        if 'original_image' in gradcam_results and gradcam_results['original_image'] is not None:
+                            st.image(gradcam_results['original_image'], use_column_width=True)
+                        else:
+                            st.info("ไม่มีภาพต้นฉบับ")
+                    
+                    with col2:
+                        st.markdown("**AI Attention Map**")
+                        st.image(overlay_image, use_column_width=True)
+                        
+                        # Explanation text
+                        st.markdown(f"""
+                        <div style="background: rgba(168, 85, 247, 0.1); padding: 0.75rem; 
+                                    border-radius: 8px; margin-top: 0.5rem; font-size: 0.85rem;">
+                            <strong>การอธิบาย:</strong> พื้นที่สีแดง-เหลืองแสดงบริเวณที่ AI ให้ความสำคัญมากที่สุด
+                            ในการระบุว่าเป็น "{class_name}" ด้วยความมั่นใจ {confidence:.1%}
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.warning("ไม่สามารถสร้าง Grad-CAM สำหรับการทำนายนี้ได้")
+    
+    def _display_gradcam_placeholder(self, result: Dict[str, Any]):
+        """แสดง placeholder สำหรับ Grad-CAM เมื่อไม่มีข้อมูล"""
+        if not self.gradcam_available:
+            return
+            
+        st.markdown("### 🔍 การอธิบายผลด้วย AI (Grad-CAM)")
+        
+        st.info("""
+        🔧 **คุณสมบัติใหม่กำลังพัฒนา**
+        
+        การอธิบายผลด้วย Grad-CAM จะแสดงให้เห็นว่า AI มองส่วนไหนของภาพเป็นสำคัญ
+        ในการตัดสินใจ - คุณสมบัตินี้จะพร้อมใช้งานในเร็วๆ นี้!
+        """)
+        
+        # Show mock example
+        with st.expander("🎯 ตัวอย่างการทำงาน", expanded=False):
+            st.markdown("""
+            **Grad-CAM จะแสดง:**
+            - 🔴 พื้นที่ที่ AI ให้ความสำคัญมากที่สุด
+            - 🟡 พื้นที่ที่ค่อนข้างสำคัญ
+            - 🔵 พื้นที่ที่สำคัญน้อย
+            
+            วิธีนี้ช่วยให้เข้าใจว่า AI "มอง" อะไรในภาพและทำไมถึงตัดสินใจแบบนั้น
+            """)
+
+    def generate_gradcam_explanation(
+        self, 
+        model, 
+        image: Image.Image, 
+        transform,
+        class_names: list,
+        target_layer = None
+    ) -> Optional[Dict[str, Any]]:
+        """สร้าง Grad-CAM explanation สำหรับ image
+        
+        Args:
+            model: PyTorch model
+            image: PIL Image
+            transform: Image preprocessing transform
+            class_names: List of class names
+            target_layer: Target layer for Grad-CAM (auto-detect if None)
+            
+        Returns:
+            Dictionary with Grad-CAM results
+        """
+        if not self.gradcam_available:
+            return None
+            
+        try:
+            # Auto-detect target layer if not provided
+            if target_layer is None:
+                # Try to determine architecture from model
+                if hasattr(model, 'backbone_name'):
+                    architecture = model.backbone_name
+                    if 'resnet' in architecture.lower():
+                        target_layer = get_target_layer(model, 'resnet')
+                    elif 'efficientnet' in architecture.lower():
+                        target_layer = get_target_layer(model, 'efficientnet')
+                    elif 'mobilenet' in architecture.lower():
+                        target_layer = get_target_layer(model, 'mobilenet')
+                    else:
+                        target_layer = get_target_layer(model, 'resnet')  # Default
+                else:
+                    target_layer = get_target_layer(model, 'resnet')  # Default
+            
+            # Generate explanation
+            explanation = generate_explanation(
+                model=model,
+                image=image,
+                target_layer=target_layer,
+                transform=transform,
+                class_names=class_names,
+                top_k=3,
+                method='gradcam'
+            )
+            
+            return explanation
+            
+        except Exception as e:
+            st.error(f"เกิดข้อผิดพลาดในการสร้าง Grad-CAM: {str(e)}")
+            return None
+
     def _create_mock_result(self, analysis_type: str) -> Dict[str, Any]:
         """สร้างผลลัพธ์จำลองสำหรับการทดสอบ"""
         thai_names = ['พระสมเด็จ', 'พระนางพญา', 'พระพิมพ์เล็ก', 'พระพิมพ์พุทธคุณ', 'พระไอย์ไข่']

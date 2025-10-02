@@ -1,0 +1,17 @@
+{
+  "total_files": 518,
+  "classes": {
+    "phra_sivali": 60,
+    "portrait_back": 108,
+    "prok_bodhi_9_leaves": 96,
+    "somdej_pratanporn_buddhagavak": 86,
+    "waek_man": 87,
+    "wat_nong_e_duk": 81
+  },
+  "balance_ratio": 0.5555555555555556,
+  "recommended_splits": {
+    "train": 0.8,
+    "val": 0.15,
+    "test": 0.05
+  }
+}

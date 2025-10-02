@@ -1,21 +1,15 @@
 {
   "current_classes": {
-    "0": "phra_sivali",
-    "1": "portrait",
-    "2": "prok_bodhi_9_leaves",
-    "3": "somdej_pratanporn_buddhagavak",
-    "4": "waek_man",
-    "5": "wat_nong_e_duk"
+    "0": "พระสมเด็จ",
+    "1": "พระพิมพ์",
+    "2": "พระกรุ",
+    "3": "พระหลวงพ่อ",
+    "4": "พระนาคปรก",
+    "5": "พระปิดตา",
+    "6": "พระพุทธชินราช",
+    "7": "พระพุทธชินสีห์",
+    "8": "พระเครื่อง",
+    "9": "พระรอด"
   },
-  "class_mapping": {
-    "phra_sivali": 0,
-    "portrait": 1,
-    "prok_bodhi_9_leaves": 2,
-    "somdej_pratanporn_buddhagavak": 3,
-    "waek_man": 4,
-    "wat_nong_e_duk": 5
-  },
-  "total_classes": 6,
-  "version": "3.0",
-  "last_updated": "2025-10-01T16:30:00.000000"
+  "num_classes": 10
 }
