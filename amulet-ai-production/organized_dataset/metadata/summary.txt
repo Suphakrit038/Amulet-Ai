@@ -1,0 +1,38 @@
+🗂️ Dataset Organization Summary
+========================================
+
+📅 Created: 2025-10-01 17:53:57
+
+📊 Class Statistics:
+  prok_bodhi_9_leaves:
+    - Total: 32 files
+    - Front: 16 files
+    - Back: 16 files
+
+  somdej_pratanporn_buddhagavak:
+    - Total: 29 files
+    - Front: 15 files
+    - Back: 14 files
+    - Unclear: 2 files
+
+  phra_sivali:
+    - Total: 20 files
+    - Front: 10 files
+    - Back: 10 files
+
+  wat_nong_e_duk:
+    - Total: 27 files
+    - Front: 14 files
+    - Back: 13 files
+
+  portrait_back:
+    - Total: 36 files
+    - Front: 18 files
+    - Back: 18 files
+
+  waek_man:
+    - Total: 29 files
+    - Front: 26 files
+    - Back: 3 files
+    - Unclear: 2 files
+

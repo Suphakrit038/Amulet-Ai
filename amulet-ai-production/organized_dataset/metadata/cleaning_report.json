@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-10-02T22:32:50.428175",
+  "operation": "dataset_cleaning_and_reorganization",
+  "statistics": {
+    "total_files": 1036,
+    "duplicate_files": 518,
+    "corrupted_files": 0,
+    "cleaned_files": 0,
+    "processed_files": 0
+  },
+  "structure": {
+    "raw_dataset": "E:\\Amulet-Ai\\organized_dataset\\raw",
+    "processed_dataset": "E:\\Amulet-Ai\\organized_dataset\\processed",
+    "augmented_dataset": "E:\\Amulet-Ai\\organized_dataset\\augmented",
+    "splits_dataset": "E:\\Amulet-Ai\\organized_dataset\\splits",
+    "metadata": "E:\\Amulet-Ai\\organized_dataset\\metadata"
+  }
+}
