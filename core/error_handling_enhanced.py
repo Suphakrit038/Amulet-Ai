@@ -9,6 +9,7 @@ from functools import wraps
 from typing import Any, Callable, Dict, Optional
 import os
 from datetime import datetime
+from pathlib import Path
 
 # Setup logging
 log_dir = Path("logs")

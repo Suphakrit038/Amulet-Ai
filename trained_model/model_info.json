@@ -1,0 +1,7 @@
+{
+  "model_name": "AmuletClassifier",
+  "version": "1.0.0",
+  "classes": 6,
+  "accuracy": 0.85,
+  "created": "2025-10-03"
+}
