@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Amulet-AI - Production Frontend
+Amulet-AI - Modern Frontend
 ระบบจำแนกพระเครื่องอัจฉริยะ
 Thai Amulet Classification System
 """
@@ -18,172 +18,70 @@ import os
 from datetime import datetime
 import io
 
-# Optional OpenCV import - ไม่จำเป็นสำหรับการทำงานหลัก
+# Add project root to path
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Optional imports with fallbacks
 try:
     import cv2
     CV2_AVAILABLE = True
 except ImportError:
     CV2_AVAILABLE = False
-    # cv2 is optional, we can work without it
-# PyTorch imports with fallback
+
 try:
     import torch
     import torch.nn.functional as F
     from torchvision import transforms
     TORCH_AVAILABLE = True
 except ImportError:
-    # Create dummy torch objects
-    class DummyTorch:
-        device = lambda x: 'cpu'
-        no_grad = lambda: DummyContext()
-        load = lambda x, **kwargs: {}
-        
-    class DummyF:
-        softmax = lambda x, dim=1: x
-        
-    class DummyTransforms:
-        Compose = lambda x: lambda img: img
-        Resize = lambda x: lambda img: img
-        ToTensor = lambda: lambda img: img
-        Normalize = lambda **kwargs: lambda img: img
-        
-    class DummyContext:
-        def __enter__(self): return self
-        def __exit__(self, *args): pass
-        
-    torch = DummyTorch()
-    F = DummyF()
-    transforms = DummyTransforms()
     TORCH_AVAILABLE = False
-    print("⚠️ PyTorch not available - using fallback mode")
 
-# Lazy import joblib to avoid threading issues
-def load_joblib_file(file_path):
-    """Lazy load joblib file to avoid threading issues in Python 3.13"""
-    try:
-        import joblib
-        return joblib.load(file_path)
-    except ImportError:
-        print(f"Warning: joblib not available, cannot load {file_path}")
-        return None
-    except Exception as e:
-        print(f"Warning: Failed to load joblib file {file_path}: {e}")
-        return None
-
-# Add project root to path
-project_root = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(project_root))
-
-# Debug: Print sys.path and project_root
-print(f"Project root: {project_root}")
-print(f"Python path configured correctly")
-
-# Import AI Models (with comprehensive fallback)
+# AI Models
 AI_MODELS_AVAILABLE = False
 try:
-    # Import our actual AI models
     from ai_models.enhanced_production_system import EnhancedProductionClassifier
     from ai_models.updated_classifier import UpdatedAmuletClassifier, get_updated_classifier
-    from ai_models.compatibility_loader import ProductionOODDetector, try_load_model
     AI_MODELS_AVAILABLE = True
-    print("✅ AI Models loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Warning: AI models not available: {e}")
-    print("   Using fallback mode - basic functionality only")
-    # Create comprehensive dummy classes
+except ImportError:
     class DummyClassifier:
         def __init__(self, *args, **kwargs):
             self.loaded = False
-            
-        def load_model(self, *args, **kwargs):
-            return False
-            
         def predict(self, *args, **kwargs):
-            return {
-                "status": "error", 
-                "error": "AI models not available in this environment",
-                "predicted_class": "Unknown",
-                "confidence": 0.0,
-                "probabilities": {},
-                "method": "Fallback"
-            }
+            return {"status": "error", "error": "AI models not available"}
     
     EnhancedProductionClassifier = DummyClassifier
     UpdatedAmuletClassifier = DummyClassifier
     get_updated_classifier = lambda: DummyClassifier()
-    ProductionOODDetector = DummyClassifier
-    AI_MODELS_AVAILABLE = False
 
-# Import core modules (with comprehensive fallback)
+# Core modules
 CORE_AVAILABLE = False
 try:
     from core.error_handling_enhanced import error_handler, validate_image_file
     from core.performance_monitoring import performance_monitor
     CORE_AVAILABLE = True
-    print("✅ Core modules loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Core modules not available: {e}")
-    print("   Using fallback implementations")
-    # Comprehensive fallback implementations
+except ImportError:
     def error_handler(error_type="general"):
         def decorator(func):
             def wrapper(*args, **kwargs):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:
-                    print(f"Error in {func.__name__}: {str(e)}")
-                    return {
-                        "status": "error", 
-                        "error": f"Function {func.__name__} failed: {str(e)}",
-                        "method": "Fallback"
-                    }
+                    return {"status": "error", "error": str(e)}
             return wrapper
         return decorator
     
     def validate_image_file(file):
-        """Basic file validation fallback"""
-        if file is None:
-            return False
-        # Basic checks
-        if hasattr(file, 'name') and hasattr(file, 'size'):
-            valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp']
-            return any(file.name.lower().endswith(ext) for ext in valid_extensions)
-        return True  # If we can't check, assume valid
+        return file is not None
     
     class performance_monitor:
         @staticmethod
         def collect_metrics():
-            return {
-                "timestamp": datetime.now().isoformat(),
-                "status": "fallback_mode",
-                "memory_usage": "unknown"
-            }
-    
-    CORE_AVAILABLE = False
+            return {"status": "fallback_mode"}
 
 # Configuration
-API_BASE_URL = "http://localhost:8000"
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-
-# Theme Colors
-COLORS = {
-    'primary': '#800000',
-    'maroon': '#800000',
-    'accent': '#B8860B',
-    'dark_gold': '#B8860B',
-    'gold': '#D4AF37',
-    'success': '#10b981',
-    'green': '#10b981',
-    'warning': '#f59e0b',
-    'yellow': '#f59e0b',
-    'error': '#ef4444',
-    'red': '#ef4444',
-    'info': '#3b82f6',
-    'blue': '#3b82f6',
-    'gray': '#6c757d',
-    'white': '#ffffff',
-    'black': '#000000'
-}
 
 # Page Configuration
 st.set_page_config(
@@ -193,25 +91,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Display system status at the top (for debugging)
+# System Status
+status_items = []
+status_items.append("AI Models: ✅ Available" if AI_MODELS_AVAILABLE else "AI Models: ❌ Fallback Mode")
+status_items.append("Core Modules: ✅ Available" if CORE_AVAILABLE else "Core Modules: ❌ Fallback Mode") 
+status_items.append("PyTorch: ✅ Available" if TORCH_AVAILABLE else "PyTorch: ❌ Not Available")
+
 if not AI_MODELS_AVAILABLE or not CORE_AVAILABLE:
-    status_info = []
-    if not AI_MODELS_AVAILABLE:
-        status_info.append("AI Models: ❌ Fallback Mode")
-    else:
-        status_info.append("AI Models: ✅ Available")
-        
-    if not CORE_AVAILABLE:
-        status_info.append("Core Modules: ❌ Fallback Mode")
-    else:
-        status_info.append("Core Modules: ✅ Available")
-        
-    if not TORCH_AVAILABLE:
-        status_info.append("PyTorch: ❌ Not Available")
-    else:
-        status_info.append("PyTorch: ✅ Available")
-        
-    st.info(f"🔧 System Status: {' | '.join(status_info)}")
+    st.info(f"🔧 System Status: {' | '.join(status_items)}")
 
 # Modern Modal Design CSS
 st.markdown(f"""
